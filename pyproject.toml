@@ -13,6 +13,9 @@ openai = "^0.27.5"
 [tool.poetry.scripts]
 elia = "elia.app:run"
 
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

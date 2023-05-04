@@ -1,17 +1,18 @@
 from __future__ import annotations
 
+import asyncio
 from typing import Any
 
 import openai
+from rich.console import RenderableType
 from rich.markdown import Markdown
-from rich.text import Text
-from textual import work, on
+from textual import work
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.events import Timer
 from textual.message import Message
+from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import DataTable, Static
 
 from elia.models import Thread, ChatMessage
 
@@ -44,6 +45,8 @@ from elia.models import Thread, ChatMessage
 
 
 class Chatbox(Widget):
+    message: ChatMessage | None = reactive(None, init=False, always_update=True,
+                                           layout=True)
 
     def __init__(
         self,
@@ -61,21 +64,24 @@ class Chatbox(Widget):
         )
         self.message = message
 
-    def compose(self) -> ComposeResult:
-        yield Static(Markdown(""))
+    def render(self) -> RenderableType:
+        return Markdown(self.message.get("content") or "")
 
     def append_chunk(self, chunk: Any):
         # If this Chatbox doesn't correspond to an OpenAI message,
         # make that connection now.
         if self.message is None:
             self.message = ChatMessage(
-                id="",
                 role="assistant",
                 content="",
             )
-
-        static = self.query_one(Static)
-        static.update(chunk)
+        else:
+            chunk_content = chunk["choices"][0].get("delta", {}).get("content", "")
+            print(chunk)
+            self.message = ChatMessage(
+                role=self.message.get("role"),
+                content=self.message.get("content") + chunk_content,
+            )
 
 
 class Conversation(Widget):
@@ -83,17 +89,19 @@ class Conversation(Widget):
         super().__init__()
 
         # The thread initially only contains the system message.
-        self.thread = Thread(messages=[
-            ChatMessage(role="system", content="You are a helpful assistant.")
-        ])
-
+        self.thread = Thread(
+            messages=[
+                ChatMessage(
+                    role="system",
+                    content="You are a helpful assistant. If asked for code, include the programming language or markup language in the markdown fence in your response, to ensure proper syntax highlighting. For example, write '```json' instead of '```'.",
+                )
+            ]
+        )
         self._response_stream_timer: Timer | None = None
 
     @work(exclusive=True)
     async def new_user_message(self, user_message: str) -> None:
-        user_message = ChatMessage(
-            role="user", content=user_message
-        )
+        user_message = ChatMessage(role="user", content=user_message)
         self.thread.messages.append(user_message)
         container = self.query_one(VerticalScroll)
         await container.mount(Chatbox(user_message))
@@ -106,36 +114,27 @@ class Conversation(Widget):
             stream=True,
         )
 
-        # {
-        #     "choices": [
-        #         {
-        #             "delta": {
-        #                 "content": "?"
-        #             },
-        #             "finish_reason": null,
-        #             "index": 0
-        #         }
-        #     ],
-        #     "created": 1683224430,
-        #     "id": "chatcmpl-7CXr4jTdQfo8UGFYuHLaPhdsAAn4G",
-        #     "model": "gpt-3.5-turbo-0301",
-        #     "object": "chat.completion.chunk"
-        # }
-
-        response_chatbox = Chatbox(message=ChatMessage(role="assistant"))
+        response_chatbox = Chatbox(
+            message=ChatMessage(role="assistant", content=""),
+            classes="assistant-message",
+        )
         await container.mount(response_chatbox)
 
-        async def handle_next_event():
-            try:
-                event = await streaming_response.__anext__()
-                choice = event["choices"][0]
-                if choice.get("finish_reason") in {"stop", "length", "content_filter"}:
-                    return
-                response_chatbox.append_chunk(event)
-            except (StopAsyncIteration, IndexError):
-                self.post_message(self.AgentResponseComplete())
+        response_stream_lock = asyncio.Lock()
 
-        self.set_interval(0.5, handle_next_event)
+        async def handle_next_event():
+            async with response_stream_lock:
+                try:
+                    event = await streaming_response.__anext__()
+                    choice = event["choices"][0]
+                    if choice.get("finish_reason") in {"stop", "length",
+                                                       "content_filter"}:
+                        return
+                    response_chatbox.append_chunk(event)
+                except (StopAsyncIteration, IndexError):
+                    self.post_message(self.AgentResponseComplete())
+
+        self.set_interval(0.05, handle_next_event)
 
     def on_conversation_agent_response_complete(self) -> None:
         timer = self._response_stream_timer
@@ -143,9 +142,9 @@ class Conversation(Widget):
             timer.stop()
 
     def compose(self) -> ComposeResult:
-        vs = VerticalScroll()
-        vs.can_focus = False
-        yield vs
+        vertical_scroll = VerticalScroll()
+        vertical_scroll.can_focus = False
+        yield vertical_scroll
 
     class AgentResponseStarted(Message):
         pass
