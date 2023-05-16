@@ -45,31 +45,44 @@ Chatbox > Static {
 }
 
 
-ConversationOptions .model-selection {
-  height: 14;
+ModelPanel {
   width: 1fr;
-  padding: 1 2;
   margin: 2 4;
 }
 
-ConversationOptions .model-selection.gpt35 {
+ModelPanel .model-selection {
+  padding: 1 2;
+  height: 15;
+}
+
+ModelPanel .model-selection.gpt35 {
   color: $text;
-  background: $accent-darken-2;
+  background: $panel;
   border: thick $accent;
 }
 
-ConversationOptions .model-selection.gpt35 :hover {
+ModelPanel .model-selection.gpt35 :hover {
+  background: $panel-lighten-1;
+  border: thick $accent-lighten-1;
+}
+
+ModelPanel .model-selection.gpt35 :focus {
   background: $accent-darken-1;
   border: thick $accent-lighten-1;
 }
 
-ConversationOptions .model-selection.gpt4 {
+ModelPanel .model-selection.gpt4 {
   color: $text;
-  background: $success-darken-2;
+  background: $panel;
   border: thick $success;
 }
 
-ConversationOptions .model-selection.gpt4 :hover {
+ModelPanel .model-selection.gpt4 :hover {
+  background: $panel-lighten-1;
+  border: thick $success-lighten-1;
+}
+
+ModelPanel .model-selection.gpt4 :focus {
   background: $success-darken-1;
   border: thick $success-lighten-1;
 }

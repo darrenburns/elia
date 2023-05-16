@@ -4,7 +4,7 @@ from rich.text import Text
 from textual.app import ComposeResult
 from textual.containers import Horizontal
 from textual.widget import Widget
-from textual.widgets import Static, Button
+from textual.widgets import Static
 
 
 class GPTModel(NamedTuple):
@@ -35,15 +35,40 @@ AVAILABLE_MODELS = [
 ]
 
 
+class ModelPanel(Widget):
+
+    def __init__(
+        self,
+        model: GPTModel,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+        disabled: bool = False,
+    ) -> None:
+        super().__init__(
+            name=name,
+            id=id,
+            classes=classes,
+            disabled=disabled,
+        )
+        self.model = model
+
+    def compose(self) -> ComposeResult:
+        name, provider, product, description, css_class = self.model
+        text = Text.assemble(
+            (name, "b"),
+            "\n",
+            (f"{product} by {provider} ", "italic"),
+            "\n\n",
+            description
+        )
+        model_option_box = Static(text, id=name, classes=f"{css_class} model-selection")
+        model_option_box.can_focus = True
+        yield model_option_box
+
+
 class ConversationOptions(Widget):
     def compose(self) -> ComposeResult:
         with Horizontal():
-            for name, provider, product, description, css_class in AVAILABLE_MODELS:
-                text = Text.assemble(
-                    (name, "b"),
-                    "\n",
-                    (f"{product} by {provider} ", "italic"),
-                    "\n\n",
-                    description
-                )
-                yield Static(text, classes=f"{css_class} model-selection")
+            for model in AVAILABLE_MODELS:
+                yield ModelPanel(model)
