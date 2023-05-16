@@ -1,11 +1,13 @@
 import os
 from pathlib import Path
+from typing import NamedTuple
 
 import openai
 from textual.app import App, ComposeResult
 from textual.widgets import Input
 
 from elia_chat.widgets.conversation import Conversation
+
 
 
 class Elia(App):

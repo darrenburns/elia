@@ -1,20 +1,22 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Any
 
 import openai
-from rich.console import RenderableType
-from rich.markdown import Markdown
-from textual import work
+from textual import work, log
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
+from textual.css.query import NoMatches
 from textual.events import Timer
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 
 from elia_chat.models import Thread, ChatMessage
+from elia_chat.widgets.chatbox import Chatbox
+from elia_chat.widgets.conversation_header import ConversationHeader
+from elia_chat.widgets.conversation_options import DEFAULT_MODEL, ConversationOptions, \
+    GPTModel
 
 
 # [
@@ -44,47 +46,9 @@ from elia_chat.models import Thread, ChatMessage
 # }
 
 
-class Chatbox(Widget):
-    message: ChatMessage | None = reactive(None, init=False, always_update=True,
-                                           layout=True)
-
-    def __init__(
-        self,
-        message: ChatMessage | None = None,
-        name: str | None = None,
-        id: str | None = None,
-        classes: str | None = None,
-        disabled: bool = False,
-    ) -> None:
-        super().__init__(
-            name=name,
-            id=id,
-            classes=classes,
-            disabled=disabled,
-        )
-        self.message = message
-
-    def render(self) -> RenderableType:
-        return Markdown(self.message.get("content") or "")
-
-    def append_chunk(self, chunk: Any):
-        # If this Chatbox doesn't correspond to an OpenAI message,
-        # make that connection now.
-        if self.message is None:
-            self.message = ChatMessage(
-                role="assistant",
-                content="",
-            )
-        else:
-            chunk_content = chunk["choices"][0].get("delta", {}).get("content", "")
-            print(chunk)
-            self.message = ChatMessage(
-                role=self.message.get("role"),
-                content=self.message.get("content") + chunk_content,
-            )
-
-
 class Conversation(Widget):
+    chosen_model: str = reactive(DEFAULT_MODEL)
+
     def __init__(self):
         super().__init__()
 
@@ -93,23 +57,38 @@ class Conversation(Widget):
             messages=[
                 ChatMessage(
                     role="system",
-                    content="You are a helpful assistant. If asked for code, include the programming language or markup language in the markdown fence in your response, to ensure proper syntax highlighting. For example, write '```json' instead of '```'.",
+                    content="You are a helpful assistant.",
                 )
             ]
         )
         self._response_stream_timer: Timer | None = None
+        self.chosen_model: GPTModel = DEFAULT_MODEL
+
+    @property
+    def is_empty(self) -> bool:
+        """True if the conversation is empty, False otherwise."""
+        return len(self.thread.messages) == 1  # Contains system message at first.
 
     @work(exclusive=True)
     async def new_user_message(self, user_message: str) -> None:
         user_message = ChatMessage(role="user", content=user_message)
         self.thread.messages.append(user_message)
+        # If the thread was empty, and now it's not, remove the ConversationOptions.
+        if len(self.thread.messages) == 2:
+            try:
+                options = self.query_one(ConversationOptions)
+            except NoMatches:
+                log.error("Couldn't remove ConversationOptions as it wasn't found.")
+            else:
+                await options.remove()
+
         container = self.query_one(VerticalScroll)
         await container.mount(Chatbox(user_message))
 
         self.post_message(self.AgentResponseStarted())
 
         streaming_response = await openai.ChatCompletion.acreate(
-            model="gpt-3.5-turbo",
+            model=self.chosen_model.name,
             messages=self.thread.messages,
             stream=True,
         )
@@ -142,9 +121,13 @@ class Conversation(Widget):
             timer.stop()
 
     def compose(self) -> ComposeResult:
-        vertical_scroll = VerticalScroll()
-        vertical_scroll.can_focus = False
-        yield vertical_scroll
+        yield ConversationHeader(title="Untitled Chat")
+        with VerticalScroll() as vertical_scroll:
+            vertical_scroll.can_focus = False
+            # TODO - check if conversation is pre-existing.
+            #  If it already exists, load it here.
+            #  If it's a new empty conversation, show the options for a new conversation.
+            yield ConversationOptions()
 
     class AgentResponseStarted(Message):
         pass

@@ -16,6 +16,17 @@ Input {
   height: 2;
 }
 
+ConversationHeader {
+  width: 1fr;
+  height: 2;
+  align: center middle;
+  background: $panel;
+}
+
+ConversationHeader > Static {
+  width: auto;
+}
+
 Chatbox {
   color: $text;
   background: $success-darken-2 60%;
@@ -32,3 +43,34 @@ Chatbox.assistant-message {
 Chatbox > Static {
   height: auto;
 }
+
+
+ConversationOptions .model-selection {
+  height: 14;
+  width: 1fr;
+  padding: 1 2;
+  margin: 2 4;
+}
+
+ConversationOptions .model-selection.gpt35 {
+  color: $text;
+  background: $accent-darken-2;
+  border: thick $accent;
+}
+
+ConversationOptions .model-selection.gpt35 :hover {
+  background: $accent-darken-1;
+  border: thick $accent-lighten-1;
+}
+
+ConversationOptions .model-selection.gpt4 {
+  color: $text;
+  background: $success-darken-2;
+  border: thick $success;
+}
+
+ConversationOptions .model-selection.gpt4 :hover {
+  background: $success-darken-1;
+  border: thick $success-lighten-1;
+}
+
