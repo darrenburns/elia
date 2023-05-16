@@ -10,7 +10,7 @@ Conversation > VerticalScroll {
 Input {
   dock: bottom;
   border: none;
-  border-top: hkey $success;
+  border-top: hkey $panel-lighten-2;
   box-sizing: border-box;
   padding: 0 2 1 2;
   height: 2;
@@ -59,8 +59,7 @@ ModelSet {
 }
 
 ModelSet:focus-within {
-  border: solid $primary;
-  padding: 0 1;
+  outline: solid $accent;
 }
 
 ModelPanel {

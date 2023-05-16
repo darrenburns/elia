@@ -22,9 +22,7 @@ class Elia(App):
 
     def compose(self) -> ComposeResult:
         yield Conversation()
-        input = Input(placeholder="Enter your message here...", id="chat-input")
-        input.focus()
-        yield input
+        yield Input(placeholder="Enter your message here...", id="chat-input")
         yield Footer()
 
     @on(Input.Submitted, "#chat-input")

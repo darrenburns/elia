@@ -143,7 +143,8 @@ class ConversationOptions(Widget):
 
             yield Label("[b]Select a model:\n", classes="conversation-options-label")
 
-            with ModelSet():
+            with ModelSet() as model_set:
+                model_set.focus()
                 for index, model in enumerate(AVAILABLE_MODELS):
                     model_panel = ModelPanel(model, id=model.name,
                                              classes=model.css_class)

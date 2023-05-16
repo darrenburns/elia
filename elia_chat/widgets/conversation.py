@@ -90,7 +90,7 @@ class Conversation(Widget):
             f"First user message received in "
             f"conversation with model {self.chosen_model.name!r}"
         )
-        
+
         streaming_response = await openai.ChatCompletion.acreate(
             model=self.chosen_model.name,
             messages=self.thread.messages,
