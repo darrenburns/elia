@@ -5,7 +5,7 @@ import openai
 from textual.app import App, ComposeResult
 from textual.widgets import Input
 
-from elia.widgets.conversation import Conversation
+from elia_chat.widgets.conversation import Conversation
 
 
 class Elia(App):

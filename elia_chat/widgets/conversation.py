@@ -14,7 +14,7 @@ from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 
-from elia.models import Thread, ChatMessage
+from elia_chat.models import Thread, ChatMessage
 
 
 # [
