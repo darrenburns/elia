@@ -47,7 +47,7 @@ from elia_chat.widgets.conversation_options import DEFAULT_MODEL, ConversationOp
 
 
 class Conversation(Widget):
-    chosen_model: str = reactive(DEFAULT_MODEL)
+    chosen_model: GPTModel = reactive(DEFAULT_MODEL)
 
     def __init__(self):
         super().__init__()
@@ -62,7 +62,6 @@ class Conversation(Widget):
             ]
         )
         self._response_stream_timer: Timer | None = None
-        self.chosen_model: GPTModel = DEFAULT_MODEL
 
     @property
     def is_empty(self) -> bool:
@@ -87,6 +86,11 @@ class Conversation(Widget):
 
         self.post_message(self.AgentResponseStarted())
 
+        log.debug(
+            f"First user message received in "
+            f"conversation with model {self.chosen_model.name!r}"
+        )
+        
         streaming_response = await openai.ChatCompletion.acreate(
             model=self.chosen_model.name,
             messages=self.thread.messages,
@@ -108,12 +112,17 @@ class Conversation(Widget):
                     choice = event["choices"][0]
                     if choice.get("finish_reason") in {"stop", "length",
                                                        "content_filter"}:
+                        self.post_message(self.AgentResponseComplete())
+                        if self._response_stream_timer is not None:
+                            self._response_stream_timer.stop()
                         return
                     response_chatbox.append_chunk(event)
                 except (StopAsyncIteration, IndexError):
                     self.post_message(self.AgentResponseComplete())
+                    if self._response_stream_timer is not None:
+                        self._response_stream_timer.stop()
 
-        self.set_interval(0.05, handle_next_event)
+        self._response_stream_timer = self.set_interval(0.05, handle_next_event)
 
     def on_conversation_agent_response_complete(self) -> None:
         timer = self._response_stream_timer
@@ -124,10 +133,11 @@ class Conversation(Widget):
         yield ConversationHeader(title="Untitled Chat")
         with VerticalScroll() as vertical_scroll:
             vertical_scroll.can_focus = False
+            yield ConversationOptions()
+
             # TODO - check if conversation is pre-existing.
             #  If it already exists, load it here.
             #  If it's a new empty conversation, show the options for a new conversation.
-            yield ConversationOptions()
 
     class AgentResponseStarted(Message):
         pass

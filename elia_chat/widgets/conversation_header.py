@@ -5,8 +5,11 @@ from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static
 
+from elia_chat.widgets.conversation_options import GPTModel
+
 
 class ConversationHeader(Widget):
+
     def __init__(
         self,
         title: str | None,
@@ -27,7 +30,15 @@ class ConversationHeader(Widget):
 
         self.title = title
         self.generate_title = generate_title
+        self.model_name = ""
+
+    def update_model(self, new_model: GPTModel) -> None:
+        self.model_name = new_model.name
+        model_static = self.query_one("#model-static", Static)
+        model_static.update(new_model.name)
+        model_static.remove_class("gpt35-text", "gpt4-text")
+        model_static.add_class(f"{new_model.css_class}-text")
 
     def compose(self) -> ComposeResult:
-        yield Static(Text(self.title, style="b"), id="title-static")
-        yield Static("gpt-3.5-turbo", id="model-static")  # TODO: Provide means of updating
+        yield Static(self.title, id="title-static")
+        yield Static(self.model_name, id="model-static")
