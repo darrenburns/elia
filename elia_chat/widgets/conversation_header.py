@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from rich.text import Text
 from textual.app import ComposeResult
+from textual.containers import Horizontal, Vertical
 from textual.widget import Widget
-from textual.widgets import Static
+from textual.widgets import Static, LoadingIndicator
 
 from elia_chat.widgets.conversation_options import GPTModel
 

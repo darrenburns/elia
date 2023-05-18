@@ -4,7 +4,7 @@ from typing import NamedTuple
 
 from rich.console import RenderableType
 from rich.text import Text
-from textual import events, log, on
+from textual import log, on
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
@@ -12,11 +12,12 @@ from textual.geometry import clamp
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import Static, Label
+from textual.widgets import Static
 
 
 class GPTModel(NamedTuple):
     name: str
+    icon: str
     provider: str
     product: str
     description: str
@@ -25,6 +26,7 @@ class GPTModel(NamedTuple):
 
 DEFAULT_MODEL = GPTModel(
     name="gpt-3.5-turbo",
+    icon="⚡️",
     provider="OpenAI",
     product="ChatGPT",
     description="The fastest ChatGPT model, great for most everyday tasks.",
@@ -34,6 +36,7 @@ AVAILABLE_MODELS = [
     DEFAULT_MODEL,
     GPTModel(
         name="gpt-4",
+        icon="🧠",
         provider="OpenAI",
         product="ChatGPT",
         description="The most powerful ChatGPT model, capable of "
@@ -68,9 +71,9 @@ class ModelPanel(Static):
         self.model = model
 
     def render(self) -> RenderableType:
-        name, provider, product, description, _ = self.model
+        name, icon, provider, product, description, _ = self.model
         return Text.assemble(
-            (name, "b"),
+            (f"{icon} {name}", "b"),
             "\n",
             (f"{product} by {provider} ", "italic"),
             "\n\n",
@@ -141,9 +144,9 @@ class ConversationOptions(Widget):
         with VerticalScroll(id="conversation-options-container") as vertical_scroll:
             vertical_scroll.can_focus = False
 
-            yield Label("[b]Select a model:\n", classes="conversation-options-label")
 
             with ModelSet() as model_set:
+                model_set.border_title = "Choose a language model"
                 model_set.focus()
                 for index, model in enumerate(AVAILABLE_MODELS):
                     model_panel = ModelPanel(model, id=model.name,

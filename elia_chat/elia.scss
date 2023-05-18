@@ -1,3 +1,10 @@
+$main-lighten-2: #9061F9;
+$main-lighten-1: #7E3AF2;
+$main: #6C2BD9;
+$main-darken-1: #5521B5;
+$main-darken-2: #4A1D96;
+
+
 Conversation {
   height: 1fr;
   width: 1fr;
@@ -19,13 +26,53 @@ Input {
 
 ConversationHeader {
   width: 1fr;
-  height: 2;
-  padding: 0 2;
-  background: $panel;
+  height: auto;
+  padding: 1 2;
+  background: $boost;
 }
 
 ConversationHeader > Static {
   width: auto;
+}
+
+ConversationHeader #title-static {
+  text-style: bold;
+}
+
+ConversationHeader #model-static {
+  color: $text-muted;
+}
+
+ConversationHeader > Horizontal {
+  width: 1fr;
+}
+
+ConversationHeader Vertical {
+  width: 1fr;
+}
+
+AgentIsTyping {
+  dock: bottom;
+  display: none;
+  align-horizontal: right;
+  margin-bottom: 1;
+  color: $text;
+  height: 3;
+}
+
+AgentIsTyping > Horizontal {
+  width: 1fr;
+  background: $main 20%;
+  padding: 1 2;
+}
+
+AgentIsTyping Label {
+  width: auto;
+}
+
+AgentIsTyping LoadingIndicator {
+  width: 11;
+  color: $main;
 }
 
 #conversation-options-container {
@@ -33,14 +80,17 @@ ConversationHeader > Static {
 }
 
 .conversation-options-label {
+  width: 1fr;
+  content-align: center middle;
   margin-left: 2;
 }
 
 Chatbox {
   color: $text;
-  background: $success-darken-2 60%;
+  background: $main-darken-1;
   height: auto;
-  width: 1fr;
+  width: auto;
+  max-width: 1fr;
   margin: 1 2;
   padding: 1 2;
 }
@@ -49,25 +99,23 @@ Chatbox.assistant-message {
   background: $panel;
 }
 
-Chatbox > Static {
-  height: auto;
-}
-
 ModelSet {
   height: auto;
+  border: solid $panel 0%;
+  border-title-color: $text;
+  border-title-align: center;
   padding: 1 2;
 }
 
 ModelSet:focus-within {
-  outline: solid $accent;
+  border: round $main-lighten-1 100%;
 }
 
 ModelPanel {
   width: 1fr;
-  margin-left: 1;
 }
 
-ModelPanel  {
+ModelPanel {
   padding: 1 2;
   height: 12;
 }
@@ -104,4 +152,26 @@ ModelPanel.gpt4.selected {
   border: thick $success-lighten-1;
 }
 
+Footer {
+  background: $main;
+}
 
+Footer > .footer--highlight {
+  background: $main-darken-1;
+}
+
+Footer > .footer--key {
+  text-style: bold;
+  background: $main-darken-2;
+  color: $text;
+}
+
+Footer > .footer--highlight-key {
+  background: $success;
+  text-style: bold;
+  color: $text;
+}
+
+Input .input--cursor {
+  color: $main-lighten-2;
+}

@@ -4,6 +4,7 @@ from typing import Any
 
 from rich.console import RenderableType
 from rich.markdown import Markdown
+from textual.geometry import Size
 from textual.reactive import reactive
 from textual.widget import Widget
 
@@ -30,8 +31,18 @@ class Chatbox(Widget):
         )
         self.message = message
 
-    def render(self) -> RenderableType:
+    @property
+    def markdown(self) -> Markdown:
         return Markdown(self.message.get("content") or "")
+
+    def render(self) -> RenderableType:
+        return self.markdown
+
+    def get_content_width(self, container: Size, viewport: Size) -> int:
+        content = self.message.get("content")
+        if len(content) <= container.width or "\n" not in content:
+            return len(content)
+        return container.width
 
     def append_chunk(self, chunk: Any):
         # If this Chatbox doesn't correspond to an OpenAI message,
