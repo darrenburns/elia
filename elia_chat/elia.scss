@@ -55,15 +55,14 @@ AgentIsTyping {
   dock: bottom;
   display: none;
   align-horizontal: right;
-  margin-bottom: 1;
+  margin-bottom: 4;
   color: $text;
-  height: 3;
+  height: 1;
 }
 
 AgentIsTyping > Horizontal {
   width: 1fr;
   background: $main 20%;
-  padding: 1 2;
 }
 
 AgentIsTyping Label {
@@ -93,6 +92,11 @@ Chatbox {
   max-width: 1fr;
   margin: 1 2;
   padding: 1 2;
+}
+
+Chatbox:focus {
+  border-left: thick $main-lighten-2;
+  padding: 1 2 1 1;
 }
 
 Chatbox.assistant-message {

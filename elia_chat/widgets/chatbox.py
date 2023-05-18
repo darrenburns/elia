@@ -11,7 +11,7 @@ from textual.widget import Widget
 from elia_chat.models import ChatMessage
 
 
-class Chatbox(Widget):
+class Chatbox(Widget, can_focus=True):
     message: ChatMessage | None = reactive(None, init=False, always_update=True,
                                            layout=True)
 

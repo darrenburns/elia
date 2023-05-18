@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+from dataclasses import dataclass
+from functools import partial
 
 import openai
 from textual import work, log, on
@@ -64,11 +66,13 @@ class Conversation(Widget):
         )
         self._response_stream_timer: Timer | None = None
 
+    @dataclass
     class AgentResponseStarted(Message):
         pass
 
+    @dataclass
     class AgentResponseComplete(Message):
-        pass
+        message: ChatMessage
 
     @property
     def is_empty(self) -> bool:
@@ -77,8 +81,7 @@ class Conversation(Widget):
 
     def show_latest_message(self):
         if self.conversation_scroll is not None:
-            self.call_after_refresh(self.conversation_scroll.scroll_end,
-                                    animate=False)
+            self.conversation_scroll.scroll_end(animate=False)
 
     @work(exclusive=True)
     async def new_user_message(self, user_message: str) -> None:
@@ -99,7 +102,7 @@ class Conversation(Widget):
 
         container = self.query_one(VerticalScroll)
         await container.mount(Chatbox(user_message))
-
+        self.refresh()
         self.show_latest_message()
 
         self.post_message(self.AgentResponseStarted())
@@ -119,30 +122,42 @@ class Conversation(Widget):
         )
         await container.mount(response_chatbox)
 
-        def handle_next_event():
+        def handle_next_event(chatbox: Chatbox) -> None:
             try:
                 event = next(streaming_response)
                 choice = event["choices"][0]
                 if choice.get("finish_reason") in {"stop", "length",
                                                    "content_filter"}:
-                    self.post_message(self.AgentResponseComplete())
+                    print("EVENT IS FINISHED")
+                    print(event)
+                    response_message = response_chatbox.message
+                    self.post_message(self.AgentResponseComplete(response_message))
                     if self._response_stream_timer is not None:
                         self._response_stream_timer.stop()
                     return
+
                 response_chatbox.append_chunk(event)
+
+                # TODO: Only show latest message if currently scrolled to
+                #  the bottom.
                 self.show_latest_message()
-            except (StopAsyncIteration, IndexError):
-                self.post_message(self.AgentResponseComplete())
+            except (StopIteration, IndexError):
+                self.post_message(self.AgentResponseComplete(response_chatbox.message))
                 if self._response_stream_timer is not None:
                     self._response_stream_timer.stop()
 
-        self._response_stream_timer = self.set_interval(0.05, handle_next_event)
+        self._response_stream_timer = self.set_interval(0.05, partial(handle_next_event,
+                                                                      response_chatbox))
 
     @on(AgentResponseComplete)
-    def stop_response_stream_timer(self) -> None:
+    def agent_finished_responding(self, event: AgentResponseComplete | None) -> None:
+        # Stop the timer which refreshes the Chatbox
         timer = self._response_stream_timer
         if timer is not None:
             timer.stop()
+
+        # Ensure the thread is updated with the message from the agent
+        self.thread.messages.append(event.message)
 
     def compose(self) -> ComposeResult:
         yield ConversationHeader(title="Untitled Chat")

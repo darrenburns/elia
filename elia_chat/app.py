@@ -7,6 +7,7 @@ from textual import on, log
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.css.query import NoMatches
+from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Input, Footer
 
@@ -21,6 +22,8 @@ class ConversationScreen(Screen):
         Binding(key="ctrl+k", action="focus('chat-input')", description="Focus Input"),
     ]
 
+    allow_input_submit: bool = reactive(True)
+
     def compose(self) -> ComposeResult:
         yield Conversation()
         yield Input(placeholder="[Ctrl+K] Enter your message here...", id="chat-input")
@@ -29,18 +32,22 @@ class ConversationScreen(Screen):
 
     @on(Input.Submitted, "#chat-input")
     def submit_message(self, event: Input.Submitted) -> None:
-        user_message = event.value
-        event.input.value = ""
-        conversation = self.query_one(Conversation)
-        conversation.new_user_message(user_message)
+        # We disable submission of the text in the Input while the agent is responding.
+        if self.allow_input_submit:
+            user_message = event.value
+            event.input.value = ""
+            conversation = self.query_one(Conversation)
+            conversation.new_user_message(user_message)
 
     @on(Conversation.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
+        self.allow_input_submit = False
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = "block"
 
     @on(Conversation.AgentResponseComplete)
-    def finish_awaiting_response(self) -> None:
+    def agent_response_complete(self) -> None:
+        self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = "none"
 
