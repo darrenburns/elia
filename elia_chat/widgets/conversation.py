@@ -13,10 +13,12 @@ from textual.events import Timer
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
+from textual.widgets import Input
 
 from elia_chat.models import Thread, ChatMessage
 from elia_chat.widgets.chatbox import Chatbox
 from elia_chat.widgets.conversation_header import ConversationHeader
+from elia_chat.widgets.conversation_list import ConversationList
 from elia_chat.widgets.conversation_options import DEFAULT_MODEL, ConversationOptions, \
     GPTModel
 
@@ -136,17 +138,17 @@ class Conversation(Widget):
                         self._response_stream_timer.stop()
                     return
 
-                response_chatbox.append_chunk(event)
+                chatbox.append_chunk(event)
 
                 # TODO: Only show latest message if currently scrolled to
                 #  the bottom.
                 self.show_latest_message()
             except (StopIteration, IndexError):
-                self.post_message(self.AgentResponseComplete(response_chatbox.message))
+                self.post_message(self.AgentResponseComplete(chatbox.message))
                 if self._response_stream_timer is not None:
                     self._response_stream_timer.stop()
 
-        self._response_stream_timer = self.set_interval(0.05, partial(handle_next_event,
+        self._response_stream_timer = self.set_interval(0.02, partial(handle_next_event,
                                                                       response_chatbox))
 
     @on(AgentResponseComplete)
@@ -161,6 +163,8 @@ class Conversation(Widget):
 
     def compose(self) -> ComposeResult:
         yield ConversationHeader(title="Untitled Chat")
+        yield Input(placeholder="[Ctrl+K] Enter your message here...",
+                    id="chat-input")
         with VerticalScroll() as vertical_scroll:
             self.conversation_scroll = vertical_scroll
             vertical_scroll.can_focus = False

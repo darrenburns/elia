@@ -14,19 +14,21 @@ from textual.widgets import Input, Footer
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.conversation import Conversation
 from elia_chat.widgets.conversation_header import ConversationHeader
+from elia_chat.widgets.conversation_list import ConversationList
 from elia_chat.widgets.conversation_options import ModelPanel, ModelSet
 
 
 class ConversationScreen(Screen):
     BINDINGS = [
+        Binding(key="ctrl+s", action="focus('chat-list-option-list')", description="Focus Chats"),
         Binding(key="ctrl+k", action="focus('chat-input')", description="Focus Input"),
     ]
 
     allow_input_submit: bool = reactive(True)
 
     def compose(self) -> ComposeResult:
+        yield ConversationList(id="chat-list")
         yield Conversation()
-        yield Input(placeholder="[Ctrl+K] Enter your message here...", id="chat-input")
         yield AgentIsTyping()
         yield Footer()
 
