@@ -21,7 +21,7 @@ from elia_chat.widgets.conversation_options import ModelPanel, ModelSet
 class ConversationScreen(Screen):
     BINDINGS = [
         Binding(key="ctrl+s", action="focus('chat-list-option-list')", description="Focus Chats"),
-        Binding(key="ctrl+k", action="focus('chat-input')", description="Focus Input"),
+        Binding(key="i", action="focus('chat-input')", description="Focus Input"),
     ]
 
     allow_input_submit: bool = reactive(True)
@@ -29,7 +29,6 @@ class ConversationScreen(Screen):
     def compose(self) -> ComposeResult:
         yield ConversationList(id="chat-list")
         yield Conversation()
-        yield AgentIsTyping()
         yield Footer()
 
     @on(Input.Submitted, "#chat-input")

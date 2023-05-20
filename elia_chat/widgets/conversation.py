@@ -16,6 +16,7 @@ from textual.widget import Widget
 from textual.widgets import Input
 
 from elia_chat.models import Thread, ChatMessage
+from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chatbox import Chatbox
 from elia_chat.widgets.conversation_header import ConversationHeader
 from elia_chat.widgets.conversation_list import ConversationList
@@ -163,8 +164,10 @@ class Conversation(Widget):
 
     def compose(self) -> ComposeResult:
         yield ConversationHeader(title="Untitled Chat")
-        yield Input(placeholder="[Ctrl+K] Enter your message here...",
+        yield Input(placeholder="[I] Enter your message here...",
                     id="chat-input")
+        yield AgentIsTyping()
+
         with VerticalScroll() as vertical_scroll:
             self.conversation_scroll = vertical_scroll
             vertical_scroll.can_focus = False
