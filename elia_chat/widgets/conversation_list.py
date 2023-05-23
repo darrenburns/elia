@@ -29,7 +29,7 @@ class ConversationList(Widget):
 
     def compose(self) -> ComposeResult:
         with Vertical(id="cl-header-container"):
-            yield Static(Text("App Name", style=self.get_component_rich_style("app-title")))
+            yield Static(Text("elia", style=self.get_component_rich_style("app-title")))
             yield Static(Text("ChatGPT in the terminal", style=self.get_component_rich_style("app-subtitle")))
 
         yield OptionList(

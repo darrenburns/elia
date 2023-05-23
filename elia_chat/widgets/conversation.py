@@ -9,7 +9,7 @@ from typing import Iterable, Any, Iterator, AsyncIterator
 import openai
 from textual import work, log, on
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll
+from textual.containers import VerticalScroll, Horizontal
 from textual.css.query import NoMatches
 from textual.events import Timer
 from textual.message import Message
@@ -160,8 +160,9 @@ class Conversation(Widget):
 
     def compose(self) -> ComposeResult:
         yield ConversationHeader(title="Untitled Chat")
-        yield Input(placeholder="[I] Enter your message here...",
-                    id="chat-input")
+        with Horizontal(id="chat-input-container"):
+            yield Input(placeholder="[I] Enter your message here...",
+                        id="chat-input")
         yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:

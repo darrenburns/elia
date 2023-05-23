@@ -40,6 +40,7 @@ class Chatbox(Widget, can_focus=True):
         return self.markdown
 
     def get_content_width(self, container: Size, viewport: Size) -> int:
+        # Naive approach. Can sometimes look strange, but works well enough.
         content = self.message.get("content")
         return min(len(content), container.width)
 

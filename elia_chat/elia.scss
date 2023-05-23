@@ -4,6 +4,8 @@ $main: #6C2BD9;
 $main-darken-1: #5521B5;
 $main-darken-2: #4A1D96;
 
+$left-border-trim: vkey $main-lighten-2 15%;
+
 Conversation {
   height: 1fr;
   width: 1fr;
@@ -11,22 +13,27 @@ Conversation {
 
 Conversation > VerticalScroll {
   scrollbar-color: $panel;
+  border-left: $left-border-trim;
+
+}
+
+#chat-input-container {
+  dock: bottom;
+  border-left: $left-border-trim;
+  height: 5;
 }
 
 #chat-input {
-  dock: bottom;
-  border: none;
-  border-top: hkey $panel-lighten-2;
   box-sizing: border-box;
-  padding: 0 2 1 2;
-  height: 2;
+  margin: 1 2;
 }
 
 ConversationHeader {
   width: 1fr;
   height: auto;
   padding: 1 2;
-  background: $boost;
+  background: $background 50%;
+  border-left: $left-border-trim;
 }
 
 ConversationHeader > Static {
@@ -86,20 +93,24 @@ ConversationList {
   dock: left;
   height: 1fr;
   width: 32;
+  background: $background 15%;
 }
 
 ConversationList #cl-header-container {
   height: 4;
   padding: 1 2;
+  background: $main-darken-2 10%;
 }
 
 ConversationList .app-title {
-  color: $text;
+  color: $main-lighten-2;
   text-style: bold;
+  background: $main-darken-2 10%;
 }
 
 ConversationList .app-subtitle {
   color: $text-muted;
+  background: $main-darken-2 10%;
 }
 
 ConversationList #cl-button-container {
@@ -113,6 +124,7 @@ ConversationList #cl-button-container {
 ConversationList #cl-option-list {
   height: auto;
   width: 1fr;
+  margin-top: 1;
 }
 
 ConversationList #cl-new-chat-button {
@@ -222,3 +234,64 @@ Footer > .footer--highlight-key {
 Input .input--cursor {
   color: $main-lighten-2;
 }
+
+OptionList {
+  background: $background 15%;
+}
+
+OptionList > .option-list--option-highlighted {
+  background: $main 50%;
+  color: $text;
+  text-style: bold;
+}
+
+OptionList:focus > .option-list--option-highlighted {
+  background: $main;
+}
+
+OptionList > .option-list--option-disabled {
+  color: $text-disabled;
+}
+
+OptionList > .option-list--option-highlighted-disabled {
+  color: $text-disabled;
+  background: $main 30%;
+}
+
+OptionList:focus > .option-list--option-highlighted-disabled {
+  background: $main 40%;
+}
+
+OptionList > .option-list--option-hover {
+  background: $boost;
+}
+
+OptionList > .option-list--option-hover-disabled {
+  color: $text-disabled;
+  background: $boost;
+}
+
+OptionList > .option-list--option-hover-highlighted {
+  background: $main 60%;
+  color: $text;
+  text-style: bold;
+}
+
+OptionList:focus > .option-list--option-hover-highlighted {
+  background: $main;
+  color: $text;
+  text-style: bold;
+}
+
+OptionList > .option-list--option-hover-highlighted-disabled {
+  color: $text-disabled;
+  background: $main 60%;
+}
+
+Input {
+  border: tall $main-lighten-1 25%;
+}
+Input:focus {
+  border: tall $main;
+}
+
