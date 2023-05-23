@@ -8,5 +8,7 @@ class ChatMessage(TypedDict):
 
 
 @dataclass
-class Thread:
+class Conversation:
+    # TODO: Fill out some more of the data in here,
+    #  then make converters to convert from this to peewee models.
     messages: list[ChatMessage]

@@ -20,12 +20,12 @@ Conversation > VerticalScroll {
 #chat-input-container {
   dock: bottom;
   border-left: $left-border-trim;
-  height: 5;
+  height: auto;
+  padding: 1 2;
 }
 
 #chat-input {
   box-sizing: border-box;
-  margin: 1 2;
 }
 
 ConversationHeader {
@@ -57,17 +57,11 @@ ConversationHeader Vertical {
 }
 
 AgentIsTyping {
-  dock: bottom;
+  dock: top;
   display: none;
-  align-horizontal: right;
-  margin-bottom: 3;
   color: $text;
   height: 1;
-}
-
-AgentIsTyping > Horizontal {
-  width: 1fr;
-  background: $main 20%;
+  align-horizontal: right;
 }
 
 AgentIsTyping Label {
@@ -137,7 +131,6 @@ ConversationList #cl-new-chat-button {
 ConversationList #cl-new-chat-button:hover {
   background: $main-darken-1;
 }
-
 
 Chatbox {
   color: $text;

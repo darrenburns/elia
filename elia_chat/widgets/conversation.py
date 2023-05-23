@@ -9,7 +9,7 @@ from typing import Iterable, Any, Iterator, AsyncIterator
 import openai
 from textual import work, log, on
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll, Horizontal
+from textual.containers import VerticalScroll, Horizontal, Vertical, Container
 from textual.css.query import NoMatches
 from textual.events import Timer
 from textual.message import Message
@@ -17,7 +17,7 @@ from textual.reactive import reactive
 from textual.widget import Widget, AwaitMount
 from textual.widgets import Input
 
-from elia_chat.models import Thread, ChatMessage
+from elia_chat.models import Conversation, ChatMessage
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chatbox import Chatbox
 from elia_chat.widgets.conversation_header import ConversationHeader
@@ -60,8 +60,8 @@ class Conversation(Widget):
         super().__init__()
 
         # The thread initially only contains the system message.
-        self.conversation_container = None
-        self.thread = Thread(
+        self.conversation_container: Container | None = None
+        self.thread = Conversation(
             messages=[
                 ChatMessage(
                     role="system",
@@ -151,6 +151,10 @@ class Conversation(Widget):
                     self.post_message(self.AgentResponseComplete(response_message))
                     return
                 response_chatbox.append_chunk(event)
+                scroll_y = self.conversation_container.scroll_y
+                max_scroll_y = self.conversation_container.max_scroll_y
+                if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
+                    self.conversation_container.scroll_end(animate=False)
             await asyncio.sleep(0.01)
 
     @on(AgentResponseComplete)
@@ -160,10 +164,10 @@ class Conversation(Widget):
 
     def compose(self) -> ComposeResult:
         yield ConversationHeader(title="Untitled Chat")
-        with Horizontal(id="chat-input-container"):
+        with Vertical(id="chat-input-container"):
             yield Input(placeholder="[I] Enter your message here...",
                         id="chat-input")
-        yield AgentIsTyping()
+            yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:
             self.conversation_container = vertical_scroll

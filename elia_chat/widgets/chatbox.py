@@ -13,8 +13,7 @@ from elia_chat.models import ChatMessage
 
 
 class Chatbox(Widget, can_focus=True):
-    message: ChatMessage | None = reactive(None, init=False, always_update=True,
-                                           layout=True)
+    message: ChatMessage | None = reactive(None, init=False, layout=True)
 
     def __init__(
         self,
