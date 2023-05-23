@@ -695,14 +695,14 @@ files = [
 
 [[package]]
 name = "openai"
-version = "0.27.6"
+version = "0.27.7"
 description = "Python client library for the OpenAI API"
 category = "main"
 optional = false
 python-versions = ">=3.7.1"
 files = [
-    {file = "openai-0.27.6-py3-none-any.whl", hash = "sha256:1f07ed06f1cfc6c25126107193726fe4cf476edcc4e1485cd9eb708f068f2606"},
-    {file = "openai-0.27.6.tar.gz", hash = "sha256:63ca9f6ac619daef8c1ddec6d987fe6aa1c87a9bfdce31ff253204d077222375"},
+    {file = "openai-0.27.7-py3-none-any.whl", hash = "sha256:788fb7fa85bf7caac6c1ed7eea5984254a1bdaf09ef485acf0e5718c8b2dc25a"},
+    {file = "openai-0.27.7.tar.gz", hash = "sha256:bca95fd4c3054ef38924def096396122130454442ec52005915ecf8269626b1d"},
 ]
 
 [package.dependencies]
@@ -773,14 +773,14 @@ plugins = ["importlib-metadata"]
 
 [[package]]
 name = "requests"
-version = "2.30.0"
+version = "2.31.0"
 description = "Python HTTP for Humans."
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "requests-2.30.0-py3-none-any.whl", hash = "sha256:10e94cc4f3121ee6da529d358cdaeaff2f1c409cd377dbc72b825852f2f7e294"},
-    {file = "requests-2.30.0.tar.gz", hash = "sha256:239d7d4458afcb28a692cdd298d87542235f4ca8d36d03a15bfc128a6559a2f4"},
+    {file = "requests-2.31.0-py3-none-any.whl", hash = "sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f"},
+    {file = "requests-2.31.0.tar.gz", hash = "sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1"},
 ]
 
 [package.dependencies]
@@ -814,27 +814,29 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "textual"
-version = "0.25.0"
+version = "0.26.0"
 description = "Modern Text User Interface framework"
 category = "main"
 optional = false
-python-versions = ">=3.7,<4.0"
-files = [
-    {file = "textual-0.25.0-py3-none-any.whl", hash = "sha256:8258499a09793696e13a1d1e1391810916828015a91770abd7ce3d9ab64cfd9e"},
-    {file = "textual-0.25.0.tar.gz", hash = "sha256:5e2d6320026dd8ff86e0d023fc4988071e80ec2e34de913bd63263a8301d664b"},
-]
+python-versions = "^3.7"
+files = []
+develop = true
 
 [package.dependencies]
-aiohttp = {version = ">=3.8.1", optional = true, markers = "extra == \"dev\""}
-click = {version = ">=8.1.2", optional = true, markers = "extra == \"dev\""}
+aiohttp = {version = ">=3.8.1", optional = true}
+click = {version = ">=8.1.2", optional = true}
 importlib-metadata = ">=4.11.3"
-markdown-it-py = {version = ">=2.1.0,<3.0.0", extras = ["linkify", "plugins"]}
-msgpack = {version = ">=1.0.3", optional = true, markers = "extra == \"dev\""}
+markdown-it-py = {version = "^2.1.0", extras = ["linkify", "plugins"]}
+msgpack = {version = ">=1.0.3", optional = true}
 rich = ">=13.3.3"
-typing-extensions = ">=4.4.0,<5.0.0"
+typing-extensions = "^4.4.0"
 
 [package.extras]
 dev = ["aiohttp (>=3.8.1)", "click (>=8.1.2)", "msgpack (>=1.0.3)"]
+
+[package.source]
+type = "directory"
+url = "../textual"
 
 [[package]]
 name = "tomli"
@@ -1021,4 +1023,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "b91ba7fc4ba68676a090bc310e8f3763b73ac1b6f3eab7d34e17be4337c37298"
+content-hash = "a2365a8b25ed075c417c065989d60a6ab9d2f9f90f6b70efaad4365ca6f0587d"

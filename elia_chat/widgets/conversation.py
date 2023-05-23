@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from dataclasses import dataclass
 from functools import partial
+from typing import Iterable, Any, Iterator, AsyncIterator
 
 import openai
 from textual import work, log, on
@@ -12,7 +14,7 @@ from textual.css.query import NoMatches
 from textual.events import Timer
 from textual.message import Message
 from textual.reactive import reactive
-from textual.widget import Widget
+from textual.widget import Widget, AwaitMount
 from textual.widgets import Input
 
 from elia_chat.models import Thread, ChatMessage
@@ -58,7 +60,7 @@ class Conversation(Widget):
         super().__init__()
 
         # The thread initially only contains the system message.
-        self.conversation_scroll = None
+        self.conversation_container = None
         self.thread = Thread(
             messages=[
                 ChatMessage(
@@ -67,7 +69,6 @@ class Conversation(Widget):
                 )
             ]
         )
-        self._response_stream_timer: Timer | None = None
 
     @dataclass
     class AgentResponseStarted(Message):
@@ -82,11 +83,11 @@ class Conversation(Widget):
         """True if the conversation is empty, False otherwise."""
         return len(self.thread.messages) == 1  # Contains system message at first.
 
-    def show_latest_message(self):
-        if self.conversation_scroll is not None:
-            self.conversation_scroll.scroll_end(animate=False)
+    def scroll_to_latest_message(self):
+        if self.conversation_container is not None:
+            self.conversation_container.refresh()
+            self.conversation_container.scroll_end(animate=False)
 
-    @work(exclusive=True)
     async def new_user_message(self, user_message: str) -> None:
         user_message = ChatMessage(role="user", content=user_message)
         self.thread.messages.append(user_message)
@@ -102,63 +103,58 @@ class Conversation(Widget):
                 log.error("Couldn't remove ConversationOptions as it wasn't found.")
             else:
                 await options.remove()
+                log.debug("Removed ConversationOptions.")
 
-        container = self.query_one(VerticalScroll)
-        await container.mount(Chatbox(user_message))
-        self.refresh()
-        self.show_latest_message()
+        user_message_chatbox = Chatbox(user_message)
+        start_time = time.time()
+        await self.conversation_container.mount(user_message_chatbox)
+        self.scroll_to_latest_message()
 
+        end_time = time.time()
+        log.debug(f"Time to mount chatbox = {end_time - start_time}")
+        # self.conversation_container.refresh(layout=True)
+        log.debug()
+        # self.check_idle()
         self.post_message(self.AgentResponseStarted())
+        log.debug(f"Refreshing for new message {time.time()}")
+        self.stream_agent_response()
 
-        streaming_response = openai.ChatCompletion.create(
+    @work(exclusive=True)
+    async def stream_agent_response(self) -> None:
+        log.debug(f"Agent response stream starting {time.time()}")
+        self.scroll_to_latest_message()
+        streaming_response = await openai.ChatCompletion.acreate(
             model=self.chosen_model.name,
             messages=self.thread.messages,
             stream=True,
         )
 
-        # TODO: We need to add the assistants response to the thread!!!
-        # TODO: We need to handle RateLimitError in the worker.
-
         response_chatbox = Chatbox(
             message=ChatMessage(role="assistant", content=""),
             classes="assistant-message",
         )
-        await container.mount(response_chatbox)
+        await self.conversation_container.mount(response_chatbox)
 
-        def handle_next_event(chatbox: Chatbox) -> None:
+        while True:
+            # TODO: We need to handle RateLimitError in the worker.
             try:
-                event = next(streaming_response)
+                event = await streaming_response.__anext__()
                 choice = event["choices"][0]
-                if choice.get("finish_reason") in {"stop", "length",
-                                                   "content_filter"}:
-                    print("EVENT IS FINISHED")
-                    print(event)
+            except (StopAsyncIteration, StopIteration, IndexError):
+                self.post_message(self.AgentResponseComplete(response_chatbox.message))
+            else:
+                finish_reason = choice.get("finish_reason")
+                if finish_reason in {"stop", "length", "content_filter"}:
+                    log.debug(
+                        f"Agent response finished. Finish reason is {finish_reason!r}.")
                     response_message = response_chatbox.message
                     self.post_message(self.AgentResponseComplete(response_message))
-                    if self._response_stream_timer is not None:
-                        self._response_stream_timer.stop()
                     return
-
-                chatbox.append_chunk(event)
-
-                # TODO: Only show latest message if currently scrolled to
-                #  the bottom.
-                self.show_latest_message()
-            except (StopIteration, IndexError):
-                self.post_message(self.AgentResponseComplete(chatbox.message))
-                if self._response_stream_timer is not None:
-                    self._response_stream_timer.stop()
-
-        self._response_stream_timer = self.set_interval(0.02, partial(handle_next_event,
-                                                                      response_chatbox))
+                response_chatbox.append_chunk(event)
+            await asyncio.sleep(0.01)
 
     @on(AgentResponseComplete)
     def agent_finished_responding(self, event: AgentResponseComplete | None) -> None:
-        # Stop the timer which refreshes the Chatbox
-        timer = self._response_stream_timer
-        if timer is not None:
-            timer.stop()
-
         # Ensure the thread is updated with the message from the agent
         self.thread.messages.append(event.message)
 
@@ -169,7 +165,7 @@ class Conversation(Widget):
         yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:
-            self.conversation_scroll = vertical_scroll
+            self.conversation_container = vertical_scroll
             vertical_scroll.can_focus = False
             yield ConversationOptions()
 

@@ -7,8 +7,9 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-textual = {version = ">=0.18.0", extras = ["dev"]}
+#textual = {version = ">=0.18.0", extras = ["dev"]}
 openai = "^0.27.5"
+textual = { path = "../textual", develop = true, extras = ["dev"] }
 
 [tool.poetry.scripts]
 elia = "elia.app:run"

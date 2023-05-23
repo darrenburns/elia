@@ -20,7 +20,7 @@ from elia_chat.widgets.conversation_options import ModelPanel, ModelSet
 
 class ConversationScreen(Screen):
     BINDINGS = [
-        Binding(key="ctrl+s", action="focus('chat-list-option-list')", description="Focus Chats"),
+        Binding(key="ctrl+s", action="focus('cl-option-list')", description="Focus Chats"),
         Binding(key="i", action="focus('chat-input')", description="Focus Input"),
     ]
 
@@ -31,14 +31,15 @@ class ConversationScreen(Screen):
         yield Conversation()
         yield Footer()
 
-    @on(Input.Submitted, "#chat-input")
-    def submit_message(self, event: Input.Submitted) -> None:
+    # @on(Input.Submitted, "#chat-input")
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
         # We disable submission of the text in the Input while the agent is responding.
+        log.debug("Input.Submitted event received.")
         if self.allow_input_submit:
             user_message = event.value
             event.input.value = ""
             conversation = self.query_one(Conversation)
-            conversation.new_user_message(user_message)
+            await conversation.new_user_message(user_message)
 
     @on(Conversation.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
