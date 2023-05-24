@@ -41,4 +41,5 @@ repos:
         name: mypy
         entry: 'mypy'
         language: system
-        files: 'elia_chat/'
+        files: elia_chat
+        types: [python, file]
