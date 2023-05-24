@@ -6,13 +6,16 @@ $main-darken-2: #4A1D96;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
+* {
+  scrollbar-color: $panel;
+}
+
 Chat {
   height: 1fr;
   width: 1fr;
 }
 
 Chat > VerticalScroll {
-  scrollbar-color: $panel;
   border-left: $left-border-trim;
 
 }
@@ -116,9 +119,10 @@ ChatList #cl-button-container {
 }
 
 ChatList #cl-option-list {
-  height: auto;
+  height: 1fr;
   width: 1fr;
   margin-top: 1;
+  scrollbar-size-vertical: 1;
 }
 
 ChatList #cl-new-chat-button {

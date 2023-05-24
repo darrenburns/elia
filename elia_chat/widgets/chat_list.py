@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from rich.console import RenderResult, Console, ConsoleOptions
 from rich.padding import Padding
 from rich.text import Text
+from textual import log
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.widget import Widget
@@ -40,10 +41,14 @@ class ChatList(Widget):
                 )
             )
 
-        yield OptionList(
+        self.options = [
             SavedChat("Osaka", "Tell me about Osaka..."),
             SavedChat("Tokyo", "Tell me about Tokyo..."),
             SavedChat("Okayama", "Tell me about Okayama..."),
+        ]
+
+        yield OptionList(
+            *self.options,
             id="cl-option-list",
         )
 
@@ -53,3 +58,17 @@ class ChatList(Widget):
     def on_focus(self) -> None:
         print("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
+
+    def create_chat(self):
+        new_chat = SavedChat("New Chat", "This is new")
+        log.debug(f"Creating new chat {new_chat!r}")
+
+        option_list = self.query_one(OptionList)
+        # Update our in-memory idea of what the chats are
+        self.options = [
+            new_chat,
+            *self.options,
+        ]
+        option_list.clear_options()
+        option_list.add_options(self.options)
+        option_list.highlighted = 0
