@@ -10,7 +10,7 @@ from peewee import (
 )
 
 # TODO: Use appdirs library to save the database somewhere appropriate
-database = SqliteDatabase("elia.sqlite")
+database = SqliteDatabase("../../elia.sqlite")
 
 
 class BaseModel(Model):

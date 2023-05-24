@@ -35,3 +35,10 @@ repos:
     rev: 23.3.0
     hooks:
       - id: black
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: 'mypy'
+        language: system
+        files: 'elia_chat/'
