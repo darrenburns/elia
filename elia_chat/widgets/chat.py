@@ -49,6 +49,10 @@ class Chat(Widget):
     class AgentResponseComplete(Message):
         message: ChatMessage
 
+    @dataclass
+    class FirstMessageSent(Message):
+        thread: ChatData
+
     @property
     def is_empty(self) -> bool:
         """True if the conversation is empty, False otherwise."""
@@ -68,15 +72,9 @@ class Chat(Widget):
                 f"First user message received in "
                 f"conversation with model {self.chosen_model.name!r}"
             )
-            # try:
-            #     options = self.query_one(ChatOptions)
-            # except NoMatches:
-            #     log.error("Couldn't remove ConversationOptions as it wasn't found.")
-            # else:
-            #     await options.remove()
-            #     log.debug("Removed ConversationOptions.")
             assert self.chat_options is not None
             self.chat_options.display = False
+            self.post_message(Chat.FirstMessageSent(thread=self.thread))
 
         user_message_chatbox = Chatbox(user_message)
         start_time = time.time()
