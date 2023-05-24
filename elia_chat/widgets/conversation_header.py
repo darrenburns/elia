@@ -10,7 +10,6 @@ from elia_chat.widgets.conversation_options import GPTModel
 
 
 class ConversationHeader(Widget):
-
     def __init__(
         self,
         title: str | None,

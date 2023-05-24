@@ -20,19 +20,22 @@ from elia_chat.widgets.conversation_options import ModelPanel, ModelSet
 
 class ConversationScreen(Screen):
     BINDINGS = [
-        Binding(key="ctrl+s", action="focus('cl-option-list')", description="Focus Chats"),
+        Binding(
+            key="ctrl+s", action="focus('cl-option-list')", description="Focus Chats"
+        ),
         Binding(key="i", action="focus('chat-input')", description="Focus Input"),
     ]
 
     allow_input_submit: bool = reactive(True)
+    """Used to lock the chat input while the agent is responding."""
 
     def compose(self) -> ComposeResult:
         yield ConversationList(id="chat-list")
         yield Conversation()
         yield Footer()
 
-    # @on(Input.Submitted, "#chat-input")
-    async def on_input_submitted(self, event: Input.Submitted) -> None:
+    @on(Input.Submitted, "#chat-input")
+    async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
         # We disable submission of the text in the Input while the agent is responding.
         log.debug("Input.Submitted event received.")
         if self.allow_input_submit:

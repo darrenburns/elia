@@ -22,8 +22,11 @@ from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chatbox import Chatbox
 from elia_chat.widgets.conversation_header import ConversationHeader
 from elia_chat.widgets.conversation_list import ConversationList
-from elia_chat.widgets.conversation_options import DEFAULT_MODEL, ConversationOptions, \
-    GPTModel
+from elia_chat.widgets.conversation_options import (
+    DEFAULT_MODEL,
+    ConversationOptions,
+    GPTModel,
+)
 
 
 # [
@@ -146,7 +149,8 @@ class Conversation(Widget):
                 finish_reason = choice.get("finish_reason")
                 if finish_reason in {"stop", "length", "content_filter"}:
                     log.debug(
-                        f"Agent response finished. Finish reason is {finish_reason!r}.")
+                        f"Agent response finished. Finish reason is {finish_reason!r}."
+                    )
                     response_message = response_chatbox.message
                     self.post_message(self.AgentResponseComplete(response_message))
                     return
@@ -165,8 +169,7 @@ class Conversation(Widget):
     def compose(self) -> ComposeResult:
         yield ConversationHeader(title="Untitled Chat")
         with Vertical(id="chat-input-container"):
-            yield Input(placeholder="[I] Enter your message here...",
-                        id="chat-input")
+            yield Input(placeholder="[I] Enter your message here...", id="chat-input")
             yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:

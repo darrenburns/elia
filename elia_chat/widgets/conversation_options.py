@@ -30,7 +30,7 @@ DEFAULT_MODEL = GPTModel(
     provider="OpenAI",
     product="ChatGPT",
     description="The fastest ChatGPT model, great for most everyday tasks.",
-    css_class="gpt35"
+    css_class="gpt35",
 )
 AVAILABLE_MODELS = [
     DEFAULT_MODEL,
@@ -40,7 +40,7 @@ AVAILABLE_MODELS = [
         provider="OpenAI",
         product="ChatGPT",
         description="The most powerful ChatGPT model, capable of "
-                    "complex tasks which require advanced reasoning.",
+        "complex tasks which require advanced reasoning.",
         css_class="gpt4",
     ),
 ]
@@ -77,7 +77,7 @@ class ModelPanel(Static):
             "\n",
             (f"{product} by {provider} ", "italic"),
             "\n\n",
-            description
+            description,
         )
 
     def on_click(self) -> None:
@@ -144,13 +144,13 @@ class ConversationOptions(Widget):
         with VerticalScroll(id="conversation-options-container") as vertical_scroll:
             vertical_scroll.can_focus = False
 
-
             with ModelSet() as model_set:
                 model_set.border_title = "Choose a language model"
                 model_set.focus()
                 for index, model in enumerate(AVAILABLE_MODELS):
-                    model_panel = ModelPanel(model, id=model.name,
-                                             classes=model.css_class)
+                    model_panel = ModelPanel(
+                        model, id=model.name, classes=model.css_class
+                    )
                     if index == 0:
                         model_panel.selected = True
 
