@@ -12,7 +12,7 @@ from elia_chat.widgets.conversation_options import GPTModel
 class ConversationHeader(Widget):
     def __init__(
         self,
-        title: str | None,
+        title: str,
         generate_title: bool = False,
         name: str | None = None,
         id: str | None = None,
@@ -26,7 +26,7 @@ class ConversationHeader(Widget):
             disabled=disabled,
         )
         if title is None and generate_title:
-            raise NotImplemented("Chat name generation not yet implemented.")
+            raise NotImplementedError("Chat name generation not yet implemented.")
 
         self.title = title
         self.generate_title = generate_title

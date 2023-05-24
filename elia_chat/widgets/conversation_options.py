@@ -81,6 +81,7 @@ class ModelPanel(Static):
         )
 
     def on_click(self) -> None:
+        assert self.parent is not None
         self.parent.post_message(ModelPanel.Selected(self.model))
 
     def watch_selected(self, value: bool) -> None:

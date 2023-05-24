@@ -12,7 +12,7 @@ from textual.screen import Screen
 from textual.widgets import Input, Footer
 
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
-from elia_chat.widgets.conversation import Conversation
+from elia_chat.widgets.conversation import Chat, Chat, Conversation
 from elia_chat.widgets.conversation_header import ConversationHeader
 from elia_chat.widgets.conversation_list import ConversationList
 from elia_chat.widgets.conversation_options import ModelPanel, ModelSet
@@ -26,7 +26,7 @@ class ConversationScreen(Screen):
         Binding(key="i", action="focus('chat-input')", description="Focus Input"),
     ]
 
-    allow_input_submit: bool = reactive(True)
+    allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
 
     def compose(self) -> ComposeResult:
@@ -48,13 +48,13 @@ class ConversationScreen(Screen):
     def start_awaiting_response(self) -> None:
         self.allow_input_submit = False
         agent_is_typing = self.query_one(AgentIsTyping)
-        agent_is_typing.display = "block"
+        agent_is_typing.display = True
 
     @on(Conversation.AgentResponseComplete)
     def agent_response_complete(self) -> None:
         self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
-        agent_is_typing.display = "none"
+        agent_is_typing.display = False
 
     @on(ModelSet.Selected)
     def update_model(self, event: ModelPanel.Selected) -> None:

@@ -13,11 +13,9 @@ from elia_chat.models import ChatMessage
 
 
 class Chatbox(Widget, can_focus=True):
-    message: ChatMessage | None = reactive(None, init=False, layout=True)
-
     def __init__(
         self,
-        message: ChatMessage | None = None,
+        message: ChatMessage,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -40,13 +38,13 @@ class Chatbox(Widget, can_focus=True):
 
     def get_content_width(self, container: Size, viewport: Size) -> int:
         # Naive approach. Can sometimes look strange, but works well enough.
-        content = self.message.get("content")
+        content = self.message.get("content", "")
         return min(len(content), container.width)
 
     def append_chunk(self, chunk: Any):
         # If this Chatbox doesn't correspond to an OpenAI message,
         # make that connection now.
-        if self.message is None:
+        if self.message.get("content") is None:
             self.message = ChatMessage(
                 role="assistant",
                 content="",
@@ -54,6 +52,7 @@ class Chatbox(Widget, can_focus=True):
         else:
             chunk_content = chunk["choices"][0].get("delta", {}).get("content", "")
             self.message = ChatMessage(
-                role=self.message.get("role"),
-                content=self.message.get("content") + chunk_content,
+                role=self.message.get("role", "undefined"),
+                content=self.message.get("content", "") + chunk_content,
             )
+        self.refresh(layout=True)

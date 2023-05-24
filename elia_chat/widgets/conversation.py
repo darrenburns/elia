@@ -3,29 +3,24 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass
-from functools import partial
-from typing import Iterable, Any, Iterator, AsyncIterator
 
 import openai
 from textual import work, log, on
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll, Horizontal, Vertical, Container
+from textual.containers import VerticalScroll, Vertical, Container, ScrollableContainer
 from textual.css.query import NoMatches
-from textual.events import Timer
 from textual.message import Message
 from textual.reactive import reactive
-from textual.widget import Widget, AwaitMount
+from textual.widget import Widget
 from textual.widgets import Input
 
-from elia_chat.models import Conversation, ChatMessage
+from elia_chat.models import Chat, ChatMessage
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chatbox import Chatbox
 from elia_chat.widgets.conversation_header import ConversationHeader
-from elia_chat.widgets.conversation_list import ConversationList
 from elia_chat.widgets.conversation_options import (
     DEFAULT_MODEL,
     ConversationOptions,
-    GPTModel,
 )
 
 
@@ -57,14 +52,14 @@ from elia_chat.widgets.conversation_options import (
 
 
 class Conversation(Widget):
-    chosen_model: GPTModel = reactive(DEFAULT_MODEL)
+    chosen_model = reactive(DEFAULT_MODEL)
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         # The thread initially only contains the system message.
-        self.conversation_container: Container | None = None
-        self.thread = Conversation(
+        self.conversation_container: ScrollableContainer | None = None
+        self.thread = Chat(
             messages=[
                 ChatMessage(
                     role="system",
@@ -91,8 +86,8 @@ class Conversation(Widget):
             self.conversation_container.refresh()
             self.conversation_container.scroll_end(animate=False)
 
-    async def new_user_message(self, user_message: str) -> None:
-        user_message = ChatMessage(role="user", content=user_message)
+    async def new_user_message(self, content: str) -> None:
+        user_message = ChatMessage(role="user", content=content)
         self.thread.messages.append(user_message)
         # If the thread was empty, and now it's not, remove the ConversationOptions.
         if len(self.thread.messages) == 2:
@@ -110,6 +105,11 @@ class Conversation(Widget):
 
         user_message_chatbox = Chatbox(user_message)
         start_time = time.time()
+
+        assert (
+            self.conversation_container is not None
+        ), "Textual has mounted container at this point in the lifecycle."
+
         await self.conversation_container.mount(user_message_chatbox)
         self.scroll_to_latest_message()
 
@@ -136,6 +136,11 @@ class Conversation(Widget):
             message=ChatMessage(role="assistant", content=""),
             classes="assistant-message",
         )
+
+        assert (
+            self.conversation_container is not None
+        ), "Textual has mounted container at this point in the lifecycle."
+
         await self.conversation_container.mount(response_chatbox)
 
         while True:
@@ -162,7 +167,7 @@ class Conversation(Widget):
             await asyncio.sleep(0.01)
 
     @on(AgentResponseComplete)
-    def agent_finished_responding(self, event: AgentResponseComplete | None) -> None:
+    def agent_finished_responding(self, event: AgentResponseComplete) -> None:
         # Ensure the thread is updated with the message from the agent
         self.thread.messages.append(event.message)
 
