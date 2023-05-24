@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from peewee import (
     Model,
     SqliteDatabase,
@@ -5,12 +7,14 @@ from peewee import (
     ForeignKeyField,
     SQL,
     DateTimeField,
-    BooleanField,
     TextField,
 )
 
 # TODO: Use appdirs library to save the database somewhere appropriate
-database = SqliteDatabase("../../elia.sqlite")
+
+database_path = Path(__file__).parent
+
+database = SqliteDatabase(database_path / "elia.sqlite")
 
 
 class BaseDao(Model):
@@ -22,9 +26,9 @@ class ChatDao(BaseDao):
     class Meta:
         table_name = "chat"
 
+    ai_model = CharField(null=False)
     name = CharField(null=False)
     started_at = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
-    is_active = BooleanField(default=True)
 
 
 class MessageDao(BaseDao):
@@ -32,7 +36,7 @@ class MessageDao(BaseDao):
         table_name = "message"
 
     chat = ForeignKeyField(ChatDao, backref="messages")
-    sender = CharField(null=False)  # sender could be 'user' or 'ai'
+    role = CharField(null=False)
     content = TextField(null=False)
     timestamp = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
 

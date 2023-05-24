@@ -11,6 +11,7 @@ class ChatMessage(TypedDict):
 class ChatData:
     # TODO: Fill out some more of the data in here,
     #  then make converters to convert from this to peewee models.
+    model_name: str
     messages: list[ChatMessage]
 
     @property

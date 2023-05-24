@@ -64,10 +64,13 @@ class ChatScreen(Screen):
 
     @on(Chat.FirstMessageSent)
     def on_first_message_sent(self, event: Chat.FirstMessageSent) -> None:
-        """The first chat message was received, so update the sidebar"""
+        """The first chat message was received in the current chat, so update the
+        sidebar."""
         chat_list = self.query_one(ChatList)
-        chat_data = event.thread
+        chat_data = event.chat_data
         chat_list.create_chat(chat_data)
+
+        self.chats_manager.create_chat(chat_data=event.chat_data)
 
     @on(ModelSet.Selected)
     def update_model(self, event: ModelPanel.Selected) -> None:

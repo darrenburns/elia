@@ -20,6 +20,7 @@ from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
     ChatOptions,
+    GPTModel,
 )
 
 
@@ -32,13 +33,14 @@ class Chat(Widget):
         # The thread initially only contains the system message.
         self.chat_container: ScrollableContainer | None = None
         self.chat_options: ChatOptions | None = None
-        self.thread = ChatData(
+        self.chat_data = ChatData(
+            model_name=DEFAULT_MODEL.name,  # updated by chosen_model watcher
             messages=[
                 ChatMessage(
                     role="system",
                     content="You are a helpful assistant.",
                 )
-            ]
+            ],
         )
 
     @dataclass
@@ -51,12 +53,15 @@ class Chat(Widget):
 
     @dataclass
     class FirstMessageSent(Message):
-        thread: ChatData
+        chat_data: ChatData
+
+    def watch_chosen_model(self, chosen_model: GPTModel) -> None:
+        self.chat_data.model_name = chosen_model.name
 
     @property
     def is_empty(self) -> bool:
         """True if the conversation is empty, False otherwise."""
-        return len(self.thread.messages) == 1  # Contains system message at first.
+        return len(self.chat_data.messages) == 1  # Contains system message at first.
 
     def scroll_to_latest_message(self):
         if self.chat_container is not None:
@@ -65,16 +70,20 @@ class Chat(Widget):
 
     async def new_user_message(self, content: str) -> None:
         user_message = ChatMessage(role="user", content=content)
-        self.thread.messages.append(user_message)
+        self.chat_data.messages.append(user_message)
         # If the thread was empty, and now it's not, remove the ConversationOptions.
-        if len(self.thread.messages) == 2:
+        if len(self.chat_data.messages) == 2:
             log.debug(
                 f"First user message received in "
                 f"conversation with model {self.chosen_model.name!r}"
             )
             assert self.chat_options is not None
             self.chat_options.display = False
-            self.post_message(Chat.FirstMessageSent(thread=self.thread))
+            self.post_message(
+                Chat.FirstMessageSent(
+                    chat_data=self.chat_data,
+                )
+            )
 
         user_message_chatbox = Chatbox(user_message)
         start_time = time.time()
@@ -97,7 +106,7 @@ class Chat(Widget):
 
     def clear_thread(self) -> None:
         # We have to maintain the system message.
-        self.thread.messages = self.thread.messages[:1]
+        self.chat_data.messages = self.chat_data.messages[:1]
 
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
@@ -105,7 +114,7 @@ class Chat(Widget):
         self.scroll_to_latest_message()
         streaming_response = await openai.ChatCompletion.acreate(
             model=self.chosen_model.name,
-            messages=self.thread.messages,
+            messages=self.chat_data.messages,
             stream=True,
         )
 
@@ -146,7 +155,7 @@ class Chat(Widget):
     @on(AgentResponseComplete)
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:
         # Ensure the thread is updated with the message from the agent
-        self.thread.messages.append(event.message)
+        self.chat_data.messages.append(event.message)
 
     async def prepare_for_new_chat(self) -> None:
         assert self.chat_container is not None
