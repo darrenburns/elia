@@ -50,15 +50,24 @@ class ChatScreen(Screen):
 
     @on(Chat.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
+        """Prevent sending messages because the agent is typing."""
         self.allow_input_submit = False
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = True
 
     @on(Chat.AgentResponseComplete)
     def agent_response_complete(self) -> None:
+        """Allow the user to send messages again."""
         self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = False
+
+    @on(Chat.FirstMessageSent)
+    def on_first_message_sent(self, event: Chat.FirstMessageSent) -> None:
+        """The first chat message was received, so update the sidebar"""
+        chat_list = self.query_one(ChatList)
+        chat_data = event.thread
+        chat_list.create_chat(chat_data)
 
     @on(ModelSet.Selected)
     def update_model(self, event: ModelPanel.Selected) -> None:

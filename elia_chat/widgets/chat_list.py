@@ -9,6 +9,8 @@ from textual.containers import Horizontal, Vertical
 from textual.widget import Widget
 from textual.widgets import Button, OptionList, Static
 
+from elia_chat.models import ChatData
+
 
 @dataclass
 class SavedChat:
@@ -60,8 +62,8 @@ class ChatList(Widget):
         log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
 
-    def create_chat(self) -> None:
-        new_chat = SavedChat("New Chat", "This is new")
+    def create_chat(self, chat_data: ChatData) -> None:
+        new_chat = SavedChat("Untitled Chat", chat_data.short_preview)
         log.debug(f"Creating new chat {new_chat!r}")
 
         option_list = self.query_one(OptionList)
