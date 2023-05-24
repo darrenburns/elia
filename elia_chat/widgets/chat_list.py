@@ -47,19 +47,20 @@ class ChatList(Widget):
             SavedChat("Okayama", "Tell me about Okayama..."),
         ]
 
-        yield OptionList(
+        option_list = OptionList(
             *self.options,
             id="cl-option-list",
         )
+        yield option_list
 
         with Horizontal(id="cl-button-container"):
             yield Button("[Ctrl+N] New Chat", id="cl-new-chat-button")
 
     def on_focus(self) -> None:
-        print("Sidebar focused")
+        log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
 
-    def create_chat(self):
+    def create_chat(self) -> None:
         new_chat = SavedChat("New Chat", "This is new")
         log.debug(f"Creating new chat {new_chat!r}")
 

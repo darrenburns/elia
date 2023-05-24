@@ -78,6 +78,6 @@ class ChatScreen(Screen):
         else:
             conversation.chosen_model = model
 
-    def action_new_chat(self) -> None:
-        chat_list = self.query_one(ChatList)
-        chat_list.create_chat()
+    async def action_new_chat(self) -> None:
+        chat = self.query_one(Chat)
+        await chat.prepare_for_new_chat()

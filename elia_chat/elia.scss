@@ -31,6 +31,10 @@ Chat > VerticalScroll {
   box-sizing: border-box;
 }
 
+ChatOptions {
+  border-left: $left-border-trim;
+}
+
 ChatHeader {
   width: 1fr;
   height: auto;

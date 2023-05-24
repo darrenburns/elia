@@ -8,7 +8,6 @@ import openai
 from textual import work, log, on
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll, Vertical, ScrollableContainer
-from textual.css.query import NoMatches
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
@@ -32,6 +31,7 @@ class Chat(Widget):
 
         # The thread initially only contains the system message.
         self.chat_container: ScrollableContainer | None = None
+        self.chat_options: ChatOptions | None = None
         self.thread = ChatData(
             messages=[
                 ChatMessage(
@@ -68,13 +68,15 @@ class Chat(Widget):
                 f"First user message received in "
                 f"conversation with model {self.chosen_model.name!r}"
             )
-            try:
-                options = self.query_one(ChatOptions)
-            except NoMatches:
-                log.error("Couldn't remove ConversationOptions as it wasn't found.")
-            else:
-                await options.remove()
-                log.debug("Removed ConversationOptions.")
+            # try:
+            #     options = self.query_one(ChatOptions)
+            # except NoMatches:
+            #     log.error("Couldn't remove ConversationOptions as it wasn't found.")
+            # else:
+            #     await options.remove()
+            #     log.debug("Removed ConversationOptions.")
+            assert self.chat_options is not None
+            self.chat_options.display = False
 
         user_message_chatbox = Chatbox(user_message)
         start_time = time.time()
@@ -94,6 +96,10 @@ class Chat(Widget):
         self.post_message(self.AgentResponseStarted())
         log.debug(f"Refreshing for new message {time.time()}")
         self.stream_agent_response()
+
+    def clear_thread(self) -> None:
+        # We have to maintain the system message.
+        self.thread.messages = self.thread.messages[:1]
 
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
@@ -144,6 +150,22 @@ class Chat(Widget):
         # Ensure the thread is updated with the message from the agent
         self.thread.messages.append(event.message)
 
+    async def prepare_for_new_chat(self) -> None:
+        assert self.chat_container is not None
+
+        self.clear_thread()
+
+        # Clear the part of the DOM containing the chat messages.
+        # Important that we make a copy before removing inside the loop!
+        children = list(self.chat_container.children)
+        for child in children:
+            log.debug(f"Removing chat message {child}.")
+            await child.remove()
+
+        # Show the options to let the user configure the new chat.
+        assert self.chat_options is not None
+        self.chat_options.display = True
+
     def compose(self) -> ComposeResult:
         yield ChatHeader(title="Untitled Chat")
         with Vertical(id="chat-input-container"):
@@ -153,9 +175,11 @@ class Chat(Widget):
         with VerticalScroll() as vertical_scroll:
             self.chat_container = vertical_scroll
             vertical_scroll.can_focus = False
-            yield ChatOptions()
 
-            # TODO - check if conversation is pre-existing.
-            #  If it already exists, load it here.
-            #  If it's a new empty conversation, show the
-            #  options for a new conversation.
+        self.chat_options = ChatOptions()
+        yield self.chat_options
+
+        # TODO - check if conversation is pre-existing.
+        #  If it already exists, load it here.
+        #  If it's a new empty conversation, show the
+        #  options for a new conversation.
