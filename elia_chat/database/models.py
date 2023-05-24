@@ -1,4 +1,13 @@
-from peewee import *
+from peewee import (
+    Model,
+    SqliteDatabase,
+    CharField,
+    ForeignKeyField,
+    SQL,
+    DateTimeField,
+    BooleanField,
+    TextField,
+)
 
 # TODO: Use appdirs library to save the database somewhere appropriate
 database = SqliteDatabase("elia.sqlite")

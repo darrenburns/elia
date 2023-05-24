@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from typing import NamedTuple
 
 import openai
 from textual import on, log
@@ -12,7 +11,7 @@ from textual.screen import Screen
 from textual.widgets import Input, Footer
 
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
-from elia_chat.widgets.conversation import Chat, Chat, Conversation
+from elia_chat.widgets.conversation import Conversation
 from elia_chat.widgets.conversation_header import ConversationHeader
 from elia_chat.widgets.conversation_list import ConversationList
 from elia_chat.widgets.conversation_options import ModelPanel, ModelSet

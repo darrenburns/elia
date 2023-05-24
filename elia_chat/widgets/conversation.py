@@ -7,7 +7,7 @@ from dataclasses import dataclass
 import openai
 from textual import work, log, on
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll, Vertical, Container, ScrollableContainer
+from textual.containers import VerticalScroll, Vertical, ScrollableContainer
 from textual.css.query import NoMatches
 from textual.message import Message
 from textual.reactive import reactive
@@ -22,33 +22,6 @@ from elia_chat.widgets.conversation_options import (
     DEFAULT_MODEL,
     ConversationOptions,
 )
-
-
-# [
-#     {"role": "system", "content": "You are a helpful assistant."},
-#     # {"role": "user", "content": "Who won the world series in 2020?"},
-#     # {"role": "assistant",
-#     #  "content": "The Los Angeles Dodgers won the World Series in 2020."},
-#     # {"role": "user", "content": "Where was it played?"}
-# ]
-
-
-# {
-#  'id': 'chatcmpl-6p9XYPYSTTRi0xEviKjjilqrWU2Ve',
-#  'object': 'chat.completion',
-#  'created': 1677649420,
-#  'model': 'gpt-3.5-turbo',
-#  'usage': {'prompt_tokens': 56, 'completion_tokens': 31, 'total_tokens': 87},
-#  'choices': [
-#    {
-#     'message': {
-#       'role': 'assistant',
-#       'content': 'The 2020 World Series was played in Arlington, Texas at the Globe Life Field, which was the new home stadium for the Texas Rangers.'},
-#     'finish_reason': 'stop',
-#     'index': 0
-#    }
-#   ]
-# }
 
 
 class Conversation(Widget):
@@ -184,4 +157,5 @@ class Conversation(Widget):
 
             # TODO - check if conversation is pre-existing.
             #  If it already exists, load it here.
-            #  If it's a new empty conversation, show the options for a new conversation.
+            #  If it's a new empty conversation, show the
+            #  options for a new conversation.

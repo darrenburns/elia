@@ -4,9 +4,7 @@ from typing import Any
 
 from rich.console import RenderableType
 from rich.markdown import Markdown
-from textual.events import Resize, Mount
 from textual.geometry import Size
-from textual.reactive import reactive
 from textual.widget import Widget
 
 from elia_chat.models import ChatMessage
