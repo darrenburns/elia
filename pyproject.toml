@@ -13,7 +13,7 @@ textual = { path = "../textual", develop = true, extras = ["dev"] }
 peewee = "^3.16.2"
 
 [tool.poetry.scripts]
-elia = "elia.app:run"
+elia = "elia_chat.app:run"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
