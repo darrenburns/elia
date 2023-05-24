@@ -11,14 +11,15 @@ from textual.screen import Screen
 from textual.widgets import Input, Footer
 
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
-from elia_chat.widgets.conversation import Conversation
-from elia_chat.widgets.conversation_header import ConversationHeader
-from elia_chat.widgets.conversation_list import ConversationList
-from elia_chat.widgets.conversation_options import ModelPanel, ModelSet
+from elia_chat.widgets.chat import Chat
+from elia_chat.widgets.chat_header import ChatHeader
+from elia_chat.widgets.chat_list import ChatList
+from elia_chat.widgets.chat_options import ModelPanel, ModelSet
 
 
-class ConversationScreen(Screen):
+class ChatScreen(Screen):
     BINDINGS = [
+        Binding("ctrl+n", action="new_chat", description="New Chat"),
         Binding(
             key="ctrl+s", action="focus('cl-option-list')", description="Focus Chats"
         ),
@@ -29,8 +30,8 @@ class ConversationScreen(Screen):
     """Used to lock the chat input while the agent is responding."""
 
     def compose(self) -> ComposeResult:
-        yield ConversationList(id="chat-list")
-        yield Conversation()
+        yield ChatList(id="chat-list")
+        yield Chat()
         yield Footer()
 
     @on(Input.Submitted, "#chat-input")
@@ -40,16 +41,16 @@ class ConversationScreen(Screen):
         if self.allow_input_submit:
             user_message = event.value
             event.input.value = ""
-            conversation = self.query_one(Conversation)
+            conversation = self.query_one(Chat)
             await conversation.new_user_message(user_message)
 
-    @on(Conversation.AgentResponseStarted)
+    @on(Chat.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
         self.allow_input_submit = False
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = True
 
-    @on(Conversation.AgentResponseComplete)
+    @on(Chat.AgentResponseComplete)
     def agent_response_complete(self) -> None:
         self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
@@ -60,18 +61,21 @@ class ConversationScreen(Screen):
         model = event.model
 
         try:
-            conversation_header = self.query_one(ConversationHeader)
+            conversation_header = self.query_one(ChatHeader)
         except NoMatches:
             log.error("Couldn't find ConversationHeader to update model name.")
         else:
             conversation_header.update_model(model)
 
         try:
-            conversation = self.query_one(Conversation)
+            conversation = self.query_one(Chat)
         except NoMatches:
             log.error("Couldn't find the Conversation")
         else:
             conversation.chosen_model = model
+
+    def action_new_chat(self) -> None:
+        pass
 
 
 class Elia(App):
@@ -82,7 +86,7 @@ class Elia(App):
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
     def on_mount(self) -> None:
-        self.push_screen(ConversationScreen())
+        self.push_screen(ChatScreen())
 
 
 app = Elia()

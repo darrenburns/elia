@@ -13,25 +13,25 @@ from peewee import (
 database = SqliteDatabase("../../elia.sqlite")
 
 
-class BaseModel(Model):
+class BaseDao(Model):
     class Meta:
         database = database
 
 
-class AIModel(BaseModel):
+class AIModelDao(BaseDao):
     name = CharField(unique=True, null=False)
     version = CharField(null=False)
 
 
-class Conversation(BaseModel):
-    ai_model = ForeignKeyField(AIModel, backref="conversations")
+class ChatDao(BaseDao):
+    ai_model = ForeignKeyField(AIModelDao, backref="chats")
     name = CharField(null=False)
     started_at = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
     is_active = BooleanField(default=True)
 
 
-class Message(BaseModel):
-    conversation = ForeignKeyField(Conversation, backref="messages")
+class MessageDao(BaseDao):
+    chat = ForeignKeyField(ChatDao, backref="messages")
     sender = CharField(null=False)  # sender could be 'user' or 'ai'
     content = TextField(null=False)
     timestamp = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
@@ -39,7 +39,7 @@ class Message(BaseModel):
 
 def create_tables():
     with database:
-        database.create_tables([AIModel, Conversation, Message])
+        database.create_tables([AIModelDao, ChatDao, MessageDao])
 
 
 if __name__ == "__main__":

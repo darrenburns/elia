@@ -27,7 +27,7 @@ class SavedChat:
         )
 
 
-class ConversationList(Widget):
+class ChatList(Widget):
     COMPONENT_CLASSES = {"app-title", "app-subtitle"}
 
     def compose(self) -> ComposeResult:

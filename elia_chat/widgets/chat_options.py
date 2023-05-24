@@ -140,9 +140,9 @@ class ModelSet(Horizontal, can_focus=True):
         log.info(f"Selected model {panels[self.selected_panel_index]}")
 
 
-class ConversationOptions(Widget):
+class ChatOptions(Widget):
     def compose(self) -> ComposeResult:
-        with VerticalScroll(id="conversation-options-container") as vertical_scroll:
+        with VerticalScroll(id="chat-options-container") as vertical_scroll:
             vertical_scroll.can_focus = False
 
             with ModelSet() as model_set:

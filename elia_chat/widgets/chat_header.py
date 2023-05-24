@@ -4,10 +4,10 @@ from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static
 
-from elia_chat.widgets.conversation_options import GPTModel
+from elia_chat.widgets.chat_options import GPTModel
 
 
-class ConversationHeader(Widget):
+class ChatHeader(Widget):
     def __init__(
         self,
         title: str,

@@ -14,25 +14,25 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Input
 
-from elia_chat.models import Chat, ChatMessage
+from elia_chat.models import ChatData, ChatMessage
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chatbox import Chatbox
-from elia_chat.widgets.conversation_header import ConversationHeader
-from elia_chat.widgets.conversation_options import (
+from elia_chat.widgets.chat_header import ChatHeader
+from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
-    ConversationOptions,
+    ChatOptions,
 )
 
 
-class Conversation(Widget):
+class Chat(Widget):
     chosen_model = reactive(DEFAULT_MODEL)
 
     def __init__(self) -> None:
         super().__init__()
 
         # The thread initially only contains the system message.
-        self.conversation_container: ScrollableContainer | None = None
-        self.thread = Chat(
+        self.chat_container: ScrollableContainer | None = None
+        self.thread = ChatData(
             messages=[
                 ChatMessage(
                     role="system",
@@ -55,9 +55,9 @@ class Conversation(Widget):
         return len(self.thread.messages) == 1  # Contains system message at first.
 
     def scroll_to_latest_message(self):
-        if self.conversation_container is not None:
-            self.conversation_container.refresh()
-            self.conversation_container.scroll_end(animate=False)
+        if self.chat_container is not None:
+            self.chat_container.refresh()
+            self.chat_container.scroll_end(animate=False)
 
     async def new_user_message(self, content: str) -> None:
         user_message = ChatMessage(role="user", content=content)
@@ -69,7 +69,7 @@ class Conversation(Widget):
                 f"conversation with model {self.chosen_model.name!r}"
             )
             try:
-                options = self.query_one(ConversationOptions)
+                options = self.query_one(ChatOptions)
             except NoMatches:
                 log.error("Couldn't remove ConversationOptions as it wasn't found.")
             else:
@@ -80,10 +80,10 @@ class Conversation(Widget):
         start_time = time.time()
 
         assert (
-            self.conversation_container is not None
+            self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
 
-        await self.conversation_container.mount(user_message_chatbox)
+        await self.chat_container.mount(user_message_chatbox)
         self.scroll_to_latest_message()
 
         end_time = time.time()
@@ -111,10 +111,10 @@ class Conversation(Widget):
         )
 
         assert (
-            self.conversation_container is not None
+            self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
 
-        await self.conversation_container.mount(response_chatbox)
+        await self.chat_container.mount(response_chatbox)
 
         while True:
             # TODO: We need to handle RateLimitError in the worker.
@@ -133,10 +133,10 @@ class Conversation(Widget):
                     self.post_message(self.AgentResponseComplete(response_message))
                     return
                 response_chatbox.append_chunk(event)
-                scroll_y = self.conversation_container.scroll_y
-                max_scroll_y = self.conversation_container.max_scroll_y
+                scroll_y = self.chat_container.scroll_y
+                max_scroll_y = self.chat_container.max_scroll_y
                 if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
-                    self.conversation_container.scroll_end(animate=False)
+                    self.chat_container.scroll_end(animate=False)
             await asyncio.sleep(0.01)
 
     @on(AgentResponseComplete)
@@ -145,15 +145,15 @@ class Conversation(Widget):
         self.thread.messages.append(event.message)
 
     def compose(self) -> ComposeResult:
-        yield ConversationHeader(title="Untitled Chat")
+        yield ChatHeader(title="Untitled Chat")
         with Vertical(id="chat-input-container"):
             yield Input(placeholder="[I] Enter your message here...", id="chat-input")
             yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:
-            self.conversation_container = vertical_scroll
+            self.chat_container = vertical_scroll
             vertical_scroll.can_focus = False
-            yield ConversationOptions()
+            yield ChatOptions()
 
             # TODO - check if conversation is pre-existing.
             #  If it already exists, load it here.
