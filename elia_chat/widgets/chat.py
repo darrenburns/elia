@@ -34,11 +34,21 @@ class Chat(Widget):
         self.chat_container: ScrollableContainer | None = None
         self.chat_options: ChatOptions | None = None
         self.chat_data = ChatData(
+            id=None,
+            title=None,
+            create_time=None,
             model_name=DEFAULT_MODEL.name,  # updated by chosen_model watcher
             messages=[
                 ChatMessage(
+                    id=None,
                     role="system",
                     content="You are a helpful assistant.",
+                    timestamp=time.time(),
+                    status=None,
+                    end_turn=None,
+                    weight=None,
+                    metadata={},
+                    recipient="all",
                 )
             ],
         )
@@ -69,7 +79,17 @@ class Chat(Widget):
             self.chat_container.scroll_end(animate=False)
 
     async def new_user_message(self, content: str) -> None:
-        user_message = ChatMessage(role="user", content=content)
+        user_message = ChatMessage(
+            id=None,
+            role="user",
+            content=content,
+            timestamp=time.time(),
+            status=None,
+            end_turn=None,
+            weight=None,
+            metadata=None,
+            recipient=None,
+        )
         self.chat_data.messages.append(user_message)
         # If the thread was empty, and now it's not, remove the ConversationOptions.
         if len(self.chat_data.messages) == 2:
@@ -118,8 +138,19 @@ class Chat(Widget):
             stream=True,
         )
 
+        # TODO - ensure any metadata available in streaming response is passed through
         response_chatbox = Chatbox(
-            message=ChatMessage(role="assistant", content=""),
+            message=ChatMessage(
+                id=None,
+                role="assistant",
+                content="",
+                timestamp=time.time(),
+                status=None,
+                end_turn=None,
+                weight=None,
+                metadata=None,
+                recipient=None,
+            ),
             classes="assistant-message",
         )
 

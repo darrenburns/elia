@@ -1,17 +1,27 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from typing import TypedDict
 
 
 class ChatMessage(TypedDict):
+    id: str | None
     role: str
     content: str
+    timestamp: float
+    status: str | None
+    end_turn: bool | None
+    weight: float | None
+    metadata: dict | None
+    recipient: str | None
 
 
 @dataclass
 class ChatData:
-    # TODO: Fill out some more of the data in here,
-    #  then make converters to convert from this to peewee models.
-    model_name: str
+    id: str | None
+    model_name: str | None
+    title: str | None
+    create_time: float | None
     messages: list[ChatMessage]
 
     @property

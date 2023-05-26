@@ -1,50 +1,49 @@
-from pathlib import Path
+from __future__ import annotations
 
-from peewee import (
-    Model,
-    SqliteDatabase,
-    CharField,
-    ForeignKeyField,
-    SQL,
-    DateTimeField,
-    TextField,
-)
+from datetime import datetime
 
-# TODO: Use appdirs library to save the database somewhere appropriate
-
-database_path = Path(__file__).parent
-
-database = SqliteDatabase(database_path / "elia.sqlite")
+from sqlalchemy import Column, DateTime, func, JSON
+from sqlalchemy.orm import selectinload
+from sqlmodel import SQLModel, Field, create_engine, Session, select, Relationship
 
 
-class BaseDao(Model):
-    class Meta:
-        database = database
+class MessageDao(SQLModel, table=True):
+    __tablename__ = "message"
+
+    id: int = Field(default=None, primary_key=True)
+    chat_id: int | None = Field(foreign_key="chat.id")
+    chat: ChatDao = Relationship(back_populates="messages")
+    role: str
+    content: str
+    timestamp: datetime | None = Field(
+        sa_column=Column(DateTime(timezone=True), server_default=func.now())
+    )
+    status: str | None
+    end_turn: bool | None
+    weight: float | None
+    meta: dict = Field(sa_column=Column(JSON), default={})
+    recipient: str | None
 
 
-class ChatDao(BaseDao):
-    class Meta:
-        table_name = "chat"
+class ChatDao(SQLModel, table=True):
+    __tablename__ = "chat"
 
-    ai_model = CharField(null=False)
-    name = CharField(null=False)
-    started_at = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
+    id: int = Field(default=None, primary_key=True)
+    model: str | None
+    title: str | None
+    started_at: datetime | None = Field(
+        sa_column=Column(DateTime(timezone=True), server_default=func.now())
+    )
+    messages: list[MessageDao] = Relationship(back_populates="chat")
 
-
-class MessageDao(BaseDao):
-    class Meta:
-        table_name = "message"
-
-    chat = ForeignKeyField(ChatDao, backref="messages")
-    role = CharField(null=False)
-    content = TextField(null=False)
-    timestamp = DateTimeField(constraints=[SQL("DEFAULT CURRENT_TIMESTAMP")])
-
-
-def create_tables():
-    with database:
-        database.create_tables([ChatDao, MessageDao])
+    @staticmethod
+    def all() -> list[ChatDao]:
+        with Session(engine) as session:
+            statement = select(ChatDao).options(selectinload(ChatDao.messages))
+            results = session.exec(statement)
+            return list(results)
 
 
-if __name__ == "__main__":
-    create_tables()
+sqlite_file_name = "elia.sqlite"
+sqlite_url = f"sqlite:///{sqlite_file_name}"
+engine = create_engine(sqlite_url, echo=True)

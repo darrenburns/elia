@@ -10,7 +10,7 @@ python = "^3.10"
 #textual = {version = ">=0.18.0", extras = ["dev"]}
 openai = "^0.27.5"
 textual = { path = "../textual", develop = true, extras = ["dev"] }
-peewee = "^3.16.2"
+sqlmodel = "^0.0.8"
 
 [tool.poetry.scripts]
 elia = "elia_chat.app:run"

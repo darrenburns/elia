@@ -9,6 +9,7 @@ from textual.containers import Horizontal, Vertical
 from textual.widget import Widget
 from textual.widgets import Button, OptionList, Static
 
+from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData
 
 
@@ -61,6 +62,13 @@ class ChatList(Widget):
     def on_focus(self) -> None:
         log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
+
+    def on_mount(self) -> None:
+        print(self.load_chats())
+
+    def load_chats(self) -> list[ChatData]:
+        all_chats = ChatsManager.all_chats()
+        return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:
         new_chat = SavedChat("Untitled Chat", chat_data.short_preview)
