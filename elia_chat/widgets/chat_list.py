@@ -44,10 +44,10 @@ class ChatList(Widget):
                 )
             )
 
+        chats = self.load_chats()
         self.options = [
-            SavedChat("Osaka", "Tell me about Osaka..."),
-            SavedChat("Tokyo", "Tell me about Tokyo..."),
-            SavedChat("Okayama", "Tell me about Okayama..."),
+            SavedChat(chat.title or "Untitled Chat", chat.short_preview)
+            for chat in chats
         ]
 
         option_list = OptionList(
@@ -63,8 +63,8 @@ class ChatList(Widget):
         log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
 
-    def on_mount(self) -> None:
-        print(self.load_chats())
+    # def on_mount(self) -> None:
+    #     print(self.load_chats())
 
     def load_chats(self) -> list[ChatData]:
         all_chats = ChatsManager.all_chats()

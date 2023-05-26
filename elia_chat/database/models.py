@@ -46,4 +46,4 @@ class ChatDao(SQLModel, table=True):
 
 sqlite_file_name = "elia.sqlite"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
-engine = create_engine(sqlite_url, echo=True)
+engine = create_engine(sqlite_url)
