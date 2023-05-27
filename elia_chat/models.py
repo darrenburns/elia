@@ -35,5 +35,15 @@ class ChatData:
         return self.messages[1]
 
     @property
+    def non_system_messages(self) -> list[ChatMessage]:
+        return self.messages[1:]
+
+    @property
     def create_time(self) -> datetime:
         return datetime.fromtimestamp(self.create_timestamp or 0)
+
+    @property
+    def update_time(self) -> datetime:
+        return datetime.fromtimestamp(
+            self.messages[-1].get("timestamp", 0) if self.messages else 0
+        )

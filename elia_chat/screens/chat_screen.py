@@ -73,9 +73,13 @@ class ChatScreen(Screen):
         self.chats_manager.create_chat(chat_data=event.chat_data)
 
     @on(ChatList.ChatOpened)
-    def on_chat_opened(self, event: ChatList.ChatOpened) -> None:
+    async def on_chat_opened(self, event: ChatList.ChatOpened) -> None:
         """Open a chat by unmounting the nodes associated with the old chat,
         and mounting the nodes associated with the new chat."""
+        self.allow_input_submit = False
+        chat_widget = self.query_one(Chat)
+        await chat_widget.load_chat(event.chat)
+        self.allow_input_submit = True
 
     @on(ModelSet.Selected)
     def update_model(self, event: ModelPanel.Selected) -> None:
@@ -86,7 +90,7 @@ class ChatScreen(Screen):
         except NoMatches:
             log.error("Couldn't find ConversationHeader to update model name.")
         else:
-            conversation_header.update_model(model)
+            conversation_header.model_name = model.name
 
         try:
             conversation = self.query_one(Chat)

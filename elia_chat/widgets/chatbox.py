@@ -28,6 +28,10 @@ class Chatbox(Widget, can_focus=True):
         )
         self.message = message
 
+    def on_mount(self) -> None:
+        if self.message.get("role") == "assistant":
+            self.add_class("assistant-message")
+
     @property
     def markdown(self) -> Markdown:
         return Markdown(self.message.get("content") or "")

@@ -10,13 +10,14 @@ from textual.containers import Horizontal, Vertical
 from textual.message import Message
 from textual.widget import Widget
 from textual.widgets import Button, OptionList, Static
+from textual.widgets.option_list import Option
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData
 
 
 @dataclass
-class ChatListItem:
+class ChatListItemRenderable:
     chat: ChatData
 
     def __rich_console__(
@@ -32,6 +33,12 @@ class ChatListItem:
             ),
             pad=(0, 1),
         )
+
+
+class ChatListItem(Option):
+    def __init__(self, chat: ChatData) -> None:
+        super().__init__(ChatListItemRenderable(chat))
+        self.chat = chat
 
 
 class ChatList(Widget):
@@ -78,13 +85,12 @@ class ChatList(Widget):
         return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:
-        new_chat = ChatListItem(chat_data)
-        log.debug(f"Creating new chat {new_chat!r}")
+        new_chat_list_item = ChatListItem(chat_data)
+        log.debug(f"Creating new chat {new_chat_list_item!r}")
 
         option_list = self.query_one(OptionList)
-        # Update our in-memory idea of what the chats are
         self.options = [
-            new_chat,
+            new_chat_list_item,
             *self.options,
         ]
         option_list.clear_options()

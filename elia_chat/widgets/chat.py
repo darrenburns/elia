@@ -65,6 +65,10 @@ class Chat(Widget):
     class FirstMessageSent(Message):
         chat_data: ChatData
 
+    @dataclass
+    class SavedChatLoaded(Message):
+        chat_data: ChatData
+
     def watch_chosen_model(self, chosen_model: GPTModel) -> None:
         self.chat_data.model_name = chosen_model.name
 
@@ -124,9 +128,20 @@ class Chat(Widget):
         log.debug(f"Refreshing for new message {time.time()}")
         self.stream_agent_response()
 
-    def clear_thread(self) -> None:
+    async def clear_thread(self) -> None:
+        """Remove the internal thread representing the chat, and update the DOM."""
+
         # We have to maintain the system message.
         self.chat_data.messages = self.chat_data.messages[:1]
+
+        assert self.chat_container is not None
+
+        # Clear the part of the DOM containing the chat messages.
+        # Important that we make a copy before removing inside the loop!
+        children = list(self.chat_container.children)
+        for child in children:
+            log.debug(f"Removing chat message {child}.")
+            await child.remove()
 
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
@@ -151,7 +166,6 @@ class Chat(Widget):
                 metadata=None,
                 recipient=None,
             ),
-            classes="assistant-message",
         )
 
         assert (
@@ -188,24 +202,30 @@ class Chat(Widget):
         # Ensure the thread is updated with the message from the agent
         self.chat_data.messages.append(event.message)
 
-    async def prepare_for_new_chat(self) -> None:
+    async def load_chat(self, chat: ChatData) -> None:
+        assert self.chat_options is not None
         assert self.chat_container is not None
 
-        self.clear_thread()
+        await self.clear_thread()
+        self.chat_options.display = False
 
-        # Clear the part of the DOM containing the chat messages.
-        # Important that we make a copy before removing inside the loop!
-        children = list(self.chat_container.children)
-        for child in children:
-            log.debug(f"Removing chat message {child}.")
-            await child.remove()
+        chatboxes = [Chatbox(chat_message) for chat_message in chat.non_system_messages]
+        await self.chat_container.mount_all(chatboxes)
+        chat_header = self.query_one(ChatHeader)
+        chat_header.title = chat.short_preview or "Untitled Chat"
+        chat_header.model_name = chat.model_name or "unknown model"
+        self.post_message(Chat.SavedChatLoaded(chat))
+        self.chat_container.scroll_end(animate=False)
+
+    async def prepare_for_new_chat(self) -> None:
+        await self.clear_thread()
 
         # Show the options to let the user configure the new chat.
         assert self.chat_options is not None
         self.chat_options.display = True
 
     def compose(self) -> ComposeResult:
-        yield ChatHeader(title="Untitled Chat")
+        yield ChatHeader()
         with Vertical(id="chat-input-container"):
             yield Input(placeholder="[I] Enter your message here...", id="chat-input")
             yield AgentIsTyping()
