@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import time
 from dataclasses import dataclass
+from typing import Any
 
 import openai
 from textual import work, log, on
@@ -143,13 +144,20 @@ class Chat(Widget):
             log.debug(f"Removing chat message {child}.")
             await child.remove()
 
+    @property
+    def outgoing_messages(self) -> list[dict[str, Any]]:
+        return [
+            {"role": message.get("role"), "content": message.get("content")}
+            for message in self.chat_data.messages
+        ]
+
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
         log.debug(f"Agent response stream starting {time.time()}")
         self.scroll_to_latest_message()
         streaming_response = await openai.ChatCompletion.acreate(
             model=self.chosen_model.name,
-            messages=self.chat_data.messages,
+            messages=self.outgoing_messages,
             stream=True,
         )
 
@@ -206,8 +214,12 @@ class Chat(Widget):
         assert self.chat_options is not None
         assert self.chat_container is not None
 
-        await self.clear_thread()
+        # If the options display is visible, get rid of it.
         self.chat_options.display = False
+
+        # Update the thread
+        await self.clear_thread()
+        self.chat_data.messages = chat.messages
 
         chatboxes = [Chatbox(chat_message) for chat_message in chat.non_system_messages]
         await self.chat_container.mount_all(chatboxes)
