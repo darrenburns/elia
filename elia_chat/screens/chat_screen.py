@@ -55,6 +55,7 @@ class ChatScreen(Screen):
     def user_message_submitted(self, event: Chat.UserMessageSubmitted) -> None:
         """Add the user message to the chat via the ChatsManager."""
         self.allow_input_submit = False
+        log.debug(f"In chat {event.chat_id}, user message submitted: {event.message}")
         self.chats_manager.add_message_to_chat(
             chat_id=event.chat_id, message=event.message
         )
@@ -95,10 +96,18 @@ class ChatScreen(Screen):
     async def on_chat_opened(self, event: ChatList.ChatOpened) -> None:
         """Open a chat by unmounting the nodes associated with the old chat,
         and mounting the nodes associated with the new chat."""
+        log.debug(f"Chat selected from chat list: {event.chat.id}")
+
         self.allow_input_submit = False
         chat_widget = self.query_one(Chat)
-        log.debug(f"Opened chat from chat list: {event.chat}")
-        await chat_widget.load_chat(event.chat)
+        opened_chat = self.chats_manager.get_chat(event.chat.id)
+
+        log.debug(
+            f"Retrieved chat {opened_chat.id!r} [model={opened_chat.model_name!r}] "
+            f"containing {len(opened_chat.messages)} messages from database."
+        )
+
+        await chat_widget.load_chat(opened_chat)
         self.allow_input_submit = True
 
     @on(ModelSet.Selected)

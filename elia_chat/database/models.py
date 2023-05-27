@@ -43,6 +43,17 @@ class ChatDao(SQLModel, table=True):
             results = session.exec(statement)
             return list(results)
 
+    @staticmethod
+    def from_id(chat_id: str) -> ChatDao:
+        with Session(engine) as session:
+            statement = (
+                select(ChatDao)
+                .where(ChatDao.id == int(chat_id))
+                .options(selectinload(ChatDao.messages))
+            )
+            result = session.exec(statement).one()
+            return result
+
 
 sqlite_file_name = "elia.sqlite"
 sqlite_url = f"sqlite:///{sqlite_file_name}"

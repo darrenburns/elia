@@ -22,6 +22,11 @@ class ChatsManager:
         return [chat_dao_to_chat_data(chat) for chat in chat_daos]
 
     @staticmethod
+    def get_chat(chat_id: str) -> ChatData:
+        chat_dao = ChatDao.from_id(chat_id)
+        return chat_dao_to_chat_data(chat_dao)
+
+    @staticmethod
     def get_messages(chat_id: str | int) -> list[ChatMessage]:
         with Session(engine) as session:
             try:

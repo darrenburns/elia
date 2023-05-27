@@ -242,15 +242,15 @@ class Chat(Widget):
         # Update the chat data
         await self.clear_thread()
         self.chat_data = chat
-        log.debug("New chat data loaded", chat)
 
         chatboxes = [Chatbox(chat_message) for chat_message in chat.non_system_messages]
         await self.chat_container.mount_all(chatboxes)
+        self.chat_container.scroll_end(animate=False)
+
         chat_header = self.query_one(ChatHeader)
         chat_header.title = chat.short_preview or "Untitled Chat"
         chat_header.model_name = chat.model_name or "unknown model"
-        self.post_message(Chat.SavedChatLoaded(chat))
-        self.chat_container.scroll_end(animate=False)
+        self.post_message(Chat.SavedChatLoaded(chat))  # TODO - required?
 
     async def prepare_for_new_chat(self) -> None:
         await self.clear_thread()
