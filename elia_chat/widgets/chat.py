@@ -60,6 +60,7 @@ class Chat(Widget):
 
     @dataclass
     class AgentResponseComplete(Message):
+        chat_id: str | None
         message: ChatMessage
 
     @dataclass
@@ -69,6 +70,11 @@ class Chat(Widget):
     @dataclass
     class SavedChatLoaded(Message):
         chat_data: ChatData
+
+    @dataclass
+    class UserMessageSubmitted(Message):
+        chat_id: str
+        message: ChatMessage
 
     def watch_chosen_model(self, chosen_model: GPTModel) -> None:
         self.chat_data.model_name = chosen_model.name
@@ -109,6 +115,12 @@ class Chat(Widget):
                     chat_data=self.chat_data,
                 )
             )
+
+        # The ID should be populated at this point.
+        assert self.chat_data.id is not None
+        self.post_message(
+            Chat.UserMessageSubmitted(chat_id=self.chat_data.id, message=user_message)
+        )
 
         user_message_chatbox = Chatbox(user_message)
         start_time = time.time()
@@ -188,7 +200,12 @@ class Chat(Widget):
                 event = await streaming_response.__anext__()
                 choice = event["choices"][0]
             except (StopAsyncIteration, StopIteration, IndexError):
-                self.post_message(self.AgentResponseComplete(response_chatbox.message))
+                self.post_message(
+                    self.AgentResponseComplete(
+                        chat_id=self.chat_data.id,
+                        message=response_chatbox.message,
+                    ),
+                )
             else:
                 finish_reason = choice.get("finish_reason")
                 if finish_reason in {"stop", "length", "content_filter"}:
@@ -196,7 +213,12 @@ class Chat(Widget):
                         f"Agent response finished. Finish reason is {finish_reason!r}."
                     )
                     response_message = response_chatbox.message
-                    self.post_message(self.AgentResponseComplete(response_message))
+                    self.post_message(
+                        self.AgentResponseComplete(
+                            chat_id=self.chat_data.id,
+                            message=response_message,
+                        )
+                    )
                     return
                 response_chatbox.append_chunk(event)
                 scroll_y = self.chat_container.scroll_y
@@ -217,9 +239,10 @@ class Chat(Widget):
         # If the options display is visible, get rid of it.
         self.chat_options.display = False
 
-        # Update the thread
+        # Update the chat data
         await self.clear_thread()
-        self.chat_data.messages = chat.messages
+        self.chat_data = chat
+        log.debug("New chat data loaded", chat)
 
         chatboxes = [Chatbox(chat_message) for chat_message in chat.non_system_messages]
         await self.chat_container.mount_all(chatboxes)

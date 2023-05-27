@@ -12,16 +12,16 @@ def chat_data_to_chat_dao(chat_data: ChatData) -> ChatDao:
     )
 
 
-def chat_message_to_message_dao(chat_id: int, chat_message: ChatMessage) -> MessageDao:
+def chat_message_to_message_dao(chat_message: ChatMessage) -> MessageDao:
     return MessageDao(
-        chat_id=chat_id,
+        role=chat_message["role"],
         content=chat_message["content"],
-        timestamp=datetime.fromtimestamp(chat_message.get("timestamp", 0)),
-        status=chat_message.get("status"),
-        end_turn=chat_message.get("end_turn"),
-        weight=chat_message.get("weight"),
-        meta=chat_message.get("metadata", {}),
-        recipient=chat_message.get("recipient"),
+        timestamp=datetime.utcfromtimestamp(chat_message["timestamp"]),
+        status=chat_message["status"],
+        end_turn=chat_message["end_turn"],
+        weight=chat_message["weight"],
+        meta=chat_message["metadata"],
+        recipient=chat_message["recipient"],
     )
 
 

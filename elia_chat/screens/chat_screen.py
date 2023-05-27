@@ -41,26 +41,45 @@ class ChatScreen(Screen):
     @on(Input.Submitted, "#chat-input")
     async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
         # We disable submission of the text in the Input while the agent is responding.
-        log.debug("Input.Submitted event received.")
+        log.debug(
+            f"Input.Submitted event received."
+            f"Input submit allowed = {self.allow_input_submit!r}."
+        )
         if self.allow_input_submit:
             user_message = event.value
             event.input.value = ""
             conversation = self.query_one(Chat)
             await conversation.new_user_message(user_message)
 
+    @on(Chat.UserMessageSubmitted)
+    def user_message_submitted(self, event: Chat.UserMessageSubmitted) -> None:
+        """Add the user message to the chat via the ChatsManager."""
+        self.allow_input_submit = False
+        self.chats_manager.add_message_to_chat(
+            chat_id=event.chat_id, message=event.message
+        )
+
     @on(Chat.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
         """Prevent sending messages because the agent is typing."""
-        self.allow_input_submit = False
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = True
 
     @on(Chat.AgentResponseComplete)
-    def agent_response_complete(self) -> None:
+    def agent_response_complete(self, event: Chat.AgentResponseComplete) -> None:
         """Allow the user to send messages again."""
         self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = False
+
+        log.debug(
+            f"Agent response complete. Adding message "
+            f"to chat_id {event.chat_id!r}: {event.message}"
+        )
+
+        self.chats_manager.add_message_to_chat(
+            chat_id=event.chat_id, message=event.message
+        )
 
     @on(Chat.FirstMessageSent)
     def on_first_message_sent(self, event: Chat.FirstMessageSent) -> None:
