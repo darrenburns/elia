@@ -72,6 +72,11 @@ class ChatScreen(Screen):
 
         self.chats_manager.create_chat(chat_data=event.chat_data)
 
+    @on(ChatList.ChatOpened)
+    def on_chat_opened(self, event: ChatList.ChatOpened) -> None:
+        """Open a chat by unmounting the nodes associated with the old chat,
+        and mounting the nodes associated with the new chat."""
+
     @on(ModelSet.Selected)
     def update_model(self, event: ModelPanel.Selected) -> None:
         model = event.model

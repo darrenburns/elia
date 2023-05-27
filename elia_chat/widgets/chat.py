@@ -36,7 +36,7 @@ class Chat(Widget):
         self.chat_data = ChatData(
             id=None,
             title=None,
-            create_time=None,
+            create_timestamp=None,
             model_name=DEFAULT_MODEL.name,  # updated by chosen_model watcher
             messages=[
                 ChatMessage(

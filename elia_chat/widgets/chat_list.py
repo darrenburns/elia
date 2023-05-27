@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 
+import humanize
 from rich.console import RenderResult, Console, ConsoleOptions
 from rich.padding import Padding
 from rich.text import Text
-from textual import log
+from textual import log, on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
+from textual.message import Message
 from textual.widget import Widget
 from textual.widgets import Button, OptionList, Static
 
@@ -14,18 +16,19 @@ from elia_chat.models import ChatData
 
 
 @dataclass
-class SavedChat:
-    title: str
-    subtitle: str
+class ChatListItem:
+    chat: ChatData
 
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
+        create_time_string = humanize.naturaltime(self.chat.create_time)
+        subtitle = f"{create_time_string}"
         yield Padding(
             Text.assemble(
-                (self.title, "b"),
+                (self.chat.short_preview, "b"),
                 "\n",
-                (self.subtitle, "dim"),
+                (subtitle, "dim"),
             ),
             pad=(0, 1),
         )
@@ -33,6 +36,10 @@ class SavedChat:
 
 class ChatList(Widget):
     COMPONENT_CLASSES = {"app-title", "app-subtitle"}
+
+    @dataclass
+    class ChatOpened(Message):
+        chat: ChatData
 
     def compose(self) -> ComposeResult:
         with Vertical(id="cl-header-container"):
@@ -45,10 +52,7 @@ class ChatList(Widget):
             )
 
         chats = self.load_chats()
-        self.options = [
-            SavedChat(chat.title or "Untitled Chat", chat.short_preview)
-            for chat in chats
-        ]
+        self.options = [ChatListItem(chat) for chat in chats]
 
         option_list = OptionList(
             *self.options,
@@ -59,19 +63,22 @@ class ChatList(Widget):
         with Horizontal(id="cl-button-container"):
             yield Button("[Ctrl+N] New Chat", id="cl-new-chat-button")
 
+    @on(OptionList.OptionSelected, "#cl-option-list")
+    def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
+        assert isinstance(event.option, ChatListItem)
+        chat = event.option.chat
+        self.post_message(ChatList.ChatOpened(chat=chat))
+
     def on_focus(self) -> None:
         log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
-
-    # def on_mount(self) -> None:
-    #     print(self.load_chats())
 
     def load_chats(self) -> list[ChatData]:
         all_chats = ChatsManager.all_chats()
         return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:
-        new_chat = SavedChat("Untitled Chat", chat_data.short_preview)
+        new_chat = ChatListItem(chat_data)
         log.debug(f"Creating new chat {new_chat!r}")
 
         option_list = self.query_one(OptionList)
