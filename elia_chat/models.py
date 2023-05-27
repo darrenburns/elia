@@ -28,11 +28,13 @@ class ChatData:
     @property
     def short_preview(self) -> str:
         first_user_message = self.first_user_message
+        if first_user_message is None:
+            return "Empty chat..."
         return first_user_message.get("content", "")[:24] + "..."
 
     @property
-    def first_user_message(self) -> ChatMessage:
-        return self.messages[1]
+    def first_user_message(self) -> ChatMessage | None:
+        return self.messages[1] if len(self.messages) > 1 else None
 
     @property
     def non_system_messages(self) -> list[ChatMessage]:

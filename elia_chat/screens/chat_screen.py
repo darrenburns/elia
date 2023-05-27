@@ -97,6 +97,7 @@ class ChatScreen(Screen):
         and mounting the nodes associated with the new chat."""
         self.allow_input_submit = False
         chat_widget = self.query_one(Chat)
+        log.debug(f"Opened chat from chat list: {event.chat}")
         await chat_widget.load_chat(event.chat)
         self.allow_input_submit = True
 
