@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
-from sqlalchemy import Column, DateTime, func, JSON
+from sqlalchemy import Column, DateTime, func, JSON, desc
 from sqlalchemy.orm import selectinload
 from sqlmodel import SQLModel, Field, create_engine, Session, select, Relationship
 
@@ -39,7 +40,24 @@ class ChatDao(SQLModel, table=True):
     @staticmethod
     def all() -> list[ChatDao]:
         with Session(engine) as session:
-            statement = select(ChatDao).options(selectinload(ChatDao.messages))
+            # Create a subquery that finds the maximum
+            # (most recent) timestamp for each chat.
+
+            assert MessageDao.chat_id is not None
+            assert MessageDao.timestamp is not None
+            max_timestamp: Any = func.max(MessageDao.timestamp).label("max_timestamp")
+            subquery = (
+                select(MessageDao.chat_id, max_timestamp)
+                .group_by(MessageDao.chat_id)
+                .alias("subquery")
+            )
+
+            statement = (
+                select(ChatDao)
+                .join(subquery, subquery.c.chat_id == ChatDao.id)
+                .order_by(desc(subquery.c.max_timestamp))
+                .options(selectinload(ChatDao.messages))
+            )
             results = session.exec(statement)
             return list(results)
 

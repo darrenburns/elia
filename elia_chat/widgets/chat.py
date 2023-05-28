@@ -123,7 +123,6 @@ class Chat(Widget):
         )
 
         user_message_chatbox = Chatbox(user_message)
-        start_time = time.time()
 
         assert (
             self.chat_container is not None
@@ -131,14 +130,7 @@ class Chat(Widget):
 
         await self.chat_container.mount(user_message_chatbox)
         self.scroll_to_latest_message()
-
-        end_time = time.time()
-        log.debug(f"Time to mount chatbox = {end_time - start_time}")
-        # self.conversation_container.refresh(layout=True)
-        log.debug()
-        # self.check_idle()
         self.post_message(self.AgentResponseStarted())
-        log.debug(f"Refreshing for new message {time.time()}")
         self.stream_agent_response()
 
     async def clear_thread(self) -> None:
@@ -165,7 +157,6 @@ class Chat(Widget):
 
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
-        log.debug(f"Agent response stream starting {time.time()}")
         self.scroll_to_latest_message()
         streaming_response = await openai.ChatCompletion.acreate(
             model=self.chosen_model.name,
