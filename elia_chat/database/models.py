@@ -43,8 +43,6 @@ class ChatDao(SQLModel, table=True):
             # Create a subquery that finds the maximum
             # (most recent) timestamp for each chat.
 
-            assert MessageDao.chat_id is not None
-            assert MessageDao.timestamp is not None
             max_timestamp: Any = func.max(MessageDao.timestamp).label("max_timestamp")
             subquery = (
                 select(MessageDao.chat_id, max_timestamp)
