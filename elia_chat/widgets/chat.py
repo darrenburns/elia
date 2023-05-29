@@ -27,6 +27,9 @@ from elia_chat.widgets.chat_options import (
 
 class Chat(Widget):
     chosen_model = reactive(DEFAULT_MODEL)
+    """String showing the chosen GPT model."""
+    allow_input_submit = reactive(True)
+    """Used to lock the chat input while the agent is responding."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -222,6 +225,13 @@ class Chat(Widget):
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:
         # Ensure the thread is updated with the message from the agent
         self.chat_data.messages.append(event.message)
+
+    @on(Input.Submitted, "#chat-input")
+    async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
+        if self.allow_input_submit:
+            user_message = event.value
+            event.input.value = ""
+            await self.new_user_message(user_message)
 
     async def load_chat(self, chat: ChatData) -> None:
         assert self.chat_options is not None

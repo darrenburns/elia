@@ -80,6 +80,16 @@ class ChatList(Widget):
         log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
 
+    def reload_and_refresh(self) -> None:
+        """Reload the chats and refresh the widget. Can be used to
+        update the ordering/previews/titles etc contained in the list."""
+        chats = self.load_chats()
+        self.options = [ChatListItem(chat) for chat in chats]
+        option_list = self.query_one(OptionList)
+        option_list.clear_options()
+        option_list.add_options(self.options)
+        option_list.highlighted = 0
+
     def load_chats(self) -> list[ChatData]:
         all_chats = ChatsManager.all_chats()
         return all_chats

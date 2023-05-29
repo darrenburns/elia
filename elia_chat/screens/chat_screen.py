@@ -2,9 +2,8 @@ from textual import on, log
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.css.query import NoMatches
-from textual.reactive import reactive
 from textual.screen import Screen
-from textual.widgets import Footer, Input
+from textual.widgets import Footer
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
@@ -26,9 +25,6 @@ class ChatScreen(Screen):
         Binding(key="i", action="focus('chat-input')", description="Focus Input"),
     ]
 
-    allow_input_submit = reactive(True)
-    """Used to lock the chat input while the agent is responding."""
-
     def __init__(self):
         super().__init__()
         self.chats_manager = ChatsManager()
@@ -38,27 +34,15 @@ class ChatScreen(Screen):
         yield Chat()
         yield Footer()
 
-    @on(Input.Submitted, "#chat-input")
-    async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
-        # We disable submission of the text in the Input while the agent is responding.
-        log.debug(
-            f"Input.Submitted event received."
-            f"Input submit allowed = {self.allow_input_submit!r}."
-        )
-        if self.allow_input_submit:
-            user_message = event.value
-            event.input.value = ""
-            conversation = self.query_one(Chat)
-            await conversation.new_user_message(user_message)
-
     @on(Chat.UserMessageSubmitted)
     def user_message_submitted(self, event: Chat.UserMessageSubmitted) -> None:
         """Add the user message to the chat via the ChatsManager."""
-        self.allow_input_submit = False
         log.debug(f"In chat {event.chat_id}, user message submitted: {event.message}")
         self.chats_manager.add_message_to_chat(
             chat_id=event.chat_id, message=event.message
         )
+        # ChatList ordering will change, so we need to force an update...
+        self.query_one(ChatList).reload_and_refresh()
 
     @on(Chat.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
