@@ -8,6 +8,10 @@ $left-border-trim: vkey $main-lighten-2 15%;
 
 * {
   scrollbar-color: $panel;
+  scrollbar-color-hover: $main-lighten-1 40%;
+  scrollbar-color-active: $main-darken-1;
+  scrollbar-background-active: $background;
+  scrollbar-background-hover: $background;
 }
 
 Chat {
@@ -292,6 +296,22 @@ OptionList > .option-list--option-hover-highlighted-disabled {
 Input {
   border: tall $main-lighten-1 25%;
 }
+
 Input:focus {
   border: tall $main;
+}
+
+MessageInfo {
+  align: center middle;
+}
+
+MessageInfo > #outermost-container {
+  width: 80%;
+  height: 60%;
+  background: $background;
+}
+
+MessageInfo #inner-container {
+  padding: 2 4;
+  height: auto;
 }

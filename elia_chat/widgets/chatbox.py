@@ -5,13 +5,17 @@ from typing import Any
 
 from rich.console import RenderableType
 from rich.markdown import Markdown
+from textual.binding import Binding
 from textual.geometry import Size
 from textual.widget import Widget
 
 from elia_chat.models import ChatMessage
+from elia_chat.screens.message_info_modal import MessageInfo
 
 
 class Chatbox(Widget, can_focus=True):
+    BINDINGS = [Binding(key="d", action="details", description="Message details")]
+
     def __init__(
         self,
         message: ChatMessage,
@@ -31,6 +35,9 @@ class Chatbox(Widget, can_focus=True):
     def on_mount(self) -> None:
         if self.message.get("role") == "assistant":
             self.add_class("assistant-message")
+
+    def action_details(self) -> None:
+        self.app.push_screen(MessageInfo(message=self.message))
 
     @property
     def markdown(self) -> Markdown:

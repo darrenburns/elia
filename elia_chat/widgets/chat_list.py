@@ -36,6 +36,7 @@ class ChatListItemRenderable:
                 (subtitle, "dim"),
             ),
             pad=(0, 1),
+            style="reverse" if self.is_open else "",
         )
 
 
@@ -97,7 +98,7 @@ class ChatList(Widget):
         update the ordering/previews/titles etc contained in the list.
 
         Args:
-            new_highlighted:
+            new_highlighted: The index to highlight after refresh.
         """
         self.options = self.load_chat_list_items()
         option_list = self.query_one(OptionList)
