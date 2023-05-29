@@ -8,6 +8,15 @@ The UI is incomplete (the sidebar contains placeholders) and there's no persiste
 
 ## Progress videos
 
+### May 29th 2023
+
+SQLite/SQLModel chosen for persistence.
+Conversations can be imported from ChatGPT and they'll be displayed in the sidebar.
+Selecting a conversation in the sidebar will load it into the main window.
+Raw markdown can be displayed.
+
+https://github.com/darrenburns/elia/assets/5740731/0a348cc9-4fab-4266-95f6-d04143b70e7b
+
 ### May 24th 2023
 
 Much of the core UI is in place, with some placeholders. No persistence yet, but I've begun to explore it.
