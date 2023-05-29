@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 import humanize
@@ -8,6 +10,7 @@ from textual import log, on
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
+from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Button, OptionList, Static
 from textual.widgets.option_list import Option
@@ -19,6 +22,7 @@ from elia_chat.models import ChatData
 @dataclass
 class ChatListItemRenderable:
     chat: ChatData
+    is_open: bool = False
 
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
@@ -27,7 +31,7 @@ class ChatListItemRenderable:
         subtitle = f"{create_time_string}"
         yield Padding(
             Text.assemble(
-                (self.chat.short_preview, "b"),
+                (self.chat.short_preview, "b" if not self.is_open else "b u"),
                 "\n",
                 (subtitle, "dim"),
             ),
@@ -36,13 +40,21 @@ class ChatListItemRenderable:
 
 
 class ChatListItem(Option):
-    def __init__(self, chat: ChatData) -> None:
-        super().__init__(ChatListItemRenderable(chat))
+    def __init__(self, chat: ChatData, is_open: bool = False) -> None:
+        """
+        Args:
+            chat: The chat associated with this option.
+            is_open: True if this is the chat that's currently open.
+        """
+        super().__init__(ChatListItemRenderable(chat, is_open=is_open))
         self.chat = chat
+        self.is_open = is_open
 
 
 class ChatList(Widget):
     COMPONENT_CLASSES = {"app-title", "app-subtitle"}
+
+    current_chat_id: reactive[str | None] = reactive(None)
 
     @dataclass
     class ChatOpened(Message):
@@ -58,9 +70,7 @@ class ChatList(Widget):
                 )
             )
 
-        chats = self.load_chats()
-        self.options = [ChatListItem(chat) for chat in chats]
-
+        self.options = self.load_chat_list_items()
         option_list = OptionList(
             *self.options,
             id="cl-option-list",
@@ -74,21 +84,37 @@ class ChatList(Widget):
     def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
         assert isinstance(event.option, ChatListItem)
         chat = event.option.chat
+        self.current_chat_id = chat.id
+        self.reload_and_refresh()
         self.post_message(ChatList.ChatOpened(chat=chat))
 
     def on_focus(self) -> None:
         log.debug("Sidebar focused")
         self.query_one("#cl-option-list", OptionList).focus()
 
-    def reload_and_refresh(self) -> None:
+    def reload_and_refresh(self, new_highlighted: int = -1) -> None:
         """Reload the chats and refresh the widget. Can be used to
-        update the ordering/previews/titles etc contained in the list."""
-        chats = self.load_chats()
-        self.options = [ChatListItem(chat) for chat in chats]
+        update the ordering/previews/titles etc contained in the list.
+
+        Args:
+            new_highlighted:
+        """
+        self.options = self.load_chat_list_items()
         option_list = self.query_one(OptionList)
+        old_highlighted = option_list.highlighted
         option_list.clear_options()
         option_list.add_options(self.options)
-        option_list.highlighted = 0
+        if new_highlighted > -1:
+            option_list.highlighted = new_highlighted
+        else:
+            option_list.highlighted = old_highlighted
+
+    def load_chat_list_items(self) -> list[ChatListItem]:
+        chats = self.load_chats()
+        return [
+            ChatListItem(chat, is_open=self.current_chat_id == chat.id)
+            for chat in chats
+        ]
 
     def load_chats(self) -> list[ChatData]:
         all_chats = ChatsManager.all_chats()
