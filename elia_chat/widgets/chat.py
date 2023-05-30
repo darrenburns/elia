@@ -14,6 +14,7 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Input
 
+from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chatbox import Chatbox
@@ -93,6 +94,7 @@ class Chat(Widget):
             self.chat_container.scroll_end(animate=False)
 
     async def new_user_message(self, content: str) -> None:
+        log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
         user_message = ChatMessage(
             id=None,
             role="user",
@@ -104,25 +106,43 @@ class Chat(Widget):
             metadata=None,
             recipient=None,
         )
-        self.chat_data.messages.append(user_message)
         # If the thread was empty, and now it's not, remove the ConversationOptions.
-        if len(self.chat_data.messages) == 2:
+        is_first_message = self.is_empty
+        if is_first_message:
             log.debug(
                 f"First user message received in "
                 f"conversation with model {self.chosen_model.name!r}"
             )
             assert self.chat_options is not None
             self.chat_options.display = False
+
+            # At this point, we should create the conversation in the database.
+            # Note that we don't need to add the message here, since `create_chat`
+            # already adds any of the messages already present in the chat.
+            self.chat_data.id = str(ChatsManager.create_chat(chat_data=self.chat_data))
+
+            # Add the first message to the thread AFTER creating the chat, since
+            # we don't want ChatsManager.create_chat to persist the message for us.
+            # The message will be persisted by us below, outwith this if block.
+
+        self.chat_data.messages.append(user_message)
+        if is_first_message:
             self.post_message(
                 Chat.FirstMessageSent(
                     chat_data=self.chat_data,
                 )
             )
 
+        ChatsManager.add_message_to_chat(
+            chat_id=str(self.chat_data.id), message=user_message
+        )
+
         # The ID should be populated at this point.
         assert self.chat_data.id is not None
         self.post_message(
-            Chat.UserMessageSubmitted(chat_id=self.chat_data.id, message=user_message)
+            Chat.UserMessageSubmitted(
+                chat_id=str(self.chat_data.id), message=user_message
+            )
         )
 
         user_message_chatbox = Chatbox(user_message)
@@ -148,7 +168,6 @@ class Chat(Widget):
         # Important that we make a copy before removing inside the loop!
         children = list(self.chat_container.children)
         for child in children:
-            log.debug(f"Removing chat message {child}.")
             await child.remove()
 
     @property
@@ -258,7 +277,14 @@ class Chat(Widget):
 
         # Show the options to let the user configure the new chat.
         assert self.chat_options is not None
+
+        chat_header = self.query_one(ChatHeader)
+        self.chat_data.id = None
+        chat_header.title = "Untitled Chat"
+        chat_header.model_name = self.chosen_model.name
         self.chat_options.display = True
+
+        log.debug(f"Prepared for new chat. Chat data = {self.chat_data}")
 
     def compose(self) -> ComposeResult:
         yield ChatHeader()

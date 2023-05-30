@@ -38,9 +38,6 @@ class ChatScreen(Screen):
     def user_message_submitted(self, event: Chat.UserMessageSubmitted) -> None:
         """Add the user message to the chat via the ChatsManager."""
         log.debug(f"In chat {event.chat_id}, user message submitted: {event.message}")
-        self.chats_manager.add_message_to_chat(
-            chat_id=event.chat_id, message=event.message
-        )
         # ChatList ordering will change, so we need to force an update...
         self.query_one(ChatList).reload_and_refresh()
 
@@ -69,12 +66,11 @@ class ChatScreen(Screen):
     @on(Chat.FirstMessageSent)
     def on_first_message_sent(self, event: Chat.FirstMessageSent) -> None:
         """The first chat message was received in the current chat, so update the
-        sidebar."""
+        sidebar. At the time of this handler being triggered, the chat should already
+        exist in the database."""
         chat_list = self.query_one(ChatList)
         chat_data = event.chat_data
         chat_list.create_chat(chat_data)
-
-        self.chats_manager.create_chat(chat_data=event.chat_data)
 
     @on(ChatList.ChatOpened)
     async def on_chat_opened(self, event: ChatList.ChatOpened) -> None:
@@ -114,4 +110,6 @@ class ChatScreen(Screen):
 
     async def action_new_chat(self) -> None:
         chat = self.query_one(Chat)
+
+        # TODO: We need to update the headers of the chat window.
         await chat.prepare_for_new_chat()
