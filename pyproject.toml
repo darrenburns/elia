@@ -12,6 +12,7 @@ openai = "^0.27.5"
 textual = { path = "../textual", develop = true, extras = ["dev"] }
 sqlmodel = "^0.0.8"
 humanize = "^4.6.0"
+tiktoken = "^0.4.0"
 
 [tool.poetry.scripts]
 elia = "elia_chat.app:run"

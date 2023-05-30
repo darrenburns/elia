@@ -106,10 +106,8 @@ class ChatScreen(Screen):
         except NoMatches:
             log.error("Couldn't find the Conversation")
         else:
-            conversation.chosen_model = model
+            conversation.chat_data.model_name = model.name
 
     async def action_new_chat(self) -> None:
         chat = self.query_one(Chat)
-
-        # TODO: We need to update the headers of the chat window.
         await chat.prepare_for_new_chat()

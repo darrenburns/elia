@@ -22,13 +22,10 @@ from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
     ChatOptions,
-    GPTModel,
 )
 
 
 class Chat(Widget):
-    chosen_model = reactive(DEFAULT_MODEL)
-    """String showing the chosen GPT model."""
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
 
@@ -42,7 +39,7 @@ class Chat(Widget):
             id=None,
             title=None,
             create_timestamp=None,
-            model_name=DEFAULT_MODEL.name,  # updated by chosen_model watcher
+            model_name=DEFAULT_MODEL.name,
             messages=[
                 ChatMessage(
                     id=None,
@@ -80,9 +77,6 @@ class Chat(Widget):
         chat_id: str
         message: ChatMessage
 
-    def watch_chosen_model(self, chosen_model: GPTModel) -> None:
-        self.chat_data.model_name = chosen_model.name
-
     @property
     def is_empty(self) -> bool:
         """True if the conversation is empty, False otherwise."""
@@ -111,7 +105,7 @@ class Chat(Widget):
         if is_first_message:
             log.debug(
                 f"First user message received in "
-                f"conversation with model {self.chosen_model.name!r}"
+                f"conversation with model {self.chat_data.model_name!r}"
             )
             assert self.chat_options is not None
             self.chat_options.display = False
@@ -180,8 +174,11 @@ class Chat(Widget):
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
         self.scroll_to_latest_message()
+        log.debug(
+            f"Creating streaming response with model {self.chat_data.model_name!r}"
+        )
         streaming_response = await openai.ChatCompletion.acreate(
-            model=self.chosen_model.name,
+            model=self.chat_data.model_name,
             messages=self.outgoing_messages,
             stream=True,
         )
@@ -281,7 +278,7 @@ class Chat(Widget):
         chat_header = self.query_one(ChatHeader)
         self.chat_data.id = None
         chat_header.title = "Untitled Chat"
-        chat_header.model_name = self.chosen_model.name
+        chat_header.model_name = self.chat_data.model_name or "unknown model"
         self.chat_options.display = True
 
         log.debug(f"Prepared for new chat. Chat data = {self.chat_data}")
