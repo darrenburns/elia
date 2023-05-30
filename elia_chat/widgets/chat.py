@@ -131,7 +131,6 @@ class Chat(Widget):
             chat_id=str(self.chat_data.id), message=user_message
         )
 
-        # The ID should be populated at this point.
         assert self.chat_data.id is not None
         self.post_message(
             Chat.UserMessageSubmitted(
@@ -139,7 +138,8 @@ class Chat(Widget):
             )
         )
 
-        user_message_chatbox = Chatbox(user_message)
+        assert self.chat_data.model_name is not None
+        user_message_chatbox = Chatbox(user_message, self.chat_data.model_name)
 
         assert (
             self.chat_container is not None
@@ -184,18 +184,22 @@ class Chat(Widget):
         )
 
         # TODO - ensure any metadata available in streaming response is passed through
+        message = ChatMessage(
+            id=None,
+            role="assistant",
+            content="",
+            timestamp=time.time(),
+            status=None,
+            end_turn=None,
+            weight=None,
+            metadata=None,
+            recipient=None,
+        )
+
+        assert self.chat_data.model_name is not None
         response_chatbox = Chatbox(
-            message=ChatMessage(
-                id=None,
-                role="assistant",
-                content="",
-                timestamp=time.time(),
-                status=None,
-                end_turn=None,
-                weight=None,
-                metadata=None,
-                recipient=None,
-            ),
+            message=message,
+            model_name=self.chat_data.model_name,
         )
 
         assert (
@@ -213,7 +217,7 @@ class Chat(Widget):
                 self.post_message(
                     self.AgentResponseComplete(
                         chat_id=self.chat_data.id,
-                        message=response_chatbox.message,
+                        message=message,
                     ),
                 )
             else:
@@ -260,7 +264,11 @@ class Chat(Widget):
         await self.clear_thread()
         self.chat_data = chat
 
-        chatboxes = [Chatbox(chat_message) for chat_message in chat.non_system_messages]
+        assert self.chat_data.model_name is not None
+        chatboxes = [
+            Chatbox(chat_message, self.chat_data.model_name)
+            for chat_message in chat.non_system_messages
+        ]
         await self.chat_container.mount_all(chatboxes)
         self.chat_container.scroll_end(animate=False)
 

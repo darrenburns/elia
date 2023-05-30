@@ -315,3 +315,40 @@ MessageInfo #inner-container {
   padding: 2 4;
   height: auto;
 }
+
+MessageInfo #message-info-header {
+  dock: top;
+  width: 1fr;
+  height: auto;
+  background: $main 30%;
+  color: $text;
+}
+
+MessageInfo #message-info-header Tab {
+  width: 1fr;
+}
+
+MessageInfo #message-info-footer {
+  dock: bottom;
+  height: 3;
+  padding: 1 2;
+  background: $main-darken-1;
+  color: $text;
+  width: 1fr;
+}
+
+MessageInfo #timestamp {
+  dock: left;
+  height: 3;
+  width: auto;
+}
+
+MessageInfo #token-count {
+  dock: right;
+  height: 3;
+  width: auto;
+}
+
+Tabs:focus .underline--bar {
+  color: $main-lighten-2;
+}

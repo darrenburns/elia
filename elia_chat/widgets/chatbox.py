@@ -19,6 +19,7 @@ class Chatbox(Widget, can_focus=True):
     def __init__(
         self,
         message: ChatMessage,
+        model_name: str,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -31,13 +32,16 @@ class Chatbox(Widget, can_focus=True):
             disabled=disabled,
         )
         self.message = message
+        self.model_name = model_name
 
     def on_mount(self) -> None:
         if self.message.get("role") == "assistant":
             self.add_class("assistant-message")
 
     def action_details(self) -> None:
-        self.app.push_screen(MessageInfo(message=self.message))
+        self.app.push_screen(
+            MessageInfo(message=self.message, model_name=self.model_name)
+        )
 
     @property
     def markdown(self) -> Markdown:

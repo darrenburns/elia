@@ -31,7 +31,7 @@ class ChatListItemRenderable:
         subtitle = f"{create_time_string}"
         yield Padding(
             Text.assemble(
-                (self.chat.short_preview, "b" if not self.is_open else "b u"),
+                (self.chat.short_preview, "" if not self.is_open else "b"),
                 "\n",
                 (subtitle, "dim"),
             ),
