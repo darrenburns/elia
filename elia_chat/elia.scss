@@ -312,15 +312,14 @@ MessageInfo > #outermost-container {
 }
 
 MessageInfo #inner-container {
-  padding: 2 4;
-  height: auto;
+  height: 1fr;
 }
 
 MessageInfo #message-info-header {
   dock: top;
   width: 1fr;
   height: auto;
-  background: $main 30%;
+  background: $main-darken-2 70%;
   color: $text;
 }
 
@@ -350,7 +349,7 @@ MessageInfo #token-count {
 }
 
 Tabs:focus .underline--bar {
-  color: $main-lighten-2;
+  color: $text 35%;
 }
 
 TokenAnalysis {
@@ -359,7 +358,7 @@ TokenAnalysis {
 
 #inner-container ContentSwitcher {
   height: auto;
-  border: solid $main;
+  padding: 2 4;
 }
 
 #inner-container #markdown-content {
