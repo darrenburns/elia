@@ -2,10 +2,6 @@
 
 A work in progress. How far will I go with this? I have no idea...
 
-## Project state
-
-The UI is incomplete (the sidebar contains placeholders) and there's no persistence yet.
-
 ## Progress videos
 
 ### May 29th 2023
