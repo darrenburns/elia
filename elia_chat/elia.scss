@@ -352,3 +352,20 @@ MessageInfo #token-count {
 Tabs:focus .underline--bar {
   color: $main-lighten-2;
 }
+
+TokenAnalysis {
+  height: auto;
+}
+
+#inner-container ContentSwitcher {
+  height: auto;
+  border: solid $main;
+}
+
+#inner-container #markdown-content {
+  height: auto;
+}
+
+#inner-container #metadata {
+  height: auto;
+}
