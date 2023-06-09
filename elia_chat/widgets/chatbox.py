@@ -11,6 +11,7 @@ from textual.widget import Widget
 
 from elia_chat.models import ChatMessage
 from elia_chat.screens.message_info_modal import MessageInfo
+from elia_chat.time_display import format_timestamp
 
 
 class Chatbox(Widget, can_focus=True):
@@ -33,6 +34,8 @@ class Chatbox(Widget, can_focus=True):
         )
         self.message = message
         self.model_name = model_name
+        timestamp = format_timestamp(message.get("timestamp", 0) or 0)
+        self.tooltip = f"Sent {timestamp}"
 
     def on_mount(self) -> None:
         if self.message.get("role") == "assistant":

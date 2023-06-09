@@ -146,7 +146,7 @@ ChatList #cl-new-chat-button:hover {
 
 Chatbox {
   color: $text;
-  background: $main-darken-1;
+  background: $main 50%;
   height: auto;
   width: auto;
   max-width: 1fr;
@@ -160,7 +160,7 @@ Chatbox:focus {
 }
 
 Chatbox.assistant-message {
-  background: $panel;
+  background: $panel 80%;
 }
 
 ModelSet {

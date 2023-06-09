@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 
 import tiktoken
 from textual import on
@@ -11,6 +10,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Static, Tabs, ContentSwitcher, Tab
 
 from elia_chat.models import ChatMessage
+from elia_chat.time_display import format_timestamp
 from elia_chat.widgets.token_analysis import TokenAnalysis
 
 
@@ -57,9 +57,7 @@ class MessageInfo(ModalScreen):
                     token_count = len(tokens)
 
                 timestamp = self.message.get("timestamp") or 0
-                timestamp_string = datetime.utcfromtimestamp(timestamp).strftime(
-                    "%Y-%m-%d %H:%M:%S"
-                )
+                timestamp_string = format_timestamp(timestamp)
                 yield Static(f"Message sent at {timestamp_string}", id="timestamp")
                 yield Static(f"{token_count} tokens", id="token-count")
 
