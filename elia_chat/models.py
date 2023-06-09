@@ -42,7 +42,7 @@ class ChatData:
 
     @property
     def create_time(self) -> datetime:
-        return datetime.fromtimestamp(self.create_timestamp or 0)
+        return datetime.fromtimestamp(self.create_timestamp or 0).astimezone()
 
     @property
     def update_time(self) -> datetime:

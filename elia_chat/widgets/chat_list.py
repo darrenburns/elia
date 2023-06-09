@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from dataclasses import dataclass
 
 import humanize
@@ -27,7 +28,9 @@ class ChatListItemRenderable:
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        create_time_string = humanize.naturaltime(self.chat.create_time)
+        utc_dt = datetime.datetime.utcnow()
+        local_dt = utc_dt.astimezone()
+        create_time_string = humanize.naturaltime(self.chat.create_time, when=local_dt)
         subtitle = f"{create_time_string}"
         yield Padding(
             Text.assemble(

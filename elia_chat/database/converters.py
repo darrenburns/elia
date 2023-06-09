@@ -16,7 +16,7 @@ def chat_message_to_message_dao(chat_message: ChatMessage) -> MessageDao:
     return MessageDao(
         role=chat_message["role"],
         content=chat_message["content"],
-        timestamp=datetime.utcfromtimestamp(chat_message["timestamp"]),
+        timestamp=datetime.fromtimestamp(chat_message["timestamp"]),
         status=chat_message["status"],
         end_turn=chat_message["end_turn"],
         weight=chat_message["weight"],
