@@ -1,6 +1,46 @@
 # Elia
 
-A work in progress. How far will I go with this? I have no idea...
+A terminal ChatGPT client built with Textual
+
+![img.png](https://github.com/darrenburns/elia/assets/49741340/80453ed8-ec94-4095-b721-89d32d9fc327)
+
+> **Note**
+> Elia is still a work in progress. How far will I go with this? I have no idea...
+
+## Quickstart
+
+Install Elia with [pipx](https://github.com/pypa/pipx), set your OpenAI API key environment variable,
+and start the app:
+
+```bash
+pipx install git+https://github.com/juftin/elia
+export OPENAI_API_KEY="xxxxxxxxxxxxxx"
+elia
+```
+
+### Wiping the Chat History
+
+Chat history is stored in a SQLite database alongside the Elia application.
+To wipe the chat history, simply run the db reset command:
+
+```bash
+elia db reset
+```
+
+### Changing the Chat Directive
+
+By default, Elia's conversations with ChatGPT are primed with a
+directive for the GPT model:
+
+`You are a helpful assistant.`
+
+This can be changed by setting the `ELIA_DIRECTIVE` environment variable before
+starting a new conversation. A directive is set for the lifetime of a conversation.
+
+```bash
+export ELIA_DIRECTIVE="You are a helpful assistant who talks like a pirate."
+elia
+```
 
 ## Progress videos
 

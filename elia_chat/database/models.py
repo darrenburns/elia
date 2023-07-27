@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pathlib
 from datetime import datetime
 from typing import Any
 
@@ -70,6 +71,7 @@ class ChatDao(SQLModel, table=True):
             return result
 
 
-sqlite_file_name = "elia.sqlite"
+_this_dir = pathlib.Path(__file__).resolve().parent
+sqlite_file_name = _this_dir / "elia.sqlite"
 sqlite_url = f"sqlite:///{sqlite_file_name}"
 engine = create_engine(sqlite_url)

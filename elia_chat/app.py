@@ -20,10 +20,5 @@ class Elia(App):
 
 app = Elia()
 
-
-def run():
-    app.run()
-
-
 if __name__ == "__main__":
     app.run()
