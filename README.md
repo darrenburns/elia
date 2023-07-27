@@ -13,7 +13,7 @@ Install Elia with [pipx](https://github.com/pypa/pipx), set your OpenAI API key 
 and start the app:
 
 ```bash
-pipx install git+https://github.com/juftin/elia
+pipx install git+https://github.com/darrenburns/elia
 export OPENAI_API_KEY="xxxxxxxxxxxxxx"
 elia
 ```
