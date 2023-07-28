@@ -125,7 +125,7 @@ class ChatList(Widget):
         return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:
-        new_chat_list_item = ChatListItem(chat_data)
+        new_chat_list_item = ChatListItem(chat_data, is_open=True)
         log.debug(f"Creating new chat {new_chat_list_item!r}")
 
         option_list = self.query_one(OptionList)
@@ -136,3 +136,4 @@ class ChatList(Widget):
         option_list.clear_options()
         option_list.add_options(self.options)
         option_list.highlighted = 0
+        self.refresh()
