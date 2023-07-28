@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import time
 from dataclasses import dataclass
 from typing import Any
@@ -32,6 +33,9 @@ class Chat(Widget):
     def __init__(self) -> None:
         super().__init__()
 
+        self.persona_directive = os.getenv(
+            "ELIA_DIRECTIVE", "You are a helpful assistant."
+        )
         # The thread initially only contains the system message.
         self.chat_container: ScrollableContainer | None = None
         self.chat_options: ChatOptions | None = None
@@ -44,7 +48,7 @@ class Chat(Widget):
                 ChatMessage(
                     id=None,
                     role="system",
-                    content="You are a helpful assistant.",
+                    content=self.persona_directive,
                     timestamp=time.time(),
                     status=None,
                     end_turn=None,

@@ -315,14 +315,14 @@ files = [
 
 [[package]]
 name = "click"
-version = "8.1.3"
+version = "8.1.6"
 description = "Composable command line interface toolkit"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "click-8.1.3-py3-none-any.whl", hash = "sha256:bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"},
-    {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
+    {file = "click-8.1.6-py3-none-any.whl", hash = "sha256:fa244bb30b3b5ee2cae3da8f55c9e5e0c0e86093306301fb418eb9dc40fbded5"},
+    {file = "click-8.1.6.tar.gz", hash = "sha256:48ee849951919527a045bfe3bf7baa8a959c423134e1a5b98c05c20ba75a1cbd"},
 ]
 
 [package.dependencies]
@@ -672,7 +672,7 @@ files = [
 name = "msgpack"
 version = "1.0.5"
 description = "MessagePack serializer"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 files = [
@@ -1364,29 +1364,40 @@ sqlalchemy2-stubs = "*"
 
 [[package]]
 name = "textual"
-version = "0.26.0"
+version = "0.30.0"
 description = "Modern Text User Interface framework"
 category = "main"
 optional = false
-python-versions = "^3.7"
-files = []
-develop = true
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "textual-0.30.0-py3-none-any.whl", hash = "sha256:e87d587e4569236f3809d41955ed9556287dbedaca64724e1d6ad5adbb69c9c5"},
+    {file = "textual-0.30.0.tar.gz", hash = "sha256:bf7045a7e9b7dc3ac589c38ce86ac31aecf0e76e8c8ce09aee474316bc2e2c03"},
+]
 
 [package.dependencies]
-aiohttp = {version = ">=3.8.1", optional = true}
-click = {version = ">=8.1.2", optional = true}
 importlib-metadata = ">=4.11.3"
-markdown-it-py = {version = "^2.1.0", extras = ["linkify", "plugins"]}
-msgpack = {version = ">=1.0.3", optional = true}
+markdown-it-py = {version = ">=2.1.0", extras = ["linkify", "plugins"]}
 rich = ">=13.3.3"
-typing-extensions = "^4.4.0"
+typing-extensions = ">=4.4.0,<5.0.0"
 
-[package.extras]
-dev = ["aiohttp (>=3.8.1)", "click (>=8.1.2)", "msgpack (>=1.0.3)"]
+[[package]]
+name = "textual-dev"
+version = "1.0.1"
+description = "Development tools for working with Textual"
+category = "dev"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "textual_dev-1.0.1-py3-none-any.whl", hash = "sha256:419fc426c120f04f89ab0cb1aa88f7873dd7cdb9c21618e709175c8eaff6b566"},
+    {file = "textual_dev-1.0.1.tar.gz", hash = "sha256:9f4c40655cbb56af7ee92805ef14fa24ae98ff8b0ae778c59de7222f1caa7281"},
+]
 
-[package.source]
-type = "directory"
-url = "../textual"
+[package.dependencies]
+aiohttp = ">=3.8.1"
+click = ">=8.1.2"
+msgpack = ">=1.0.3"
+textual = ">=0.29.0"
+typing-extensions = ">=4.4.0,<5.0.0"
 
 [[package]]
 name = "tiktoken"
@@ -1652,4 +1663,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f2a1fe1ee0fed95267d5322a2ec3a223c56fa38e519612d36f733c785b759cef"
+content-hash = "ad158f1220a6129853651d410f5e5304b89f2b9b1af71f494c73aa683d217c6a"

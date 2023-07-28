@@ -30,8 +30,8 @@ class ChatListItemRenderable:
     ) -> RenderResult:
         utc_dt = datetime.datetime.utcnow()
         local_dt = utc_dt.astimezone()
-        create_time_string = humanize.naturaltime(self.chat.create_time, when=local_dt)
-        subtitle = f"{create_time_string}"
+        delta = local_dt - self.chat.create_time
+        subtitle = humanize.naturaltime(delta)
         yield Padding(
             Text.assemble(
                 (self.chat.short_preview, "" if not self.is_open else "b"),
