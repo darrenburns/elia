@@ -24,7 +24,7 @@ Chat history is stored in a SQLite database alongside the Elia application.
 To wipe the chat history, simply run the db reset command:
 
 ```bash
-elia db reset
+elia reset
 ```
 
 ### Changing the Chat Directive
