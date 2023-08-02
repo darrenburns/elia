@@ -44,6 +44,7 @@ AVAILABLE_MODELS = [
         css_class="gpt4",
     ),
 ]
+MODEL_MAPPING = {model.name: model for model in AVAILABLE_MODELS}
 
 
 class ModelPanel(Static):
