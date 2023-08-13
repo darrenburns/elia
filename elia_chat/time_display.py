@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 
 def format_timestamp(timestamp: float) -> str:
-    """Convert a Unix timestamp into a string in human readable format.
+    """Convert a Unix timestamp into a string in human-readable format.
 
     Args:
         timestamp: The Unix timestamp.

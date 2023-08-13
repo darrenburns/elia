@@ -46,7 +46,7 @@ def reset() -> None:
         exists=True, dir_okay=False, path_type=pathlib.Path, resolve_path=True
     ),
 )
-def import_file_to_db(file) -> None:
+def import_file_to_db(file: pathlib.Path) -> None:
     """
     Import ChatGPT Conversations
 
