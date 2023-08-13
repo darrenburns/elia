@@ -42,6 +42,12 @@ export ELIA_DIRECTIVE="You are a helpful assistant who talks like a pirate."
 elia
 ```
 
+### Launching Directly into a Conversation
+
+```bash
+elia chat write python code to detect a palindrome
+```
+
 ## Progress updates
 
 ### June 2023
