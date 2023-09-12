@@ -4,24 +4,32 @@ import asyncio
 import os
 import time
 from dataclasses import dataclass
-from typing import Any
 
-import openai
-from textual import work, log, on, events
+from langchain.chat_models.base import BaseChatModel
+from langchain.schema import (
+    AIMessage,
+    BaseMessage,
+    HumanMessage,
+    SystemMessage,
+)
+from langchain.schema.messages import BaseMessageChunk
+from textual import log, on, work
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll, Vertical, ScrollableContainer
+from textual.containers import ScrollableContainer, Vertical, VerticalScroll
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData, ChatMessage, EliaContext
+from elia_chat.models import ChatData, ChatMessage
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
+    MODEL_MAPPING,
     ChatOptions,
+    callback,
 )
 from elia_chat.widgets.chatbox import Chatbox
 
@@ -169,11 +177,21 @@ class Chat(Widget):
             await child.remove()
 
     @property
-    def outgoing_messages(self) -> list[dict[str, Any]]:
-        return [
-            {"role": message.get("role"), "content": message.get("content")}
-            for message in self.chat_data.messages
-        ]
+    def outgoing_messages(self) -> list[BaseMessage]:
+        messages = []
+        for message in self.chat_data.messages:
+            if message["role"] == "user":
+                langchain_message = HumanMessage(content=message["content"])
+                messages.append(langchain_message)
+            elif message["role"] == "system":
+                langchain_message = SystemMessage(content=message["content"])
+                messages.append(langchain_message)
+            elif message["role"] == "assistant":
+                langchain_message = AIMessage(content=message["content"])
+                messages.append(langchain_message)
+            else:
+                raise NotImplementedError(f"Unknown message type, {message}")
+        return messages
 
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
@@ -181,12 +199,8 @@ class Chat(Widget):
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
-        streaming_response = await openai.ChatCompletion.acreate(
-            model=self.chat_data.model_name,
-            messages=self.outgoing_messages,
-            stream=True,
-        )
-
+        llm: BaseChatModel = MODEL_MAPPING[self.chat_data.model_name].model
+        streaming_response = llm.astream(input=self.outgoing_messages)
         # TODO - ensure any metadata available in streaming response is passed through
         message = ChatMessage(
             id=None,
@@ -199,51 +213,31 @@ class Chat(Widget):
             metadata=None,
             recipient=None,
         )
-
         assert self.chat_data.model_name is not None
         response_chatbox = Chatbox(
             message=message,
             model_name=self.chat_data.model_name,
         )
-
         assert (
             self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
-
         await self.chat_container.mount(response_chatbox)
-
-        while True:
-            # TODO: We need to handle RateLimitError in the worker.
-            try:
-                event = await streaming_response.__anext__()
-                choice = event["choices"][0]
-            except (StopAsyncIteration, StopIteration, IndexError):
-                self.post_message(
-                    self.AgentResponseComplete(
-                        chat_id=self.chat_data.id,
-                        message=message,
-                    ),
-                )
+        async for token in streaming_response:
+            if isinstance(token, BaseMessageChunk):
+                token_str = token.content
             else:
-                finish_reason = choice.get("finish_reason")
-                if finish_reason in {"stop", "length", "content_filter"}:
-                    log.debug(
-                        f"Agent response finished. Finish reason is {finish_reason!r}."
-                    )
-                    response_message = response_chatbox.message
-                    self.post_message(
-                        self.AgentResponseComplete(
-                            chat_id=self.chat_data.id,
-                            message=response_message,
-                        )
-                    )
-                    return
-                response_chatbox.append_chunk(event)
-                scroll_y = self.chat_container.scroll_y
-                max_scroll_y = self.chat_container.max_scroll_y
-                if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
-                    self.chat_container.scroll_end(animate=False)
-            await asyncio.sleep(0.01)
+                token_str = str(token)
+            response_chatbox.append_chunk(token_str)
+            scroll_y = self.chat_container.scroll_y
+            max_scroll_y = self.chat_container.max_scroll_y
+            if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
+                self.chat_container.scroll_end(animate=False)
+        self.post_message(
+            self.AgentResponseComplete(
+                chat_id=self.chat_data.id,
+                message=response_chatbox.message,
+            )
+        )
 
     @on(AgentResponseComplete)
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:

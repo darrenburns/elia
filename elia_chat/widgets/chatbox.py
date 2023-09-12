@@ -58,33 +58,16 @@ class Chatbox(Widget, can_focus=True):
         content = self.message.get("content", "")
         return min(len(content), container.width)
 
-    def append_chunk(self, chunk: Any):
-        # If this Chatbox doesn't correspond to an OpenAI message,
-        # make that connection now.
-        if self.message.get("content") is None:
-            # TODO - fill in the None values below
-            self.message = ChatMessage(
-                id=None,
-                role="assistant",
-                content="",
-                timestamp=time.time(),
-                status=None,
-                end_turn=None,
-                weight=None,
-                metadata=None,
-                recipient=None,
-            )
-        else:
-            chunk_content = chunk["choices"][0].get("delta", {}).get("content", "")
-            self.message = ChatMessage(
-                id=None,
-                role=self.message.get("role", "undefined"),
-                content=self.message.get("content", "") + chunk_content,
-                timestamp=time.time(),
-                status=None,
-                end_turn=None,
-                weight=None,
-                metadata=None,
-                recipient=None,
-            )
+    def append_chunk(self, chunk: str):
+        self.message = ChatMessage(
+            id=None,
+            role=self.message.get("role", "undefined"),
+            content=self.message.get("content", "") + chunk,
+            timestamp=time.time(),
+            status=None,
+            end_turn=None,
+            weight=None,
+            metadata=None,
+            recipient=None,
+        )
         self.refresh(layout=True)

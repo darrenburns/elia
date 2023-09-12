@@ -1,7 +1,12 @@
 from __future__ import annotations
 
-from typing import NamedTuple
+from dataclasses import dataclass
+from typing import Dict
 
+from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain.chat_models import ChatOpenAI
+from langchain.chat_models.base import BaseChatModel
+from langchain.llms.base import LLM
 from rich.console import RenderableType
 from rich.text import Text
 from textual import log, on
@@ -14,14 +19,18 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Static
 
+callback = AsyncIteratorCallbackHandler()
 
-class GPTModel(NamedTuple):
+
+@dataclass
+class GPTModel:
     name: str
     icon: str
     provider: str
     product: str
     description: str
     css_class: str
+    model: BaseChatModel | LLM
 
 
 DEFAULT_MODEL = GPTModel(
@@ -31,6 +40,11 @@ DEFAULT_MODEL = GPTModel(
     product="ChatGPT",
     description="The fastest ChatGPT model, great for most everyday tasks.",
     css_class="gpt35",
+    model=ChatOpenAI(
+        model_name="gpt-3.5-turbo",
+        streaming=True,
+        callbacks=[callback],
+    ),
 )
 AVAILABLE_MODELS = [
     DEFAULT_MODEL,
@@ -42,9 +56,14 @@ AVAILABLE_MODELS = [
         description="The most powerful ChatGPT model, capable of "
         "complex tasks which require advanced reasoning.",
         css_class="gpt4",
+        model=ChatOpenAI(
+            model_name="gpt-4",
+            streaming=True,
+            callbacks=[callback],
+        ),
     ),
 ]
-MODEL_MAPPING = {model.name: model for model in AVAILABLE_MODELS}
+MODEL_MAPPING: Dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}
 
 
 class ModelPanel(Static):
@@ -72,13 +91,12 @@ class ModelPanel(Static):
         self.model = model
 
     def render(self) -> RenderableType:
-        name, icon, provider, product, description, _ = self.model
         return Text.assemble(
-            (f"{icon} {name}", "b"),
+            (f"{self.model.icon} {self.model.name}", "b"),
             "\n",
-            (f"{product} by {provider} ", "italic"),
+            (f"{self.model.product} by {self.model.provider} ", "italic"),
             "\n\n",
-            description,
+            self.model.description,
         )
 
     def on_click(self) -> None:
