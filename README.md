@@ -42,7 +42,19 @@ export ELIA_DIRECTIVE="You are a helpful assistant who talks like a pirate."
 elia
 ```
 
-## Progress videos
+### Launching Directly into a Conversation
+
+```bash
+elia chat write python code to detect a palindrome
+```
+
+## Progress updates
+
+### June 2023
+
+Messages are now tokenized and you can see how messages are split into tokens using the "Message Details" modal.
+
+<img width="700" alt="image" src="https://github.com/darrenburns/elia/assets/5740731/395fd2b5-ca83-49cc-b86b-163a44fe7750">
 
 ### May 29th 2023
 

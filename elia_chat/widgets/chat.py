@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 import openai
-from textual import work, log, on
+from textual import work, log, on, events
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll, Vertical, ScrollableContainer
 from textual.message import Message
@@ -16,14 +16,14 @@ from textual.widget import Widget
 from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData, ChatMessage
+from elia_chat.models import ChatData, ChatMessage, EliaContext
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
-from elia_chat.widgets.chatbox import Chatbox
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
     ChatOptions,
 )
+from elia_chat.widgets.chatbox import Chatbox
 
 
 class Chat(Widget):
@@ -312,3 +312,16 @@ class Chat(Widget):
         #  If it already exists, load it here.
         #  If it's a new empty conversation, show the
         #  options for a new conversation.
+
+    async def on_mount(self, _: events.Mount) -> None:
+        """
+        When the component is mounted, we need to check if there is a new chat to start
+        """
+        app_context: EliaContext = self.app.elia_context  # type: ignore[attr-defined]
+        gpt_model = app_context.gpt_model
+        self.chat_data.model_name = gpt_model.name
+        chat_input = self.query_one("#chat-input")
+        if app_context.chat_message is not None:
+            await self.prepare_for_new_chat()
+            await self.new_user_message(app_context.chat_message)
+            chat_input.focus()
