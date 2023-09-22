@@ -120,17 +120,19 @@ ChatList .app-subtitle {
 
 ChatList #cl-button-container {
   dock: bottom;
-  padding: 1 2;
+  padding: 0 1;
   height: 5;
   width: 1fr;
-  margin-bottom: 1;
 }
 
 ChatList #cl-option-list {
   height: 1fr;
   width: 1fr;
-  margin-top: 1;
   scrollbar-size-vertical: 1;
+}
+
+ChatList #cl-option-list:focus {
+  border: wide $main;
 }
 
 ChatList #cl-new-chat-button {
@@ -293,11 +295,11 @@ OptionList > .option-list--option-hover-highlighted-disabled {
   background: $main 60%;
 }
 
-Input {
+Screen Input {
   border: tall $main-lighten-1 25%;
 }
 
-Input:focus {
+Screen Input:focus {
   border: tall $main;
 }
 
