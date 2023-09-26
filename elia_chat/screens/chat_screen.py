@@ -11,6 +11,7 @@ from elia_chat.widgets.chat import Chat
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_list import ChatList
 from elia_chat.widgets.chat_options import ModelSet, ModelPanel
+from elia_chat.widgets.text_area import EliaTextArea
 
 
 class ChatScreen(Screen):
@@ -44,7 +45,9 @@ class ChatScreen(Screen):
     @on(Chat.AgentResponseStarted)
     def start_awaiting_response(self) -> None:
         """Prevent sending messages because the agent is typing."""
+        chat_input = self.query_one(EliaTextArea)
         agent_is_typing = self.query_one(AgentIsTyping)
+        chat_input.allow_input_submit = False
         agent_is_typing.display = True
 
     @on(Chat.AgentResponseComplete)
@@ -53,6 +56,8 @@ class ChatScreen(Screen):
         self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = False
+        chat_input = self.query_one(EliaTextArea)
+        chat_input.allow_input_submit = True
 
         log.debug(
             f"Agent response complete. Adding message "

@@ -13,7 +13,6 @@ from textual.containers import VerticalScroll, Vertical, ScrollableContainer
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage, EliaContext
@@ -24,6 +23,7 @@ from elia_chat.widgets.chat_options import (
     ChatOptions,
 )
 from elia_chat.widgets.chatbox import Chatbox
+from elia_chat.widgets.text_area import EliaTextArea
 
 
 class Chat(Widget):
@@ -250,11 +250,10 @@ class Chat(Widget):
         # Ensure the thread is updated with the message from the agent
         self.chat_data.messages.append(event.message)
 
-    @on(Input.Submitted, "#chat-input")
-    async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
+    @on(EliaTextArea.Submitted)
+    async def user_chat_message_submitted(self, event: EliaTextArea.Submitted) -> None:
         if self.allow_input_submit:
             user_message = event.value
-            event.input.value = ""
             await self.new_user_message(user_message)
 
     async def load_chat(self, chat: ChatData) -> None:
@@ -298,7 +297,7 @@ class Chat(Widget):
     def compose(self) -> ComposeResult:
         yield ChatHeader()
         with Vertical(id="chat-input-container"):
-            yield Input(placeholder="[I] Enter your message here...", id="chat-input")
+            yield EliaTextArea(id="chat-input")
             yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:
