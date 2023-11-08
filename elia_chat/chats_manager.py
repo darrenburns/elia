@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from langchain.schema import BaseMessage
 from sqlmodel import Session
 from textual import log
 
@@ -11,7 +12,7 @@ from elia_chat.database.converters import (
     message_dao_to_chat_message,
 )
 from elia_chat.database.models import ChatDao, MessageDao, engine
-from elia_chat.models import ChatData, ChatMessage
+from elia_chat.models import ChatData
 
 
 @dataclass
@@ -27,7 +28,7 @@ class ChatsManager:
         return chat_dao_to_chat_data(chat_dao)
 
     @staticmethod
-    def get_messages(chat_id: str | int) -> list[ChatMessage]:
+    def get_messages(chat_id: str | int) -> list[BaseMessage]:
         with Session(engine) as session:
             try:
                 chat: ChatDao | None = session.get(ChatDao, int(chat_id))
@@ -41,8 +42,7 @@ class ChatsManager:
                 raise RuntimeError(f"Chat with ID {chat_id} not found.")
             message_daos = chat.messages
             session.commit()
-
-        # Convert MessageDao objects to ChatMessages
+        # Convert MessageDao objects to BaseMessages
         chat_messages = []
         for message_dao in message_daos:
             chat_message = message_dao_to_chat_message(message_dao)
@@ -58,9 +58,7 @@ class ChatsManager:
         chat = ChatDao(model=chat_data.model_name, title="Untitled chat")
 
         for message in chat_data.messages:
-            new_message = MessageDao(
-                role=message.get("role"), content=message.get("content")
-            )
+            new_message = MessageDao(role=message.type, content=message.content)
             chat.messages.append(new_message)
 
         with Session(engine) as session:
@@ -71,7 +69,7 @@ class ChatsManager:
         return chat.id
 
     @staticmethod
-    def add_message_to_chat(chat_id: str, message: ChatMessage) -> None:
+    def add_message_to_chat(chat_id: str, message: BaseMessage) -> None:
         with Session(engine) as session:
             chat: ChatDao | None = session.get(ChatDao, chat_id)
             if not chat:

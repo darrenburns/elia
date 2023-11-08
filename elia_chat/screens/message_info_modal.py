@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-
 import tiktoken
+from langchain.schema import BaseMessage
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -9,7 +9,6 @@ from textual.containers import VerticalScroll, Vertical, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Static, Tabs, ContentSwitcher, Tab
 
-from elia_chat.models import ChatMessage
 from elia_chat.time_display import format_timestamp
 from elia_chat.widgets.token_analysis import TokenAnalysis
 
@@ -19,7 +18,7 @@ class MessageInfo(ModalScreen):
 
     def __init__(
         self,
-        message: ChatMessage,
+        message: BaseMessage,
         model_name: str,
         name: str | None = None,
         id: str | None = None,
@@ -34,7 +33,7 @@ class MessageInfo(ModalScreen):
         self.model_name = model_name
 
     def compose(self) -> ComposeResult:
-        markdown_content = self.message.get("content", "")
+        markdown_content = self.message.content or ""
         encoder = tiktoken.encoding_for_model(self.model_name)
         tokens = encoder.encode(markdown_content)
 
@@ -56,7 +55,7 @@ class MessageInfo(ModalScreen):
                 if self.model_name:
                     token_count = len(tokens)
 
-                timestamp = self.message.get("timestamp") or 0
+                timestamp = self.message.additional_kwargs.get("timestamp", 0)
                 timestamp_string = format_timestamp(timestamp)
                 yield Static(f"Message sent at {timestamp_string}", id="timestamp")
                 yield Static(f"{token_count} tokens", id="token-count")

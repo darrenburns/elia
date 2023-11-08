@@ -31,6 +31,7 @@ class GPTModel:
     description: str
     css_class: str
     model: BaseChatModel | LLM
+    token_limit: int
 
 
 DEFAULT_MODEL = GPTModel(
@@ -45,6 +46,7 @@ DEFAULT_MODEL = GPTModel(
         streaming=True,
         callbacks=[callback],
     ),
+    token_limit=4096,
 )
 AVAILABLE_MODELS = [
     DEFAULT_MODEL,
@@ -61,6 +63,7 @@ AVAILABLE_MODELS = [
             streaming=True,
             callbacks=[callback],
         ),
+        token_limit=8192,
     ),
 ]
 MODEL_MAPPING: Dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}
