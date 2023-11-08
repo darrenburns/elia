@@ -12,7 +12,7 @@ from elia_chat.widgets.chat_options import GPTModel, MODEL_MAPPING, DEFAULT_MODE
 @dataclass
 class ChatData:
     id: str | None
-    model_name: str | None
+    model_name: str
     title: str | None
     create_timestamp: float | None
     messages: list[BaseMessage]

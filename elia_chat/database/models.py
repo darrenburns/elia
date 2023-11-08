@@ -31,7 +31,7 @@ class ChatDao(SQLModel, table=True):
     __tablename__ = "chat"
 
     id: int = Field(default=None, primary_key=True)
-    model: str | None
+    model: str
     title: str | None
     started_at: datetime | None = Field(
         sa_column=Column(DateTime(timezone=True), server_default=func.now())

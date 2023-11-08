@@ -13,7 +13,7 @@ from langchain.schema import (
     SystemMessage,
 )
 from langchain.schema.messages import BaseMessageChunk
-from textual import log, on, work
+from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.containers import ScrollableContainer, Vertical, VerticalScroll
 from textual.message import Message
@@ -22,7 +22,7 @@ from textual.widget import Widget
 from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData
+from elia_chat.models import ChatData, EliaContext
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
@@ -236,7 +236,7 @@ class Chat(Widget):
 
     @on(Input.Submitted, "#chat-input")
     async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
-        if self.allow_input_submit:
+        if self.allow_input_submit is True:
             user_message = event.value
             event.input.value = ""
             await self.new_user_message(user_message)
@@ -340,10 +340,10 @@ class Chat(Widget):
         """
         Trim messages to fit within max_tokens
 
-        This method pre-calculates the length of each message, then iterates through the
-        messages in reverse order, adding them to a list until the total number of tokens
-        exceeds max_tokens. Optionally, the system message can be preserved at the
-        beginning of the chat.
+        This method pre-calculates the length of each message, then iterates
+        through the messages in reverse order, adding them to a list until
+        the total number of tokens exceeds max_tokens. Optionally, the system
+        message can be preserved at the beginning of the chat.
 
         Parameters
         ----------
@@ -387,6 +387,9 @@ class Chat(Widget):
             else:
                 trimmed_messages.append(message)
         if len(trimmed_messages) == 0:
-            msg = f"Unable to trim ({len(messages)}) messages to fit within max_tokens ({max_tokens})"
+            msg = (
+                f"Unable to trim ({len(messages)}) messages to fit "
+                f"within max_tokens ({max_tokens})"
+            )
             raise ValueError(msg)
         return preserved_messages + list(reversed(trimmed_messages))
