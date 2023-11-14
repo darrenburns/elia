@@ -1,27 +1,35 @@
 from __future__ import annotations
 
-import asyncio
 import os
 import time
 from dataclasses import dataclass
-from typing import Any
 
-import openai
-from textual import work, log, on, events
+from langchain.chat_models.base import BaseChatModel
+from langchain.llms.base import LLM
+from langchain.schema import (
+    AIMessage,
+    BaseMessage,
+    HumanMessage,
+    SystemMessage,
+)
+from langchain.schema.messages import BaseMessageChunk
+from textual import log, on, work, events
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll, Vertical, ScrollableContainer
+from textual.containers import ScrollableContainer, Vertical, VerticalScroll
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData, ChatMessage, EliaContext
+from elia_chat.models import ChatData, EliaContext
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
+    MODEL_MAPPING,
     ChatOptions,
+    GPTModel,
 )
 from elia_chat.widgets.chatbox import Chatbox
 
@@ -45,16 +53,16 @@ class Chat(Widget):
             create_timestamp=None,
             model_name=DEFAULT_MODEL.name,
             messages=[
-                ChatMessage(
-                    id=None,
-                    role="system",
+                SystemMessage(
                     content=self.persona_directive,
-                    timestamp=time.time(),
-                    status=None,
-                    end_turn=None,
-                    weight=None,
-                    metadata={},
-                    recipient="all",
+                    additional_kwargs={
+                        "timestamp": time.time(),
+                        "status": None,
+                        "end_turn": None,
+                        "weight": None,
+                        "metadata": None,
+                        "recipient": "all",
+                    },
                 )
             ],
         )
@@ -66,7 +74,7 @@ class Chat(Widget):
     @dataclass
     class AgentResponseComplete(Message):
         chat_id: str | None
-        message: ChatMessage
+        message: BaseMessage
 
     @dataclass
     class FirstMessageSent(Message):
@@ -79,7 +87,7 @@ class Chat(Widget):
     @dataclass
     class UserMessageSubmitted(Message):
         chat_id: str
-        message: ChatMessage
+        message: BaseMessage
 
     @property
     def is_empty(self) -> bool:
@@ -93,16 +101,16 @@ class Chat(Widget):
 
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
-        user_message = ChatMessage(
-            id=None,
-            role="user",
+        user_message = HumanMessage(
             content=content,
-            timestamp=time.time(),
-            status=None,
-            end_turn=None,
-            weight=None,
-            metadata=None,
-            recipient=None,
+            additional_kwargs={
+                "timestamp": time.time(),
+                "status": None,
+                "end_turn": None,
+                "weight": None,
+                "metadata": None,
+                "recipient": None,
+            },
         )
         # If the thread was empty, and now it's not, remove the ConversationOptions.
         is_first_message = self.is_empty
@@ -168,82 +176,58 @@ class Chat(Widget):
         for child in children:
             await child.remove()
 
-    @property
-    def outgoing_messages(self) -> list[dict[str, Any]]:
-        return [
-            {"role": message.get("role"), "content": message.get("content")}
-            for message in self.chat_data.messages
-        ]
-
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
         self.scroll_to_latest_message()
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
-        streaming_response = await openai.ChatCompletion.acreate(
-            model=self.chat_data.model_name,
-            messages=self.outgoing_messages,
-            stream=True,
+        selected_model: GPTModel = MODEL_MAPPING[self.chat_data.model_name]
+        llm: BaseChatModel = selected_model.model
+        trimmed_messages = self.trim_messages(
+            model=llm,
+            messages=self.chat_data.messages,
+            max_tokens=selected_model.token_limit,
+            preserve_system_message=True,
         )
-
+        streaming_response = llm.astream(input=trimmed_messages)
         # TODO - ensure any metadata available in streaming response is passed through
-        message = ChatMessage(
-            id=None,
-            role="assistant",
+        message = AIMessage(
             content="",
-            timestamp=time.time(),
-            status=None,
-            end_turn=None,
-            weight=None,
-            metadata=None,
-            recipient=None,
+            additional_kwargs={
+                "timestamp": time.time(),
+                "status": None,
+                "end_turn": None,
+                "weight": None,
+                "metadata": None,
+                "recipient": None,
+            },
         )
-
         assert self.chat_data.model_name is not None
         response_chatbox = Chatbox(
             message=message,
             model_name=self.chat_data.model_name,
         )
-
         assert (
             self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
-
         await self.chat_container.mount(response_chatbox)
-
-        while True:
-            # TODO: We need to handle RateLimitError in the worker.
-            try:
-                event = await streaming_response.__anext__()
-                choice = event["choices"][0]
-            except (StopAsyncIteration, StopIteration, IndexError):
-                self.post_message(
-                    self.AgentResponseComplete(
-                        chat_id=self.chat_data.id,
-                        message=message,
-                    ),
-                )
+        async for token in streaming_response:
+            if isinstance(token, BaseMessageChunk):
+                token_str = token.content
             else:
-                finish_reason = choice.get("finish_reason")
-                if finish_reason in {"stop", "length", "content_filter"}:
-                    log.debug(
-                        f"Agent response finished. Finish reason is {finish_reason!r}."
-                    )
-                    response_message = response_chatbox.message
-                    self.post_message(
-                        self.AgentResponseComplete(
-                            chat_id=self.chat_data.id,
-                            message=response_message,
-                        )
-                    )
-                    return
-                response_chatbox.append_chunk(event)
-                scroll_y = self.chat_container.scroll_y
-                max_scroll_y = self.chat_container.max_scroll_y
-                if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
-                    self.chat_container.scroll_end(animate=False)
-            await asyncio.sleep(0.01)
+                token_str = str(token)
+            response_chatbox.append_chunk(token_str)
+            scroll_y = self.chat_container.scroll_y
+            max_scroll_y = self.chat_container.max_scroll_y
+            if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
+                self.chat_container.scroll_end(animate=False)
+        self.post_message(
+            self.AgentResponseComplete(
+                chat_id=self.chat_data.id,
+                message=response_chatbox.message,
+            )
+        )
 
     @on(AgentResponseComplete)
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:
@@ -252,7 +236,7 @@ class Chat(Widget):
 
     @on(Input.Submitted, "#chat-input")
     async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
-        if self.allow_input_submit:
+        if self.allow_input_submit is True:
             user_message = event.value
             event.input.value = ""
             await self.new_user_message(user_message)
@@ -325,3 +309,87 @@ class Chat(Widget):
             await self.prepare_for_new_chat()
             await self.new_user_message(app_context.chat_message)
             chat_input.focus()
+
+    @classmethod
+    def get_message_length(
+        cls,
+        messages: list[BaseMessage],
+        model: BaseChatModel | LLM,
+    ) -> tuple[list[tuple[BaseMessage, int]], int]:
+        """
+        Get the length of messages
+        """
+        if len(messages) == 0:
+            raise ValueError("No messages provided")
+        total_length = 0
+        message_lengths: list[tuple[BaseMessage, int]] = []
+        for message in messages:
+            message_length = model.get_num_tokens_from_messages(messages=[message])
+            message_lengths.append((message, message_length))
+            total_length += message_length
+        return message_lengths, total_length
+
+    @classmethod
+    def trim_messages(
+        cls,
+        model: BaseChatModel | LLM,
+        messages: list[BaseMessage],
+        max_tokens: int,
+        preserve_system_message: bool = True,
+    ) -> list[BaseMessage]:
+        """
+        Trim messages to fit within max_tokens
+
+        This method pre-calculates the length of each message, then iterates
+        through the messages in reverse order, adding them to a list until
+        the total number of tokens exceeds max_tokens. Optionally, the system
+        message can be preserved at the beginning of the chat.
+
+        Parameters
+        ----------
+        model: BaseChatModel | LLM
+            Language model
+        messages: list[BaseMessage]
+            Messages
+        max_tokens: int
+            Maximum number of tokens
+        preserve_system_message: bool
+            Whether to preserve the system message at the beginning of the chat
+
+        Returns
+        -------
+        list[BaseMessage]
+            Trimmed messages
+        """
+        message_lengths, total_length = cls.get_message_length(
+            messages=messages, model=model
+        )
+        if total_length <= max_tokens:
+            return messages
+        total_tokens = 0
+        trimmed_messages: list[BaseMessage] = []
+        preserved_messages: list[BaseMessage] = []
+        if preserve_system_message is True and isinstance(messages[0], SystemMessage):
+            system_message_tokens = model.get_num_tokens_from_messages(
+                messages=[messages[0]]
+            )
+            if system_message_tokens > max_tokens:
+                raise ValueError(
+                    f"System message is too long ({system_message_tokens} tokens)"
+                )
+            total_tokens += system_message_tokens
+            preserved_messages.append(messages[0])
+            message_lengths = message_lengths[1:]
+        for message, length in reversed(message_lengths):
+            total_tokens += length
+            if total_tokens > max_tokens:
+                break
+            else:
+                trimmed_messages.append(message)
+        if len(trimmed_messages) == 0:
+            msg = (
+                f"Unable to trim ({len(messages)}) messages to fit "
+                f"within max_tokens ({max_tokens})"
+            )
+            raise ValueError(msg)
+        return preserved_messages + list(reversed(trimmed_messages))

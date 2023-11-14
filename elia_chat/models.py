@@ -2,44 +2,35 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TypedDict, Optional
+from typing import Optional
+
+from langchain.schema import BaseMessage
 
 from elia_chat.widgets.chat_options import GPTModel, MODEL_MAPPING, DEFAULT_MODEL
-
-
-class ChatMessage(TypedDict):
-    id: str | None
-    role: str
-    content: str
-    timestamp: float
-    status: str | None
-    end_turn: bool | None
-    weight: float | None
-    metadata: dict | None
-    recipient: str | None
 
 
 @dataclass
 class ChatData:
     id: str | None
-    model_name: str | None
+    model_name: str
     title: str | None
     create_timestamp: float | None
-    messages: list[ChatMessage]
+    messages: list[BaseMessage]
 
     @property
     def short_preview(self) -> str:
         first_user_message = self.first_user_message
         if first_user_message is None:
             return "Empty chat..."
-        return first_user_message.get("content", "")[:24] + "..."
+        first_content = first_user_message.content or ""
+        return first_content[:24] + "..."
 
     @property
-    def first_user_message(self) -> ChatMessage | None:
+    def first_user_message(self) -> BaseMessage | None:
         return self.messages[1] if len(self.messages) > 1 else None
 
     @property
-    def non_system_messages(self) -> list[ChatMessage]:
+    def non_system_messages(self) -> list[BaseMessage]:
         return self.messages[1:]
 
     @property

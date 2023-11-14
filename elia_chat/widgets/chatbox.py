@@ -1,15 +1,12 @@
 from __future__ import annotations
 
-import time
-from typing import Any
-
+from langchain.schema import BaseMessage
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from textual.binding import Binding
 from textual.geometry import Size
 from textual.widget import Widget
 
-from elia_chat.models import ChatMessage
 from elia_chat.screens.message_info_modal import MessageInfo
 from elia_chat.time_display import format_timestamp
 
@@ -19,7 +16,7 @@ class Chatbox(Widget, can_focus=True):
 
     def __init__(
         self,
-        message: ChatMessage,
+        message: BaseMessage,
         model_name: str,
         name: str | None = None,
         id: str | None = None,
@@ -34,11 +31,11 @@ class Chatbox(Widget, can_focus=True):
         )
         self.message = message
         self.model_name = model_name
-        timestamp = format_timestamp(message.get("timestamp", 0) or 0)
+        timestamp = format_timestamp(message.additional_kwargs.get("timestamp", 0) or 0)
         self.tooltip = f"Sent {timestamp}"
 
     def on_mount(self) -> None:
-        if self.message.get("role") == "assistant":
+        if self.message.type == "ai":
             self.add_class("assistant-message")
 
     def action_details(self) -> None:
@@ -48,43 +45,18 @@ class Chatbox(Widget, can_focus=True):
 
     @property
     def markdown(self) -> Markdown:
-        return Markdown(self.message.get("content") or "")
+        return Markdown(self.message.content or "")
 
     def render(self) -> RenderableType:
         return self.markdown
 
     def get_content_width(self, container: Size, viewport: Size) -> int:
         # Naive approach. Can sometimes look strange, but works well enough.
-        content = self.message.get("content", "")
+        content = self.message.content or ""
         return min(len(content), container.width)
 
-    def append_chunk(self, chunk: Any):
-        # If this Chatbox doesn't correspond to an OpenAI message,
-        # make that connection now.
-        if self.message.get("content") is None:
-            # TODO - fill in the None values below
-            self.message = ChatMessage(
-                id=None,
-                role="assistant",
-                content="",
-                timestamp=time.time(),
-                status=None,
-                end_turn=None,
-                weight=None,
-                metadata=None,
-                recipient=None,
-            )
-        else:
-            chunk_content = chunk["choices"][0].get("delta", {}).get("content", "")
-            self.message = ChatMessage(
-                id=None,
-                role=self.message.get("role", "undefined"),
-                content=self.message.get("content", "") + chunk_content,
-                timestamp=time.time(),
-                status=None,
-                end_turn=None,
-                weight=None,
-                metadata=None,
-                recipient=None,
-            )
+    def append_chunk(self, chunk: str):
+        existing_content = self.message.content or ""
+        new_content = existing_content + chunk
+        self.message.content = new_content
         self.refresh(layout=True)

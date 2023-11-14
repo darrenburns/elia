@@ -28,10 +28,11 @@ class ChatScreen(Screen):
     def __init__(self):
         super().__init__()
         self.chats_manager = ChatsManager()
+        self.chat = Chat()
 
     def compose(self) -> ComposeResult:
         yield ChatList(id="chat-list")
-        yield Chat()
+        yield self.chat
         yield Footer()
 
     @on(Chat.UserMessageSubmitted)
@@ -46,19 +47,18 @@ class ChatScreen(Screen):
         """Prevent sending messages because the agent is typing."""
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = True
+        self.chat.allow_input_submit = False
 
     @on(Chat.AgentResponseComplete)
     def agent_response_complete(self, event: Chat.AgentResponseComplete) -> None:
         """Allow the user to send messages again."""
-        self.allow_input_submit = True
         agent_is_typing = self.query_one(AgentIsTyping)
         agent_is_typing.display = False
-
+        self.chat.allow_input_submit = True
         log.debug(
             f"Agent response complete. Adding message "
             f"to chat_id {event.chat_id!r}: {event.message}"
         )
-
         self.chats_manager.add_message_to_chat(
             chat_id=event.chat_id, message=event.message
         )
@@ -78,7 +78,7 @@ class ChatScreen(Screen):
         and mounting the nodes associated with the new chat."""
         log.debug(f"Chat selected from chat list: {event.chat.id}")
 
-        self.allow_input_submit = False
+        self.chat.allow_input_submit = False
         chat_widget = self.query_one(Chat)
         opened_chat = self.chats_manager.get_chat(event.chat.id)
 
@@ -88,7 +88,7 @@ class ChatScreen(Screen):
         )
 
         await chat_widget.load_chat(opened_chat)
-        self.allow_input_submit = True
+        self.chat.allow_input_submit = True
 
     @on(ModelSet.Selected)
     def update_model(self, event: ModelPanel.Selected) -> None:
