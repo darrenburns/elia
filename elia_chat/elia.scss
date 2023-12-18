@@ -94,13 +94,6 @@ AgentIsTyping LoadingIndicator {
   margin-left: 2;
 }
 
-ChatList {
-  dock: left;
-  height: 1fr;
-  width: 32;
-  background: $background 15%;
-}
-
 ChatList #cl-header-container {
   height: 4;
   padding: 1 2;
@@ -138,6 +131,10 @@ ChatList #cl-new-chat-button {
   border: none;
   width: 100%;
   height: 3;
+}
+
+OptionList:focus {
+  border: wide $main;
 }
 
 ChatList #cl-new-chat-button:hover {
