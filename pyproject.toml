@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "elia-chat"
-version = "0.4.1"
+version = "0.5.0"
 description = "A terminal interface to ChatGPT."
 authors = ["Darren Burns <darrenb900@gmail.com>"]
 readme = "README.md"
