@@ -51,7 +51,7 @@ DEFAULT_MODEL = GPTModel(
 AVAILABLE_MODELS = [
     DEFAULT_MODEL,
     GPTModel(
-        name="gpt-4",
+        name="gpt-4-turbo",
         icon="🧠",
         provider="OpenAI",
         product="ChatGPT",
@@ -59,11 +59,11 @@ AVAILABLE_MODELS = [
         "complex tasks which require advanced reasoning.",
         css_class="gpt4",
         model=ChatOpenAI(
-            model_name="gpt-4",
+            model_name="gpt-4-1106-preview",
             streaming=True,
             callbacks=[callback],
         ),
-        token_limit=8192,
+        token_limit=128000,
     ),
 ]
 MODEL_MAPPING: Dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}
