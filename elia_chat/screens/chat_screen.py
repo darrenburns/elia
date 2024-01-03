@@ -22,8 +22,12 @@ class ChatScreen(Screen):
         Binding(
             key="ctrl+s", action="focus('cl-option-list')", description="Focus Chats"
         ),
+        Binding(key="ctrl+e", action="exit", description="Exit App"),
         Binding(key="i", action="focus('chat-input')", description="Focus Input"),
     ]
+    
+    def action_exit(self):
+        self.app.exit()
 
     def __init__(self):
         super().__init__()
