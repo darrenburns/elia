@@ -13,7 +13,7 @@ from elia_chat.widgets.chat_list import ChatList
 from elia_chat.widgets.chat_options import ModelSet, ModelPanel
 
 
-class ChatScreen(Screen):
+class ChatScreen(Screen[None]):
     """This screen doesn't correspond to a single chat. It's just the screen
     where chatting takes place. It includes the list of chats in the sidebar."""
 

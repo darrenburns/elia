@@ -9,11 +9,11 @@ from rich.padding import Padding
 from rich.text import Text
 from textual import log, on
 from textual.app import ComposeResult
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import Button, OptionList, Static
+from textual.widgets import Button, OptionList
 from textual.widgets.option_list import Option
 
 from elia_chat.chats_manager import ChatsManager
@@ -56,8 +56,6 @@ class ChatListItem(Option):
 
 
 class ChatList(Widget):
-    COMPONENT_CLASSES = {"app-title", "app-subtitle"}
-
     current_chat_id: reactive[str | None] = reactive(None)
 
     @dataclass
@@ -65,15 +63,6 @@ class ChatList(Widget):
         chat: ChatData
 
     def compose(self) -> ComposeResult:
-        with Vertical(id="cl-header-container"):
-            yield Static(Text("elia", style=self.get_component_rich_style("app-title")))
-            yield Static(
-                Text(
-                    "ChatGPT in the terminal",
-                    style=self.get_component_rich_style("app-subtitle"),
-                )
-            )
-
         self.options = self.load_chat_list_items()
         option_list = OptionList(
             *self.options,

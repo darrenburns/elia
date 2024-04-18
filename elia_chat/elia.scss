@@ -3,6 +3,8 @@ $main-lighten-1: #7E3AF2;
 $main: #6C2BD9;
 $main-darken-1: #5521B5;
 $main-darken-2: #4A1D96;
+$main-border-color: $main 50%;
+$main-border-color-focus: $main 80%;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
@@ -94,28 +96,49 @@ AgentIsTyping LoadingIndicator {
   margin-left: 2;
 }
 
-ChatList {
-  dock: left;
-  height: 1fr;
-  width: 32;
-  background: $background 15%;
+HomeScreen TextArea {
+  height: auto;
+  max-height: 30%;
+  width: 1fr;
+  border: round $main-border-color;
+  border-title-color: $main-lighten-1;
+  border-subtitle-color: $main-lighten-1;
+  &:focus {
+    border: round $main-border-color-focus;
+    border-title-style: bold;
+  }
+  & .text-area--cursor-line {
+    background: $background 0%;
+  }
+  & .text-area--selection {
+    background: $main-lighten-1 60%;
+  }
 }
 
-ChatList #cl-header-container {
-  height: 4;
+HomeScreen ChatList {
+  height: 2fr;
+  width: 1fr;
+}
+
+AppHeader #cl-header-container {
+  height: auto;
   padding: 1 2;
-  background: $main-darken-2 10%;
 }
 
-ChatList .app-title {
-  color: $main-lighten-2;
-  text-style: bold;
-  background: $main-darken-2 10%;
-}
+AppHeader {
+  dock: top;
+  width: 1fr;
+  height: auto;
+  & .app-title {
+      color: $main-lighten-2;
+      text-style: bold;
+      background: $main-darken-2 10%;
+  }
 
-ChatList .app-subtitle {
-  color: $text-muted;
-  background: $main-darken-2 10%;
+  & .app-subtitle {
+      color: $text-muted;
+      background: $main-darken-2 10%;
+  }
 }
 
 ChatList #cl-button-container {
@@ -130,7 +153,6 @@ ChatList #cl-option-list {
   height: 1fr;
   width: 1fr;
   margin-top: 1;
-  scrollbar-size-vertical: 1;
 }
 
 ChatList #cl-new-chat-button {
