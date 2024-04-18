@@ -27,9 +27,9 @@ from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
     DEFAULT_MODEL,
-    MODEL_MAPPING,
     ChatOptions,
     GPTModel,
+    get_model_by_name,
 )
 from elia_chat.widgets.chatbox import Chatbox
 
@@ -182,7 +182,7 @@ class Chat(Widget):
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
-        selected_model: GPTModel = MODEL_MAPPING[self.chat_data.model_name]
+        selected_model: GPTModel = get_model_by_name(self.chat_data.model_name)
         llm: BaseChatModel = selected_model.model
         trimmed_messages = self.trim_messages(
             model=llm,

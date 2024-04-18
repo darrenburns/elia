@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from langchain.callbacks import AsyncIteratorCallbackHandler
-from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
 from langchain.llms.base import LLM
 from rich.console import RenderableType
@@ -42,11 +42,11 @@ DEFAULT_MODEL = GPTModel(
     description="The fastest ChatGPT model, great for most everyday tasks.",
     css_class="gpt35",
     model=ChatOpenAI(
-        model_name="gpt-3.5-turbo",
+        model="gpt-3.5-turbo",
         streaming=True,
         callbacks=[callback],
     ),
-    token_limit=4096,
+    token_limit=16385,
 )
 AVAILABLE_MODELS = [
     DEFAULT_MODEL,
@@ -59,7 +59,7 @@ AVAILABLE_MODELS = [
         "complex tasks which require advanced reasoning.",
         css_class="gpt4",
         model=ChatOpenAI(
-            model_name="gpt-4-1106-preview",
+            model="gpt-4-turbo",
             streaming=True,
             callbacks=[callback],
         ),
@@ -67,6 +67,11 @@ AVAILABLE_MODELS = [
     ),
 ]
 MODEL_MAPPING: Dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}
+
+
+def get_model_by_name(model_name: str) -> GPTModel:
+    """Given the name of a model as a string, return the GPTModel."""
+    return MODEL_MAPPING[model_name]
 
 
 class ModelPanel(Static):
@@ -172,7 +177,7 @@ class ChatOptions(Widget):
                 model_set.focus()
                 for index, model in enumerate(AVAILABLE_MODELS):
                     model_panel = ModelPanel(
-                        model, id=model.name, classes=model.css_class
+                        model, id=model.css_class, classes=model.css_class
                     )
                     if index == 0:
                         model_panel.selected = True

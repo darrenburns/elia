@@ -1,20 +1,18 @@
-from __future__ import annotations
-
 import pathlib
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from sqlalchemy import Column, DateTime, func, JSON, desc
 from sqlalchemy.orm import selectinload
-from sqlmodel import SQLModel, Field, create_engine, Session, select, Relationship
+from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
 
 
 class MessageDao(SQLModel, table=True):
     __tablename__ = "message"
 
     id: int = Field(default=None, primary_key=True)
-    chat_id: int | None = Field(foreign_key="chat.id")
-    chat: ChatDao = Relationship(back_populates="messages")
+    chat_id: Optional[int] = Field(foreign_key="chat.id")
+    chat: "ChatDao" = Relationship(back_populates="messages")
     role: str
     content: str
     timestamp: datetime | None = Field(
@@ -23,7 +21,7 @@ class MessageDao(SQLModel, table=True):
     status: str | None
     end_turn: bool | None
     weight: float | None
-    meta: dict = Field(sa_column=Column(JSON), default={})
+    meta: dict[Any, Any] = Field(sa_column=Column(JSON), default={})
     recipient: str | None
 
 
@@ -39,7 +37,7 @@ class ChatDao(SQLModel, table=True):
     messages: list[MessageDao] = Relationship(back_populates="chat")
 
     @staticmethod
-    def all() -> list[ChatDao]:
+    def all() -> list["ChatDao"]:
         with Session(engine) as session:
             # Create a subquery that finds the maximum
             # (most recent) timestamp for each chat.
@@ -60,7 +58,7 @@ class ChatDao(SQLModel, table=True):
             return list(results)
 
     @staticmethod
-    def from_id(chat_id: str) -> ChatDao:
+    def from_id(chat_id: str) -> "ChatDao":
         with Session(engine) as session:
             statement = (
                 select(ChatDao)
