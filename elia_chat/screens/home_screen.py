@@ -3,13 +3,13 @@ import os
 from langchain.schema import HumanMessage, SystemMessage
 from textual import on
 from textual.app import ComposeResult
-from textual.binding import Binding
 from textual.events import ScreenResume
 from textual.screen import Screen
 from textual.widgets import TextArea
 
 from elia_chat.models import ChatData
 from elia_chat.widgets.chat_list import ChatList
+from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.app_header import AppHeader
 from elia_chat.screens.chat_screen import ChatScreen
@@ -24,29 +24,17 @@ ChatList {
 }
 """
 
-    BINDINGS = [Binding("ctrl+n", "new_chat", "New Chat")]
-
     def on_mount(self) -> None:
         self.chats_manager = ChatsManager()
 
     def compose(self) -> ComposeResult:
         yield AppHeader()
-        text_area = TextArea(id="prompt")
-        text_area.border_title = "Enter your message..."
-        yield text_area
+        yield PromptInput()
         yield ChatList()
 
     @on(ScreenResume)
     def reload_screen(self) -> None:
         self.query_one(ChatList).reload_and_refresh()
-
-    @on(TextArea.Changed, "#prompt")
-    def prompt_changed(self, event: TextArea.Changed) -> None:
-        text_area = event.text_area
-        if text_area.text != "":
-            text_area.border_subtitle = "[[white]Ctrl+N[/]] Send Message"
-        else:
-            text_area.border_subtitle = None
 
     @on(ChatList.ChatOpened)
     def open_chat_screen(self, event: ChatList.ChatOpened):
@@ -55,7 +43,8 @@ ChatList {
         chat = self.chats_manager.get_chat(chat_id)
         self.app.push_screen(ChatScreen(chat))
 
-    def action_new_chat(self):
+    @on(PromptInput.PromptSubmitted)
+    def create_new_chat(self):
         system_prompt = os.getenv("ELIA_DIRECTIVE", "You are a helpful assistant.")
         text_area = self.query_one("#prompt", TextArea)
         user_prompt = text_area.text

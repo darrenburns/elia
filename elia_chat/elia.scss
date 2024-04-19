@@ -17,52 +17,25 @@ $left-border-trim: vkey $main-lighten-2 15%;
   scrollbar-background-hover: $background;
 }
 
+Screen {
+  background: $panel-darken-1;
+}
+
 Chat {
   height: 1fr;
   width: 1fr;
-}
 
-Chat > VerticalScroll {
-  border-left: $left-border-trim;
-}
+  & ChatHeader {
+    width: 1fr;
+    height: 4;
+    padding: 1 2;
+    background: $background 50%;
 
-#chat-input-container {
-  dock: bottom;
-  border-left: $left-border-trim;
-  height: auto;
-  padding: 1 2;
-}
+    & #model-static {
+      color: $text-muted;
+    }
 
-#chat-input {
-  box-sizing: border-box;
-}
-
-ChatHeader {
-  width: 1fr;
-  height: auto;
-  padding: 1 2;
-  background: $background 50%;
-  border-left: $left-border-trim;
-}
-
-ChatHeader > Static {
-  width: auto;
-}
-
-ChatHeader #title-static {
-  text-style: bold;
-}
-
-ChatHeader #model-static {
-  color: $text-muted;
-}
-
-ChatHeader > Horizontal {
-  width: 1fr;
-}
-
-ChatHeader Vertical {
-  width: 1fr;
+  }
 }
 
 AgentIsTyping {
@@ -80,16 +53,6 @@ AgentIsTyping Label {
 AgentIsTyping LoadingIndicator {
   width: 11;
   color: $main;
-}
-
-#chat-options-container {
-  padding: 2 4;
-}
-
-.chat-options-label {
-  width: 1fr;
-  content-align: center middle;
-  margin-left: 2;
 }
 
 TextArea {
@@ -116,10 +79,14 @@ TextArea {
   }
 }
 
-HomeScreen TextArea {
+HomeScreen PromptInput {
   height: auto;
   max-height: 30%;
-  width: 1fr;
+}
+
+PromptInput TextArea {
+  height: auto;
+  max-height: 100%;
 }
 
 HomeScreen ChatList {

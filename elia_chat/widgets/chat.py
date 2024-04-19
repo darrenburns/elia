@@ -25,6 +25,7 @@ from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
+from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.widgets.chat_options import (
     GPTModel,
     get_model_by_name,
@@ -167,7 +168,7 @@ class Chat(Widget):
         # Ensure the thread is updated with the message from the agent
         self.chat_data.messages.append(event.message)
 
-    @on(Input.Submitted, "#chat-input")
+    @on(PromptInput.PromptSubmitted)
     async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
         if self.allow_input_submit is True:
             user_message = event.value
@@ -191,21 +192,20 @@ class Chat(Widget):
 
     def compose(self) -> ComposeResult:
         yield ChatHeader()
-        with Vertical(id="chat-input-container"):
-            yield Input(placeholder="[I] Enter your message here...", id="chat-input")
-            yield AgentIsTyping()
 
         with VerticalScroll() as vertical_scroll:
             self.chat_container = vertical_scroll
             vertical_scroll.can_focus = False
+
+        with Vertical(id="chat-input-container"):
+            yield PromptInput()
+            yield AgentIsTyping()
 
     async def on_mount(self, _: events.Mount) -> None:
         """
         When the component is mounted, we need to check if there is a new chat to start
         """
         await self.load_chat(self.chat_data)
-        chat_input = self.query_one("#chat-input")
-        chat_input.focus()
 
     @classmethod
     def get_message_length(

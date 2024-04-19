@@ -15,7 +15,7 @@ class ChatScreen(Screen[None]):
     where chatting takes place. It includes the list of chats in the sidebar."""
 
     BINDINGS = [
-        Binding(key="i", action="focus('chat-input')", description="Focus Input"),
+        Binding(key="p", action="focus('prompt')", description="Focus Prompt"),
     ]
 
     def __init__(
