@@ -28,12 +28,14 @@ class ChatListItemRenderable:
         utc_dt = datetime.datetime.now(datetime.UTC)
         local_dt = utc_dt.astimezone()
         delta = local_dt - self.chat.create_time
-        subtitle = humanize.naturaltime(delta)
+        subtitle = Text.from_markup(
+            f"[dim]{humanize.naturaltime(delta)} [i]via[/] {self.chat.model_name}[/]"
+        )
         yield Padding(
             Text.assemble(
                 (self.chat.short_preview, "" if not self.is_open else "b"),
                 "\n",
-                (subtitle, "dim"),
+                subtitle,
             ),
             pad=(0, 1),
         )
@@ -76,6 +78,8 @@ class ChatList(OptionList):
     def show_border_subtitle(self) -> None:
         if self.highlighted is not None:
             self.border_subtitle = "[[white]Enter[/]] Open Chat"
+        elif self.option_count > 0:
+            self.highlighted = 0
 
     def on_blur(self) -> None:
         self.border_subtitle = None

@@ -1,12 +1,13 @@
 from textual import on
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.screen import Screen
 from textual.widgets import TextArea
 
 from elia_chat.widgets.chat_list import ChatList
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.widgets.chat import Chat
 from elia_chat.widgets.app_header import AppHeader
+from elia_chat.screens.chat_screen import ChatScreen
 
 
 class HomeScreen(Screen[None]):
@@ -18,10 +19,10 @@ ChatList {
 }
 """
 
-    def __init__(self):
-        super().__init__()
+    BINDINGS = [Binding("ctrl+n", "new_chat", "New Chat")]
+
+    def on_mount(self) -> None:
         self.chats_manager = ChatsManager()
-        self.chat = Chat()
 
     def compose(self) -> ComposeResult:
         yield AppHeader()
@@ -37,3 +38,14 @@ ChatList {
             text_area.border_subtitle = "[[white]Ctrl+N[/]] Send Message"
         else:
             text_area.border_subtitle = None
+
+    @on(ChatList.ChatOpened)
+    def open_chat_screen(self, event: ChatList.ChatOpened):
+        chat_id = event.chat.id
+        # This is one of two paths to opening the ChatScreen.
+        # You can select from the chat history list, or enter
+        # a new prompt.
+        self.app.push_screen(ChatScreen(chat_id))
+
+    def action_new_chat(self):
+        self.app.push_screen(ChatScreen())

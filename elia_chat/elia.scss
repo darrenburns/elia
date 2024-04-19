@@ -24,7 +24,6 @@ Chat {
 
 Chat > VerticalScroll {
   border-left: $left-border-trim;
-
 }
 
 #chat-input-container {
@@ -36,10 +35,6 @@ Chat > VerticalScroll {
 
 #chat-input {
   box-sizing: border-box;
-}
-
-ChatOptions {
-  border-left: $left-border-trim;
 }
 
 ChatHeader {
