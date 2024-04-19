@@ -5,15 +5,15 @@ from langchain.schema import BaseMessage
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import VerticalScroll, Vertical, Horizontal
+from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Static, Tabs, ContentSwitcher, Tab
+from textual.widgets import Static, Tabs, ContentSwitcher, Tab, TextArea
 
 from elia_chat.time_display import format_timestamp
 from elia_chat.widgets.token_analysis import TokenAnalysis
 
 
-class MessageInfo(ModalScreen):
+class MessageInfo(ModalScreen[None]):
     BINDINGS = [Binding("escape", "app.pop_screen", "Close Modal")]
 
     def __init__(
@@ -45,9 +45,16 @@ class MessageInfo(ModalScreen):
                     Tab("Metadata", id="metadata"),
                 )
 
-            with VerticalScroll(id="inner-container"):
+            with Vertical(id="inner-container"):
                 with ContentSwitcher(initial="markdown-content"):
-                    yield Static(markdown_content, id="markdown-content")
+                    text_area = TextArea(
+                        markdown_content,
+                        read_only=True,
+                        show_line_numbers=True,
+                        id="markdown-content",
+                    )
+                    text_area.border_subtitle = "read-only"
+                    yield text_area
                     yield TokenAnalysis(tokens, encoder, id="tokens")
                     yield Static("Metadata", id="metadata")
 

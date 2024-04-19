@@ -184,7 +184,9 @@ class Chat(Widget):
         self.chat_container.scroll_end(animate=False)
 
         chat_header = self.query_one(ChatHeader)
-        chat_header.title = chat_data.short_preview or "Untitled Chat"
+        chat_header.title = (
+            chat_data.short_preview.replace("\n", " ") or "Untitled Chat"
+        )
         chat_header.model_name = chat_data.model_name or "unknown model"
 
     def compose(self) -> ComposeResult:

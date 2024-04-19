@@ -1,3 +1,4 @@
+from rich.style import Style
 from textual.app import ComposeResult
 from textual.containers import Vertical
 from textual.widget import Widget
@@ -15,8 +16,8 @@ class AppHeader(Widget):
         with Vertical(id="cl-header-container"):
             yield Label(
                 Text.assemble(
-                    ("elia ", subtitle_style),
-                    ("///", title_style),
-                    (" llm tools", subtitle_style),
+                    ("elia ", title_style + Style(bold=True)),
+                    ("///", subtitle_style),
+                    (" llm tools", title_style),
                 )
             )

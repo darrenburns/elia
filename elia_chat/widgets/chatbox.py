@@ -8,11 +8,10 @@ from textual.geometry import Size
 from textual.widget import Widget
 
 from elia_chat.screens.message_info_modal import MessageInfo
-from elia_chat.time_display import format_timestamp
 
 
 class Chatbox(Widget, can_focus=True):
-    BINDINGS = [Binding(key="d", action="details", description="Message details")]
+    BINDINGS = [Binding(key="enter", action="details", description="Message details")]
 
     def __init__(
         self,
@@ -31,17 +30,30 @@ class Chatbox(Widget, can_focus=True):
         )
         self.message = message
         self.model_name = model_name
-        timestamp = format_timestamp(message.additional_kwargs.get("timestamp", 0) or 0)
-        self.tooltip = f"Sent {timestamp}"
 
     def on_mount(self) -> None:
         if self.message.type == "ai":
             self.add_class("assistant-message")
+        else:
+            self.add_class("human-message")
+
+    def key_up(self) -> None:
+        self.screen.focus_previous(Chatbox)
+
+    def key_down(self) -> None:
+        self.screen.focus_next(Chatbox)
 
     def action_details(self) -> None:
         self.app.push_screen(
             MessageInfo(message=self.message, model_name=self.model_name)
         )
+
+    def _watch_has_focus(self, focus: bool) -> None:
+        if focus:
+            author = "Agent" if self.message.type == "ai" else "You"
+            self.border_title = f"[white]{author}[/]"
+        else:
+            self.border_title = None
 
     @property
     def markdown(self) -> Markdown:

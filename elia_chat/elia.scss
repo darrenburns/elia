@@ -92,10 +92,7 @@ AgentIsTyping LoadingIndicator {
   margin-left: 2;
 }
 
-HomeScreen TextArea {
-  height: auto;
-  max-height: 30%;
-  width: 1fr;
+TextArea {
   padding: 1 2;
   border: round $main-border-color;
   border-title-color: $main-border-text-color;
@@ -107,9 +104,22 @@ HomeScreen TextArea {
   & .text-area--cursor-line {
     background: $background 0%;
   }
+  & .text-area--cursor-gutter {
+    background: $background 0%;
+  }
+  &:focus .text-area--cursor-gutter {
+    color: yellowgreen 88%;
+    background: $background 0%;
+  }
   & .text-area--selection {
     background: $main-lighten-1 60%;
   }
+}
+
+HomeScreen TextArea {
+  height: auto;
+  max-height: 30%;
+  width: 1fr;
 }
 
 HomeScreen ChatList {
@@ -128,13 +138,13 @@ AppHeader {
   width: 1fr;
   height: auto;
   & .app-title {
-      color: greenyellow 50%;
-      text-style: bold;
+    color: $text-muted;
+    background: $main-darken-2 10%;
   }
 
   & .app-subtitle {
-      color: $text-muted;
-      background: $main-darken-2 10%;
+    color: greenyellow 50%;
+    text-style: bold;
   }
 }
 
@@ -154,21 +164,27 @@ ChatList {
 
 Chatbox {
   color: $text;
-  background: $main 50%;
   height: auto;
   width: auto;
   max-width: 1fr;
-  margin: 1 2;
   padding: 1 2;
-}
 
-Chatbox:focus {
-  border-left: thick $main-lighten-2;
-  padding: 1 2 1 1;
 }
 
 Chatbox.assistant-message {
-  background: $panel 80%;
+  border: round greenyellow 60%;
+  &:focus {
+    border: round greenyellow;
+    border-left: thick greenyellow 50%;
+  }
+}
+
+Chatbox.human-message {
+  border: round $main-border-color;
+  &:focus {
+    border: round $main-border-color-focus;
+    border-left: thick $main-border-color-focus;
+  }
 }
 
 ModelSet {
@@ -366,11 +382,11 @@ TokenAnalysis {
 
 #inner-container ContentSwitcher {
   height: auto;
-  padding: 2 4;
+  padding: 1 2;
 }
 
 #inner-container #markdown-content {
-  height: auto;
+  height: 1fr;
 }
 
 #inner-container #metadata {

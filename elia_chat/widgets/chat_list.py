@@ -33,7 +33,10 @@ class ChatListItemRenderable:
         )
         yield Padding(
             Text.assemble(
-                (self.chat.short_preview, "" if not self.is_open else "b"),
+                (
+                    self.chat.short_preview.replace("\n", " "),
+                    "" if not self.is_open else "b",
+                ),
                 "\n",
                 subtitle,
             ),
