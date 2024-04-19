@@ -33,7 +33,7 @@ from elia_chat.widgets.chatbox import Chatbox
 
 
 class Chat(Widget):
-    BINDINGS = [Binding("escape", "pop_screen", "Return home")]
+    BINDINGS = [Binding("escape", "pop_screen", "Home")]
 
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""

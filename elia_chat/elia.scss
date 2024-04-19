@@ -33,7 +33,9 @@ Chat {
     dock: top;
     width: 1fr;
     height: 4;
-    padding: 1 2;
+    padding: 1 2 0 2;
+    border-bottom: hkey $main-lighten-2 8%;
+    background: $panel-darken-2 20%;
 
     & #model-static {
       color: $text-muted;
