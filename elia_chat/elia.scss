@@ -3,8 +3,9 @@ $main-lighten-1: #7E3AF2;
 $main: #6C2BD9;
 $main-darken-1: #5521B5;
 $main-darken-2: #4A1D96;
+$main-border-text-color: $main-lighten-1;
 $main-border-color: $main 50%;
-$main-border-color-focus: $main 80%;
+$main-border-color-focus: $main 100%;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
@@ -101,8 +102,8 @@ HomeScreen TextArea {
   max-height: 30%;
   width: 1fr;
   border: round $main-border-color;
-  border-title-color: $main-lighten-1;
-  border-subtitle-color: $main-lighten-1;
+  border-title-color: $main-border-text-color;
+  border-subtitle-color: $main-border-text-color;
   &:focus {
     border: round $main-border-color-focus;
     border-title-style: bold;
@@ -141,33 +142,18 @@ AppHeader {
   }
 }
 
-ChatList #cl-button-container {
-  dock: bottom;
-  padding: 1 2;
-  height: 5;
-  width: 1fr;
-  margin-bottom: 1;
-}
-
-ChatList #cl-option-list {
+ChatList {
   height: 1fr;
   width: 1fr;
-  margin-top: 1;
-}
+  border: round $main-border-color;
+  border-title-color: $main-border-text-color;
+  border-subtitle-color: $main-border-text-color;
 
-ChatList #cl-new-chat-button {
-  background: $main-darken-2;
-  border: none;
-  width: 100%;
-  height: 3;
-}
-
-OptionList:focus {
-  border: wide $main;
-}
-
-ChatList #cl-new-chat-button:hover {
-  background: $main-darken-1;
+  &:focus {
+    border: round $main-border-color-focus;
+    border-title-style: bold;
+    border-subtitle-color: $main-border-text-color;
+  }
 }
 
 Chatbox {
@@ -271,13 +257,13 @@ OptionList {
 }
 
 OptionList > .option-list--option-highlighted {
-  background: $main 50%;
+  background: $main 30%;
   color: $text;
   text-style: bold;
 }
 
 OptionList:focus > .option-list--option-highlighted {
-  background: $main;
+  background: $main-lighten-1 40%;
 }
 
 OptionList > .option-list--option-disabled {
@@ -303,13 +289,13 @@ OptionList > .option-list--option-hover-disabled {
 }
 
 OptionList > .option-list--option-hover-highlighted {
-  background: $main 60%;
+  background: $main-lighten-1 40%;
   color: $text;
   text-style: bold;
 }
 
 OptionList:focus > .option-list--option-hover-highlighted {
-  background: $main;
+  background: $main-lighten-1 50%;
   color: $text;
   text-style: bold;
 }

@@ -34,6 +34,6 @@ ChatList {
     def prompt_changed(self, event: TextArea.Changed) -> None:
         text_area = event.text_area
         if text_area.text != "":
-            text_area.border_subtitle = "[Ctrl+N] Send Message"
+            text_area.border_subtitle = "[[white]Ctrl+N[/]] Send Message"
         else:
             text_area.border_subtitle = None

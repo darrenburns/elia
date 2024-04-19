@@ -7,13 +7,10 @@ import humanize
 from rich.console import RenderResult, Console, ConsoleOptions
 from rich.padding import Padding
 from rich.text import Text
-from textual import log, on
-from textual.app import ComposeResult
-from textual.containers import Horizontal
+from textual import events, log, on
 from textual.message import Message
 from textual.reactive import reactive
-from textual.widget import Widget
-from textual.widgets import Button, OptionList
+from textual.widgets import OptionList
 from textual.widgets.option_list import Option
 
 from elia_chat.chats_manager import ChatsManager
@@ -39,7 +36,6 @@ class ChatListItemRenderable:
                 (subtitle, "dim"),
             ),
             pad=(0, 1),
-            style="reverse" if self.is_open else "",
         )
 
 
@@ -55,25 +51,19 @@ class ChatListItem(Option):
         self.is_open = is_open
 
 
-class ChatList(Widget):
+class ChatList(OptionList):
     current_chat_id: reactive[str | None] = reactive(None)
 
     @dataclass
     class ChatOpened(Message):
         chat: ChatData
 
-    def compose(self) -> ComposeResult:
+    def on_mount(self) -> None:
+        self.border_title = "Chat history"
         self.options = self.load_chat_list_items()
-        option_list = OptionList(
-            *self.options,
-            id="cl-option-list",
-        )
-        yield option_list
+        self.add_options(self.options)
 
-        with Horizontal(id="cl-button-container"):
-            yield Button("[Ctrl+N] New Chat", id="cl-new-chat-button")
-
-    @on(OptionList.OptionSelected, "#cl-option-list")
+    @on(OptionList.OptionSelected)
     def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
         assert isinstance(event.option, ChatListItem)
         chat = event.option.chat
@@ -81,9 +71,14 @@ class ChatList(Widget):
         self.reload_and_refresh()
         self.post_message(ChatList.ChatOpened(chat=chat))
 
-    def on_focus(self) -> None:
-        log.debug("Sidebar focused")
-        self.query_one("#cl-option-list", OptionList).focus()
+    @on(OptionList.OptionHighlighted)
+    @on(events.Focus)
+    def show_border_subtitle(self) -> None:
+        if self.highlighted is not None:
+            self.border_subtitle = "[[white]Enter[/]] Open Chat"
+
+    def on_blur(self) -> None:
+        self.border_subtitle = None
 
     def reload_and_refresh(self, new_highlighted: int = -1) -> None:
         """Reload the chats and refresh the widget. Can be used to
@@ -93,14 +88,13 @@ class ChatList(Widget):
             new_highlighted: The index to highlight after refresh.
         """
         self.options = self.load_chat_list_items()
-        option_list = self.query_one(OptionList)
-        old_highlighted = option_list.highlighted
-        option_list.clear_options()
-        option_list.add_options(self.options)
+        old_highlighted = self.highlighted
+        self.clear_options()
+        self.add_options(self.options)
         if new_highlighted > -1:
-            option_list.highlighted = new_highlighted
+            self.highlighted = new_highlighted
         else:
-            option_list.highlighted = old_highlighted
+            self.highlighted = old_highlighted
 
     def load_chat_list_items(self) -> list[ChatListItem]:
         chats = self.load_chats()
