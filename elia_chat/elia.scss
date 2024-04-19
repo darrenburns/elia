@@ -37,13 +37,13 @@ Chat {
   }
 
   & PromptInput {
-    dock: bottom;
     height: auto;
-    & TextArea {
-      padding: 0;
-      max-height: 10;
-      height: auto;
-    }
+    max-height: 10;
+    padding: 0 1;
+  }
+
+  VerticalScroll {
+    background: $panel-darken-1;
   }
 
 }

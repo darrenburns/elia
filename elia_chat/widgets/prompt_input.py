@@ -36,7 +36,7 @@ class PromptInput(TextArea):
         #  things don't appear to refresh correctly.
         #  I think this may be a Textual bug.
         #  The refresh below should not be required.
-        self.refresh()
+        self.parent.refresh()
 
     def action_submit_prompt(self) -> None:
         message = self.PromptSubmitted(self.text)
