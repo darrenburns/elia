@@ -25,11 +25,11 @@ class ChatListItemRenderable:
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        utc_dt = datetime.datetime.now(datetime.UTC)
-        local_dt = utc_dt.astimezone()
-        delta = local_dt - self.chat.create_time
+        now = datetime.datetime.now(datetime.UTC)
+        delta = now - self.chat.create_time
+        time_ago = humanize.naturaltime(delta)
         subtitle = Text.from_markup(
-            f"[dim]{humanize.naturaltime(delta)} [i]via[/] {self.chat.model_name}[/]"
+            f"[dim]{time_ago} [i not b]via[/] {self.chat.model_name}[/]"
         )
         yield Padding(
             Text.assemble(

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Optional
 
 from langchain.schema import BaseMessage
@@ -23,7 +23,7 @@ class ChatData:
         if first_user_message is None:
             return "Empty chat..."
         first_content = first_user_message.content or ""
-        return first_content[:24] + "..."
+        return first_content[:80] + "..."
 
     @property
     def first_user_message(self) -> BaseMessage | None:
@@ -35,7 +35,11 @@ class ChatData:
 
     @property
     def create_time(self) -> datetime:
-        return datetime.fromtimestamp(self.create_timestamp or 0).astimezone()
+        return (
+            datetime.fromtimestamp(self.create_timestamp or 0)
+            .astimezone()
+            .replace(tzinfo=UTC)
+        )
 
     @property
     def update_time(self) -> datetime:

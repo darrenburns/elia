@@ -11,6 +11,7 @@ from elia_chat.screens.home_screen import HomeScreen
 
 
 class NewElia(App[None]):
+    ENABLE_COMMAND_PALETTE = False
     CSS_PATH = Path(__file__).parent / "elia.scss"
 
     def __init__(self, context: EliaContext | None = None) -> None:

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-import os
-import time
+import datetime
 from dataclasses import dataclass
 
 from langchain.chat_models.base import BaseChatModel
@@ -15,6 +14,7 @@ from langchain.schema import (
 from langchain.schema.messages import BaseMessageChunk
 from textual import log, on, work, events
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.containers import ScrollableContainer, Vertical, VerticalScroll
 from textual.message import Message
 from textual.reactive import reactive
@@ -22,7 +22,7 @@ from textual.widget import Widget
 from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData, EliaContext
+from elia_chat.models import ChatData
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.chat_options import (
@@ -33,16 +33,14 @@ from elia_chat.widgets.chatbox import Chatbox
 
 
 class Chat(Widget):
+    BINDINGS = [Binding("escape", "pop_screen", "Close chat")]
+
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
 
     def __init__(self, chat_data: ChatData) -> None:
         super().__init__()
         self.chat_data = chat_data
-        self.persona_directive = os.getenv(
-            "ELIA_DIRECTIVE", "You are a helpful assistant."
-        )
-        # The thread initially only contains the system message.
         self.chat_container: ScrollableContainer | None = None
 
     @dataclass
@@ -78,50 +76,19 @@ class Chat(Widget):
         user_message = HumanMessage(
             content=content,
             additional_kwargs={
-                "timestamp": time.time(),
-                "status": None,
-                "end_turn": None,
-                "weight": None,
-                "metadata": None,
-                "recipient": None,
+                "timestamp": datetime.datetime.now(datetime.UTC),
             },
         )
-        is_first_message = self.is_empty
-        if is_first_message:
-            log.debug(
-                f"First user message received in "
-                f"conversation with model {self.chat_data.model_name!r}"
-            )
-
-            # At this point, we should create the conversation in the database.
-            # Note that we don't need to add the message here, since `create_chat`
-            # already adds any of the messages already present in the chat.
-            self.chat_data.id = str(ChatsManager.create_chat(chat_data=self.chat_data))
-
-            # Add the first message to the thread AFTER creating the chat, since
-            # we don't want ChatsManager.create_chat to persist the message for us.
-            # The message will be persisted by us below, outwith this if block.
-
         self.chat_data.messages.append(user_message)
-        if is_first_message:
-            self.post_message(
-                Chat.FirstMessageSent(
-                    chat_data=self.chat_data,
-                )
-            )
-
         ChatsManager.add_message_to_chat(
             chat_id=str(self.chat_data.id), message=user_message
         )
 
-        assert self.chat_data.id is not None
         self.post_message(
             Chat.UserMessageSubmitted(
                 chat_id=str(self.chat_data.id), message=user_message
             )
         )
-
-        assert self.chat_data.model_name is not None
         user_message_chatbox = Chatbox(user_message, self.chat_data.model_name)
 
         assert (
@@ -166,12 +133,7 @@ class Chat(Widget):
         message = AIMessage(
             content="",
             additional_kwargs={
-                "timestamp": time.time(),
-                "status": None,
-                "end_turn": None,
-                "weight": None,
-                "metadata": None,
-                "recipient": None,
+                "timestamp": datetime.datetime.now(datetime.UTC),
             },
         )
         assert self.chat_data.model_name is not None
@@ -212,42 +174,18 @@ class Chat(Widget):
             event.input.value = ""
             await self.new_user_message(user_message)
 
-    # async def load_chat(self, chat: ChatData | None) -> None:
-    #     assert self.chat_container is not None
-    #     if chat is not None:
-    #         self.chat_data = chat
-    #     else:
-    #         self.chat_data = ChatData(
-    #             id=None,
-    #             title=None,
-    #             create_timestamp=None,
-    #             model_name=self.model_name,
-    #             messages=[
-    #                 SystemMessage(
-    #                     content=self.persona_directive,
-    #                     additional_kwargs={
-    #                         "timestamp": time.time(),
-    #                         "status": None,
-    #                         "end_turn": None,
-    #                         "weight": None,
-    #                         "metadata": None,
-    #                         "recipient": "all",
-    #                     },
-    #                 )
-    #             ],
-    #         )
+    async def load_chat(self, chat_data: ChatData) -> None:
+        assert self.chat_container is not None
+        chatboxes = [
+            Chatbox(chat_message, self.chat_data.model_name)
+            for chat_message in self.chat_data.non_system_messages
+        ]
+        await self.chat_container.mount_all(chatboxes)
+        self.chat_container.scroll_end(animate=False)
 
-    #     chat_data = self.chat_data
-    #     chatboxes = [
-    #         Chatbox(chat_message, self.chat_data.model_name)
-    #         for chat_message in self.chat_data.non_system_messages
-    #     ]
-    #     await self.chat_container.mount_all(chatboxes)
-    #     self.chat_container.scroll_end(animate=False)
-
-    #     chat_header = self.query_one(ChatHeader)
-    #     chat_header.title = chat_data.short_preview or "Untitled Chat"
-    #     chat_header.model_name = chat_data.model_name or "unknown model"
+        chat_header = self.query_one(ChatHeader)
+        chat_header.title = chat_data.short_preview or "Untitled Chat"
+        chat_header.model_name = chat_data.model_name or "unknown model"
 
     def compose(self) -> ComposeResult:
         yield ChatHeader()
@@ -263,13 +201,9 @@ class Chat(Widget):
         """
         When the component is mounted, we need to check if there is a new chat to start
         """
-        app_context: EliaContext = self.app.elia_context  # type: ignore[attr-defined]
-        gpt_model = app_context.gpt_model
-        self.chat_data.model_name = gpt_model.name
+        await self.load_chat(self.chat_data)
         chat_input = self.query_one("#chat-input")
-        if app_context.chat_message is not None:
-            await self.new_user_message(app_context.chat_message)
-            chat_input.focus()
+        chat_input.focus()
 
     @classmethod
     def get_message_length(

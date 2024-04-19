@@ -3,9 +3,9 @@ $main-lighten-1: #7E3AF2;
 $main: #6C2BD9;
 $main-darken-1: #5521B5;
 $main-darken-2: #4A1D96;
-$main-border-text-color: $main-lighten-1;
-$main-border-color: $main 50%;
-$main-border-color-focus: $main 100%;
+$main-border-text-color: greenyellow 70%;
+$main-border-color: $main-lighten-1 50%;
+$main-border-color-focus: $main-lighten-1 100%;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
@@ -96,6 +96,7 @@ HomeScreen TextArea {
   height: auto;
   max-height: 30%;
   width: 1fr;
+  padding: 1 2;
   border: round $main-border-color;
   border-title-color: $main-border-text-color;
   border-subtitle-color: $main-border-text-color;
@@ -114,6 +115,7 @@ HomeScreen TextArea {
 HomeScreen ChatList {
   height: 2fr;
   width: 1fr;
+  padding: 1 2;
 }
 
 AppHeader #cl-header-container {
@@ -126,9 +128,8 @@ AppHeader {
   width: 1fr;
   height: auto;
   & .app-title {
-      color: $main-lighten-2;
+      color: greenyellow 50%;
       text-style: bold;
-      background: $main-darken-2 10%;
   }
 
   & .app-subtitle {
@@ -252,7 +253,7 @@ OptionList {
 }
 
 OptionList > .option-list--option-highlighted {
-  background: $main 30%;
+  background: $main 25%;
   color: $text;
   text-style: bold;
 }

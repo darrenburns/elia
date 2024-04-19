@@ -164,7 +164,7 @@ tenacity==8.2.3
     # via langchain
     # via langchain-community
     # via langchain-core
-textual==0.56.4
+textual==0.57.0
     # via elia
     # via textual-dev
 textual-dev==1.4.0

@@ -13,10 +13,10 @@ class AppHeader(Widget):
         title_style = self.get_component_rich_style("app-title")
         subtitle_style = self.get_component_rich_style("app-subtitle")
         with Vertical(id="cl-header-container"):
-            yield Label(Text("elia", style=title_style))
             yield Label(
-                Text(
-                    "ChatGPT in the terminal",
-                    style=subtitle_style,
+                Text.assemble(
+                    ("elia ", subtitle_style),
+                    ("///", title_style),
+                    (" llm tools", subtitle_style),
                 )
             )

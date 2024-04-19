@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 
 from langchain.schema import BaseMessage, SystemMessage, AIMessage, HumanMessage
 
@@ -6,19 +6,12 @@ from elia_chat.database.models import ChatDao, MessageDao
 from elia_chat.models import ChatData
 
 
-def chat_data_to_chat_dao(chat_data: ChatData) -> ChatDao:
-    return ChatDao(
-        model=chat_data.model_name,
-        started_at=datetime.fromtimestamp(chat_data.create_timestamp or 0),
-    )
-
-
 def chat_message_to_message_dao(chat_message: BaseMessage) -> MessageDao:
     return MessageDao(
         role=chat_message.type,
         content=chat_message.content,
         timestamp=datetime.fromtimestamp(
-            chat_message.additional_kwargs.get("timestamp", 0)
+            chat_message.additional_kwargs.get("timestamp", 0), tz=UTC
         ),
         status=chat_message.additional_kwargs.get("status"),
         end_turn=chat_message.additional_kwargs.get("end_turn"),
