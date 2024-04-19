@@ -1,4 +1,6 @@
 from __future__ import annotations
+import datetime
+from typing import cast
 
 import tiktoken
 from langchain.schema import BaseMessage
@@ -62,8 +64,11 @@ class MessageInfo(ModalScreen[None]):
                 if self.model_name:
                     token_count = len(tokens)
 
-                timestamp = self.message.additional_kwargs.get("timestamp", 0)
-                timestamp_string = format_timestamp(timestamp)
+                timestamp = cast(
+                    datetime.datetime,
+                    self.message.additional_kwargs.get("timestamp", 0.0),
+                )
+                timestamp_string = format_timestamp(timestamp if timestamp else 0.0)
                 yield Static(f"Message sent at {timestamp_string}", id="timestamp")
                 yield Static(f"{token_count} tokens", id="token-count")
 

@@ -16,7 +16,7 @@ class ChatScreen(Screen[None]):
 
     AUTO_FOCUS = None
     BINDINGS = [
-        Binding(key="p", action="focus('prompt')", description="Focus Prompt"),
+        Binding(key="m", action="focus('prompt')", description="Focus Prompt"),
     ]
 
     def __init__(

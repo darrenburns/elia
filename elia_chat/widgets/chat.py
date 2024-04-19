@@ -77,9 +77,6 @@ class Chat(Widget):
         """
         await self.load_chat(self.chat_data)
         self.query_one(PromptInput).focus()
-        if len(self.chat_data.messages) == 2:
-            self.post_message(self.AgentResponseStarted())
-            self.stream_agent_response()
 
     @property
     def is_empty(self) -> bool:
@@ -190,8 +187,9 @@ class Chat(Widget):
         await self.chat_container.mount_all(chatboxes)
         self.chat_container.scroll_end(animate=False)
 
-        self.post_message(self.AgentResponseStarted())
-        self.stream_agent_response()
+        if chat_data.messages and chat_data.messages[-1].type == "human":
+            self.post_message(self.AgentResponseStarted())
+            self.stream_agent_response()
 
         chat_header = self.query_one(ChatHeader)
         chat_header.title = (

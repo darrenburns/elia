@@ -6,6 +6,7 @@ from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.events import ScreenResume
 from textual.screen import Screen
+from textual.widgets import Footer
 
 from elia_chat.models import ChatData
 from elia_chat.widgets.chat_list import ChatList
@@ -33,15 +34,12 @@ ChatList {
         yield AppHeader()
         yield PromptInput(id="home-prompt")
         yield ChatList()
+        yield Footer()
 
     @on(ScreenResume)
     def reload_screen(self) -> None:
-        print("Home screen resumed")
         chat_list = self.query_one(ChatList)
         chat_list.reload_and_refresh()
-        chat_list.highlighted = None
-        prompt_input = self.query_one(PromptInput)
-        prompt_input.focus()
 
     @on(ChatList.ChatOpened)
     def open_chat_screen(self, event: ChatList.ChatOpened):

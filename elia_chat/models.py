@@ -6,7 +6,6 @@ from datetime import UTC, datetime
 from langchain.schema import BaseMessage
 
 
-
 @dataclass
 class ChatData:
     id: str | None
@@ -41,6 +40,12 @@ class ChatData:
 
     @property
     def update_time(self) -> datetime:
-        return datetime.fromtimestamp(
-            self.messages[-1].get("timestamp", 0) if self.messages else 0
+        return (
+            datetime.fromtimestamp(
+                self.messages[-1].additional_kwargs.get("timestamp", 0)
+                if self.messages
+                else 0
+            )
+            .astimezone()
+            .replace(tzinfo=UTC)
         )

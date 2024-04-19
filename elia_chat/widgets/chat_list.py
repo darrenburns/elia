@@ -26,10 +26,10 @@ class ChatListItemRenderable:
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
         now = datetime.datetime.now(datetime.UTC)
-        delta = now - self.chat.create_time
+        delta = now - self.chat.update_time
         time_ago = humanize.naturaltime(delta)
         subtitle = Text.from_markup(
-            f"[dim]{time_ago} [i not b]via[/] {self.chat.model_name}[/]"
+            f"[dim]last message {time_ago} [i not b]via[/] {self.chat.model_name}[/]"
         )
         yield Padding(
             Text.assemble(
@@ -40,7 +40,7 @@ class ChatListItemRenderable:
                 "\n",
                 subtitle,
             ),
-            pad=(0, 1),
+            pad=(0, 1, 1, 1),
         )
 
 
