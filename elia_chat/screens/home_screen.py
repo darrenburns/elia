@@ -25,7 +25,10 @@ ChatList {
 }
 """
 
-    BINDINGS = [Binding("escape,m", "focus('home-prompt')", "Focus prompt")]
+    BINDINGS = [
+        Binding("escape,m", "focus('home-prompt')", "Focus prompt"),
+        Binding("ctrl+n", "send_message", "Send message", priority=True),
+    ]
 
     def on_mount(self) -> None:
         self.chats_manager = ChatsManager()
@@ -73,3 +76,7 @@ ChatList {
         )
         chat.id = str(ChatsManager.create_chat(chat_data=chat))
         self.app.push_screen(ChatScreen(chat))
+
+    def action_send_message(self) -> None:
+        prompt_input = self.query_one(PromptInput)
+        prompt_input.action_submit_prompt()
