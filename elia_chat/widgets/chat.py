@@ -69,7 +69,7 @@ class Chat(Widget):
             self.chat_container = vertical_scroll
             vertical_scroll.can_focus = False
 
-        yield PromptInput()
+        yield PromptInput(id="prompt")
         yield AgentIsTyping()
 
     async def on_mount(self, _: events.Mount) -> None:

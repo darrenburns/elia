@@ -21,6 +21,10 @@ Screen {
   background: $panel-darken-1;
 }
 
+ModalScreen {
+  background: black 50%;
+}
+
 Chat {
   height: 1fr;
   width: 1fr;
@@ -81,7 +85,7 @@ TextArea {
     background: $background 0%;
   }
   &:focus .text-area--cursor-gutter {
-    color: yellowgreen 88%;
+    color: yellowgreen;
     background: $background 0%;
   }
   & .text-area--selection {

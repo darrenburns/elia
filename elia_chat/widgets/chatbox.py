@@ -11,7 +11,11 @@ from elia_chat.screens.message_info_modal import MessageInfo
 
 
 class Chatbox(Widget, can_focus=True):
-    BINDINGS = [Binding(key="enter", action="details", description="Message details")]
+    BINDINGS = [
+        Binding(key="enter", action="details", description="Message details"),
+        Binding(key="up,k", action="up", description="Up"),
+        Binding(key="down,j", action="down", description="Down"),
+    ]
 
     def __init__(
         self,
@@ -37,10 +41,10 @@ class Chatbox(Widget, can_focus=True):
         else:
             self.add_class("human-message")
 
-    def key_up(self) -> None:
+    def action_up(self) -> None:
         self.screen.focus_previous(Chatbox)
 
-    def key_down(self) -> None:
+    def action_down(self) -> None:
         self.screen.focus_next(Chatbox)
 
     def action_details(self) -> None:
