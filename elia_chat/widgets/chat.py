@@ -15,7 +15,7 @@ from langchain.schema.messages import BaseMessageChunk
 from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import ScrollableContainer, Vertical, VerticalScroll
+from textual.containers import ScrollableContainer, VerticalScroll
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
@@ -61,6 +61,23 @@ class Chat(Widget):
     class UserMessageSubmitted(Message):
         chat_id: str
         message: BaseMessage
+
+    def compose(self) -> ComposeResult:
+        yield ChatHeader()
+
+        with VerticalScroll() as vertical_scroll:
+            self.chat_container = vertical_scroll
+            vertical_scroll.can_focus = False
+
+        yield PromptInput()
+        yield AgentIsTyping()
+
+    async def on_mount(self, _: events.Mount) -> None:
+        """
+        When the component is mounted, we need to check if there is a new chat to start
+        """
+        await self.load_chat(self.chat_data)
+        self.query_one(PromptInput).focus()
 
     @property
     def is_empty(self) -> bool:
@@ -189,23 +206,6 @@ class Chat(Widget):
             chat_data.short_preview.replace("\n", " ") or "Untitled Chat"
         )
         chat_header.model_name = chat_data.model_name or "unknown model"
-
-    def compose(self) -> ComposeResult:
-        yield ChatHeader()
-
-        with VerticalScroll() as vertical_scroll:
-            self.chat_container = vertical_scroll
-            vertical_scroll.can_focus = False
-
-        with Vertical(id="chat-input-container"):
-            yield PromptInput()
-            yield AgentIsTyping()
-
-    async def on_mount(self, _: events.Mount) -> None:
-        """
-        When the component is mounted, we need to check if there is a new chat to start
-        """
-        await self.load_chat(self.chat_data)
 
     @classmethod
     def get_message_length(

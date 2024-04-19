@@ -5,7 +5,6 @@ from textual import on
 from textual.app import ComposeResult
 from textual.events import ScreenResume
 from textual.screen import Screen
-from textual.widgets import TextArea
 
 from elia_chat.models import ChatData
 from elia_chat.widgets.chat_list import ChatList
@@ -44,11 +43,8 @@ ChatList {
         self.app.push_screen(ChatScreen(chat))
 
     @on(PromptInput.PromptSubmitted)
-    def create_new_chat(self):
+    def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
         system_prompt = os.getenv("ELIA_DIRECTIVE", "You are a helpful assistant.")
-        text_area = self.query_one("#prompt", TextArea)
-        user_prompt = text_area.text
-        text_area.text = ""
         current_time = datetime.datetime.now(datetime.UTC).timestamp()
         chat = ChatData(
             id=None,
@@ -64,7 +60,7 @@ ChatList {
                     },
                 ),
                 HumanMessage(
-                    content=user_prompt,
+                    content=event.text,
                     additional_kwargs={"timestamp": current_time},
                 ),
             ],

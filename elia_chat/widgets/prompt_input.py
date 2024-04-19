@@ -1,13 +1,11 @@
 from dataclasses import dataclass
 from textual import on
-from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Vertical
 from textual.widgets import TextArea
 from textual.message import Message
 
 
-class PromptInput(Vertical):
+class PromptInput(TextArea):
     @dataclass
     class PromptSubmitted(Message):
         text: str
@@ -23,12 +21,10 @@ class PromptInput(Vertical):
     ) -> None:
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
 
-    def compose(self) -> ComposeResult:
-        text_area = TextArea(id="prompt")
-        text_area.border_title = "Enter your [u]m[/]essage..."
-        yield text_area
+    def on_mount(self):
+        self.border_title = "Enter your [u]m[/]essage..."
 
-    @on(TextArea.Changed, "#prompt")
+    @on(TextArea.Changed)
     def prompt_changed(self, event: TextArea.Changed) -> None:
         text_area = event.text_area
         if text_area.text != "":
@@ -36,8 +32,13 @@ class PromptInput(Vertical):
         else:
             text_area.border_subtitle = None
 
+        # TODO - when the height of the textarea changes
+        #  things don't appear to refresh correctly.
+        #  I think this may be a Textual bug.
+        #  The refresh below should not be required.
+        self.refresh()
+
     def action_submit_prompt(self) -> None:
-        text_area = self.query_one("#prompt", TextArea)
-        message = self.PromptSubmitted(text_area.text)
+        message = self.PromptSubmitted(self.text)
         self.post_message(message)
-        text_area.text = ""
+        self.text = ""

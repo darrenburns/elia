@@ -26,16 +26,26 @@ Chat {
   width: 1fr;
 
   & ChatHeader {
+    dock: top;
     width: 1fr;
     height: 4;
     padding: 1 2;
-    background: $background 50%;
 
     & #model-static {
       color: $text-muted;
     }
-
   }
+
+  & PromptInput {
+    dock: bottom;
+    height: auto;
+    & TextArea {
+      padding: 0;
+      max-height: 10;
+      height: auto;
+    }
+  }
+
 }
 
 AgentIsTyping {
@@ -82,11 +92,11 @@ TextArea {
 HomeScreen PromptInput {
   height: auto;
   max-height: 30%;
-}
 
-PromptInput TextArea {
-  height: auto;
-  max-height: 100%;
+  & TextArea {
+    height: auto;
+    max-height: 100%;
+  }
 }
 
 HomeScreen ChatList {
@@ -134,8 +144,8 @@ Chatbox {
   height: auto;
   width: auto;
   max-width: 1fr;
+  margin: 0 1;
   padding: 1 2;
-
 }
 
 Chatbox.assistant-message {
@@ -287,15 +297,15 @@ TokenAnalysis {
   height: auto;
 }
 
-#inner-container ContentSwitcher {
+MessageInfo #inner-container ContentSwitcher {
   height: auto;
   padding: 1 2;
 }
 
-#inner-container #markdown-content {
+MessageInfo #inner-container #markdown-content {
   height: 1fr;
 }
 
-#inner-container #metadata {
+MessageInfo #inner-container #metadata {
   height: auto;
 }
