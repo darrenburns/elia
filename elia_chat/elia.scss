@@ -154,58 +154,6 @@ Chatbox.human-message {
   }
 }
 
-ModelSet {
-  height: auto;
-  border: solid $panel 0%;
-  border-title-color: $text;
-  border-title-align: center;
-  padding: 1 2;
-}
-
-ModelSet:focus-within {
-  border: round $main-lighten-1 100%;
-}
-
-ModelPanel {
-  width: 1fr;
-}
-
-ModelPanel {
-  padding: 1 2;
-  height: 12;
-}
-
-ModelPanel.gpt35 {
-  color: $text;
-  background: $panel;
-  border: thick $accent;
-}
-
-ModelPanel.gpt35 :hover {
-  background: $panel-lighten-1;
-  border: thick $accent-lighten-1;
-}
-
-ModelPanel.gpt35.selected {
-  background: $accent-darken-2;
-  border: thick $accent-lighten-1;
-}
-
-ModelPanel.gpt4 {
-  color: $text;
-  background: $panel;
-  border: thick $success;
-}
-
-ModelPanel.gpt4 :hover {
-  background: $panel-lighten-1;
-  border: thick $success-lighten-1;
-}
-
-ModelPanel.gpt4.selected {
-  background: $success-darken-2;
-  border: thick $success-lighten-1;
-}
 
 Footer {
   background: $main;
@@ -282,14 +230,6 @@ OptionList:focus > .option-list--option-hover-highlighted {
 OptionList > .option-list--option-hover-highlighted-disabled {
   color: $text-disabled;
   background: $main 60%;
-}
-
-Input {
-  border: tall $main-lighten-1 25%;
-}
-
-Input:focus {
-  border: tall $main;
 }
 
 MessageInfo {
