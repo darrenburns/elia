@@ -25,7 +25,7 @@ class ChatListItemRenderable:
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        utc_dt = datetime.datetime.utcnow()
+        utc_dt = datetime.datetime.now(datetime.UTC)
         local_dt = utc_dt.astimezone()
         delta = local_dt - self.chat.create_time
         subtitle = humanize.naturaltime(delta)
