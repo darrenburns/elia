@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import os
 from typing import Dict
 
 from langchain.callbacks import AsyncIteratorCallbackHandler
@@ -10,38 +11,38 @@ from langchain.llms.base import LLM
 
 callback = AsyncIteratorCallbackHandler()
 
+ORGANIZATION_ID = os.getenv("OPENAI_ORGANIZATION")
+
 
 @dataclass
 class GPTModel:
     name: str
-    icon: str
     provider: str
     product: str
     description: str
     css_class: str
     model: BaseChatModel | LLM
-    token_limit: int
+    context_window: int
 
 
 DEFAULT_MODEL = GPTModel(
     name="gpt-3.5-turbo",
-    icon="⚡️",
     provider="OpenAI",
     product="ChatGPT",
     description="The fastest ChatGPT model, great for most everyday tasks.",
     css_class="gpt35",
     model=ChatOpenAI(
         model="gpt-3.5-turbo",
+        organization=ORGANIZATION_ID,
         streaming=True,
         callbacks=[callback],
     ),
-    token_limit=16385,
+    context_window=16385,
 )
 AVAILABLE_MODELS = [
     DEFAULT_MODEL,
     GPTModel(
         name="gpt-4-turbo",
-        icon="🧠",
         provider="OpenAI",
         product="ChatGPT",
         description="The most powerful ChatGPT model, capable of "
@@ -49,10 +50,11 @@ AVAILABLE_MODELS = [
         css_class="gpt4",
         model=ChatOpenAI(
             model="gpt-4-turbo",
+            organization=ORGANIZATION_ID,
             streaming=True,
             callbacks=[callback],
         ),
-        token_limit=128000,
+        context_window=128000,
     ),
 ]
 MODEL_MAPPING: Dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}

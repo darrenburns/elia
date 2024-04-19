@@ -3,6 +3,7 @@ import os
 from langchain.schema import HumanMessage, SystemMessage
 from textual import on
 from textual.app import ComposeResult
+from textual.binding import Binding
 from textual.events import ScreenResume
 from textual.screen import Screen
 
@@ -23,17 +24,24 @@ ChatList {
 }
 """
 
+    BINDINGS = [Binding("escape,m", "focus('home-prompt')", "Focus prompt")]
+
     def on_mount(self) -> None:
         self.chats_manager = ChatsManager()
 
     def compose(self) -> ComposeResult:
         yield AppHeader()
-        yield PromptInput()
+        yield PromptInput(id="home-prompt")
         yield ChatList()
 
     @on(ScreenResume)
     def reload_screen(self) -> None:
-        self.query_one(ChatList).reload_and_refresh()
+        print("Home screen resumed")
+        chat_list = self.query_one(ChatList)
+        chat_list.reload_and_refresh()
+        chat_list.highlighted = None
+        prompt_input = self.query_one(PromptInput)
+        prompt_input.focus()
 
     @on(ChatList.ChatOpened)
     def open_chat_screen(self, event: ChatList.ChatOpened):

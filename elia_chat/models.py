@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Optional
 
 from langchain.schema import BaseMessage
 
-from elia_chat.widgets.chat_options import GPTModel, MODEL_MAPPING, DEFAULT_MODEL
 
 
 @dataclass
@@ -46,20 +44,3 @@ class ChatData:
         return datetime.fromtimestamp(
             self.messages[-1].get("timestamp", 0) if self.messages else 0
         )
-
-
-@dataclass
-class EliaContext:
-    """
-    Elia Context
-    """
-
-    chat_message: Optional[str] = None
-    model_name: str = DEFAULT_MODEL.name
-
-    @property
-    def gpt_model(self) -> GPTModel:
-        gpt_model = MODEL_MAPPING.get(self.model_name)
-        if gpt_model is None:
-            raise ValueError(f"Unknown model name: {self.model_name}")
-        return gpt_model

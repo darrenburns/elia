@@ -62,7 +62,12 @@ class Chatbox(Widget, can_focus=True):
 
     @property
     def markdown(self) -> Markdown:
-        return Markdown(html.escape(self.message.content) or "")
+        message = self.message
+        if message.type == "human":
+            content = html.escape(message.content)
+        else:
+            content = message.content
+        return Markdown(content)
 
     def render(self) -> RenderableType:
         return self.markdown

@@ -19,7 +19,6 @@ from textual.containers import ScrollableContainer, VerticalScroll
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
-from textual.widgets import Input
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData
@@ -78,6 +77,9 @@ class Chat(Widget):
         """
         await self.load_chat(self.chat_data)
         self.query_one(PromptInput).focus()
+        if len(self.chat_data.messages) == 2:
+            self.post_message(self.AgentResponseStarted())
+            self.stream_agent_response()
 
     @property
     def is_empty(self) -> bool:
@@ -118,20 +120,6 @@ class Chat(Widget):
         self.post_message(self.AgentResponseStarted())
         self.stream_agent_response()
 
-    async def clear_thread(self) -> None:
-        """Remove the internal thread representing the chat, and update the DOM."""
-
-        # We have to maintain the system message.
-        self.chat_data.messages = self.chat_data.messages[:1]
-
-        assert self.chat_container is not None
-
-        # Clear the part of the DOM containing the chat messages.
-        # Important that we make a copy before removing inside the loop!
-        children = list(self.chat_container.children)
-        for child in children:
-            await child.remove()
-
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
         self.scroll_to_latest_message()
@@ -143,7 +131,7 @@ class Chat(Widget):
         trimmed_messages = self.trim_messages(
             model=llm,
             messages=self.chat_data.messages,
-            max_tokens=selected_model.token_limit,
+            max_tokens=selected_model.context_window,
             preserve_system_message=True,
         )
         streaming_response = llm.astream(input=trimmed_messages)
@@ -186,10 +174,11 @@ class Chat(Widget):
         self.chat_data.messages.append(event.message)
 
     @on(PromptInput.PromptSubmitted)
-    async def user_chat_message_submitted(self, event: Input.Submitted) -> None:
+    async def user_chat_message_submitted(
+        self, event: PromptInput.PromptSubmitted
+    ) -> None:
         if self.allow_input_submit is True:
-            user_message = event.value
-            event.input.value = ""
+            user_message = event.text
             await self.new_user_message(user_message)
 
     async def load_chat(self, chat_data: ChatData) -> None:
@@ -200,6 +189,9 @@ class Chat(Widget):
         ]
         await self.chat_container.mount_all(chatboxes)
         self.chat_container.scroll_end(animate=False)
+
+        self.post_message(self.AgentResponseStarted())
+        self.stream_agent_response()
 
         chat_header = self.query_one(ChatHeader)
         chat_header.title = (

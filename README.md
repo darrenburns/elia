@@ -9,13 +9,19 @@ A terminal ChatGPT client built with Textual
 
 ## Quickstart
 
-Install Elia with [pipx](https://github.com/pypa/pipx), set your OpenAI API key environment variable,
+Install Elia with [pipx](https://github.com/pypa/pipx), set your `OPENAI_API_KEY` environment variable,
 and start the app:
 
 ```bash
 pipx install git+https://github.com/darrenburns/elia
 export OPENAI_API_KEY="xxxxxxxxxxxxxx"
 elia
+```
+
+If you're a member of multiple organizations on the OpenAI platform, you may also need to set the `OPENAI_ORGANIZATION` environment variable to your organization ID, found on the OpenAI dashboard for your organization.
+
+```bash
+export OPENAI_ORGANIZATION="org-klj8ashdkJHKJas"
 ```
 
 ### Wiping the Chat History

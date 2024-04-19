@@ -1,4 +1,3 @@
-from datetime import UTC, datetime
 
 from langchain.schema import BaseMessage, SystemMessage, AIMessage, HumanMessage
 
@@ -10,9 +9,7 @@ def chat_message_to_message_dao(chat_message: BaseMessage) -> MessageDao:
     return MessageDao(
         role=chat_message.type,
         content=chat_message.content,
-        timestamp=datetime.fromtimestamp(
-            chat_message.additional_kwargs.get("timestamp", 0), tz=UTC
-        ),
+        timestamp=chat_message.additional_kwargs.get("timestamp", 0),
         status=chat_message.additional_kwargs.get("status"),
         end_turn=chat_message.additional_kwargs.get("end_turn"),
         weight=chat_message.additional_kwargs.get("weight"),
