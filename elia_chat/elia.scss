@@ -77,6 +77,9 @@ TextArea {
   &:focus {
     border: round $main-border-color-focus;
     border-title-style: bold;
+    & .text-area--selection {
+      background: $main-lighten-1 60%;
+    }
   }
   & .text-area--cursor-line {
     background: $background 0%;
@@ -89,7 +92,7 @@ TextArea {
     background: $background 0%;
   }
   & .text-area--selection {
-    background: $main-lighten-1 60%;
+    background: $main-lighten-2 25%;
   }
 }
 
@@ -198,26 +201,17 @@ OptionList {
 }
 
 OptionList > .option-list--option-highlighted {
-  background: $main 25%;
+  background: $main 40%;
   color: $text;
   text-style: bold;
 }
 
 OptionList:focus > .option-list--option-highlighted {
-  background: $main-lighten-1 40%;
+  background: $main-lighten-1 60%;
 }
 
 OptionList > .option-list--option-disabled {
   color: $text-disabled;
-}
-
-OptionList > .option-list--option-highlighted-disabled {
-  color: $text-disabled;
-  background: $main 30%;
-}
-
-OptionList:focus > .option-list--option-highlighted-disabled {
-  background: $main 40%;
 }
 
 OptionList > .option-list--option-hover {

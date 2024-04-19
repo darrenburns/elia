@@ -1,4 +1,5 @@
 from __future__ import annotations
+import html
 
 from langchain.schema import BaseMessage
 from rich.console import RenderableType
@@ -61,7 +62,7 @@ class Chatbox(Widget, can_focus=True):
 
     @property
     def markdown(self) -> Markdown:
-        return Markdown(self.message.content or "")
+        return Markdown(html.escape(self.message.content) or "")
 
     def render(self) -> RenderableType:
         return self.markdown
