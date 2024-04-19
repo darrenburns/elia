@@ -26,8 +26,11 @@ ChatList {
 """
 
     BINDINGS = [
-        Binding("escape,m", "focus('home-prompt')", "Focus prompt"),
-        Binding("ctrl+n", "send_message", "Send message", priority=True),
+        Binding("escape,m", "focus('home-prompt')", "Focus prompt", key_display="esc"),
+        Binding(
+            "ctrl+n", "send_message", "Send message", priority=True, key_display="^n"
+        ),
+        Binding("o,ctrl+o", "options", "Options", key_display="^o"),
     ]
 
     def on_mount(self) -> None:

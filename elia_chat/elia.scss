@@ -132,6 +132,17 @@ AppHeader {
     color: greenyellow 50%;
     text-style: bold;
   }
+
+  & Horizontal {
+    height: auto;
+  }
+
+  & Button {
+    border: none;
+    margin: 1 1 0 0;
+    background: $main-darken-2 0%;
+    text-style: dim;
+  }
 }
 
 ChatList {
