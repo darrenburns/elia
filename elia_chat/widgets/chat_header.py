@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from rich.markup import escape
+
 from textual.reactive import reactive
 from textual.app import ComposeResult
 from textual.widget import Widget
@@ -18,7 +20,7 @@ class ChatHeader(Widget):
     def watch_title(self, new_title: str | None) -> None:
         if new_title is not None:
             title_static = self.query_one("#title-static", Static)
-            title_static.update(new_title)
+            title_static.update(escape(new_title))
 
     def compose(self) -> ComposeResult:
         yield Static(self.title, id="title-static")
