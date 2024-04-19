@@ -30,7 +30,9 @@ class Elia(App[None]):
         self.push_screen(HomeScreen())
 
     def launch_chat(self, prompt: str, model_name: str) -> None:
-        system_prompt = os.getenv("ELIA_DIRECTIVE", "You are a helpful assistant.")
+        system_prompt = os.getenv(
+            "ELIA_DIRECTIVE", "You are a helpful assistant named Elia."
+        )
         current_time = datetime.datetime.now(datetime.UTC).timestamp()
         chat = ChatData(
             id=None,

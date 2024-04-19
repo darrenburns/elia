@@ -137,9 +137,9 @@ AppHeader {
     height: auto;
   }
 
-  & Button {
+  & #model {
     border: none;
-    margin: 1 1 0 0;
+    margin: 1 2;
     background: $main-darken-2 0%;
     text-style: dim;
   }
