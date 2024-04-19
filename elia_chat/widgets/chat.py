@@ -25,7 +25,7 @@ from elia_chat.models import ChatData
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.prompt_input import PromptInput
-from elia_chat.widgets.chat_options import (
+from elia_chat.models import (
     GPTModel,
     get_model_by_name,
 )

@@ -1,6 +1,4 @@
-import datetime
-import os
-from langchain.schema import HumanMessage, SystemMessage
+from typing import TYPE_CHECKING
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -8,12 +6,15 @@ from textual.events import ScreenResume
 from textual.screen import Screen
 from textual.widgets import Footer
 
-from elia_chat.models import ChatData
 from elia_chat.widgets.chat_list import ChatList
 from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.app_header import AppHeader
 from elia_chat.screens.chat_screen import ChatScreen
+
+if TYPE_CHECKING:
+    from elia_chat.app import Elia
+    from typing import cast
 
 
 class HomeScreen(Screen[None]):
@@ -56,29 +57,9 @@ ChatList {
 
     @on(PromptInput.PromptSubmitted)
     def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
-        system_prompt = os.getenv("ELIA_DIRECTIVE", "You are a helpful assistant.")
-        current_time = datetime.datetime.now(datetime.UTC).timestamp()
-        chat = ChatData(
-            id=None,
-            title=None,
-            create_timestamp=None,
-            model_name="gpt-3.5-turbo",  # TODO - get model from ui
-            messages=[
-                SystemMessage(
-                    content=system_prompt,
-                    additional_kwargs={
-                        "timestamp": current_time,
-                        "recipient": "all",
-                    },
-                ),
-                HumanMessage(
-                    content=event.text,
-                    additional_kwargs={"timestamp": current_time},
-                ),
-            ],
-        )
-        chat.id = str(ChatsManager.create_chat(chat_data=chat))
-        self.app.push_screen(ChatScreen(chat))
+        app = self.app
+        app = cast(Elia, app)
+        app.launch_chat(prompt=event.text, model_name="gpt-3.5-turbo")
 
     def action_send_message(self) -> None:
         prompt_input = self.query_one(PromptInput)

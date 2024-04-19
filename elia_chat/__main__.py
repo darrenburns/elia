@@ -11,8 +11,8 @@ from elia_chat.app import Elia
 from elia_chat.database.create_database import create_database
 from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.database.models import sqlite_file_name
-from elia_chat.models import EliaContext
-from elia_chat.widgets.chat_options import DEFAULT_MODEL, MODEL_MAPPING
+from elia_chat.context import EliaContext
+from elia_chat.models import DEFAULT_MODEL, MODEL_MAPPING
 
 
 @click.group(invoke_without_command=True)
@@ -21,7 +21,7 @@ def cli(context: click.Context) -> None:
     """
     Elia: A terminal ChatGPT client built with Textual
     """
-    app = Elia(context=None)
+    app = Elia(None)
     # Run the app if no subcommand is provided
     if context.invoked_subcommand is None:
         # Create the database if it doesn't exist
@@ -75,7 +75,7 @@ def chat(message: Tuple[str, ...], model: str) -> None:
     Start Elia with a chat message
     """
     context = EliaContext(chat_message=" ".join(message), model_name=model)
-    app = Elia(context=context)
+    app = Elia(context)
     app.run()
 
 

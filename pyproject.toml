@@ -13,6 +13,7 @@ dependencies = [
     "click>=8.1.6",
     "langchain>=0.0.331",
     "langchain-openai>=0.0.5",
+    "textual-autocomplete>=2.1.0b0",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
