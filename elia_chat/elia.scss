@@ -80,7 +80,7 @@ TextArea {
     border: round $main-border-color-focus;
     border-title-style: bold;
     & .text-area--selection {
-      background: $main-lighten-1 60%;
+      background: $main 60%;
     }
   }
   & .text-area--cursor-line {
@@ -205,10 +205,6 @@ Footer > .footer--highlight-key {
   color: $text;
 }
 
-Input .input--cursor {
-  color: $main-lighten-2;
-}
-
 OptionList {
   background: $background 15%;
 }
@@ -319,4 +315,24 @@ MessageInfo #inner-container #markdown-content {
 
 MessageInfo #inner-container #metadata {
   height: auto;
+}
+
+OptionsModal {
+  align: center middle;
+}
+
+OptionsModal #form-scrollable {
+  padding: 1 2;
+  width: 60%;
+  height: auto;
+  max-height: 80%;
+  border: wide $main-darken-2 80%;
+  & #available-models {
+    width: 100%;
+    border: round $main-border-color;
+    border-title-color: yellowgreen;
+    background: red 0%;
+    padding: 1 2;
+  }
+
 }

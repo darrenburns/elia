@@ -166,10 +166,7 @@ tenacity==8.2.3
     # via langchain-core
 textual==0.57.0
     # via elia
-    # via textual-autocomplete
     # via textual-dev
-textual-autocomplete==2.1.0b0
-    # via elia
 textual-dev==1.4.0
 tiktoken==0.5.2
     # via elia
@@ -184,7 +181,6 @@ typing-extensions==4.9.0
     # via pydantic-core
     # via sqlalchemy
     # via textual
-    # via textual-autocomplete
     # via textual-dev
     # via typing-inspect
 typing-inspect==0.9.0

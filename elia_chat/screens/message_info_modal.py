@@ -11,11 +11,12 @@ from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Static, Tabs, ContentSwitcher, Tab, TextArea
 
+from elia_chat.runtime_options import RuntimeOptions
 from elia_chat.time_display import format_timestamp
 from elia_chat.widgets.token_analysis import TokenAnalysis
 
 
-class MessageInfo(ModalScreen[None]):
+class MessageInfo(ModalScreen[RuntimeOptions]):
     BINDINGS = [Binding("escape", "app.pop_screen", "Close Modal")]
 
     def __init__(

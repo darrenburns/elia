@@ -38,7 +38,7 @@ class Elia(App[None]):
             id=None,
             title=None,
             create_timestamp=None,
-            model_name=model_name,  # TODO - get model from ui
+            model_name=model_name,
             messages=[
                 SystemMessage(
                     content=system_prompt,
