@@ -39,8 +39,10 @@ class Chatbox(Widget, can_focus=True):
     def on_mount(self) -> None:
         if self.message.type == "ai":
             self.add_class("assistant-message")
+            self.border_title = "Agent"
         else:
             self.add_class("human-message")
+            self.border_title = "You"
 
     def action_up(self) -> None:
         self.screen.focus_previous(Chatbox)
@@ -52,13 +54,6 @@ class Chatbox(Widget, can_focus=True):
         self.app.push_screen(
             MessageInfo(message=self.message, model_name=self.model_name)
         )
-
-    def _watch_has_focus(self, focus: bool) -> None:
-        if focus:
-            author = "Agent" if self.message.type == "ai" else "You"
-            self.border_title = f"[white]{author}[/]"
-        else:
-            self.border_title = None
 
     @property
     def markdown(self) -> Markdown:

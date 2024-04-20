@@ -9,7 +9,7 @@ from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Static, Tabs, ContentSwitcher, Tab, TextArea
+from textual.widgets import Footer, Static, Tabs, ContentSwitcher, Tab, TextArea
 
 from elia_chat.runtime_options import RuntimeOptions
 from elia_chat.time_display import format_timestamp
@@ -72,6 +72,8 @@ class MessageInfo(ModalScreen[RuntimeOptions]):
                 timestamp_string = format_timestamp(timestamp if timestamp else 0.0)
                 yield Static(f"Message sent at {timestamp_string}", id="timestamp")
                 yield Static(f"{token_count} tokens", id="token-count")
+
+        yield Footer()
 
     @on(Tabs.TabActivated)
     def tab_activated(self, event: Tabs.TabActivated) -> None:

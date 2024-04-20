@@ -25,7 +25,6 @@ repos:
       - id: python-no-eval
       - id: python-no-log-warn
       - id: python-use-type-annotations
-      - id: python-check-blanket-type-ignore
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.0.269'
     hooks:

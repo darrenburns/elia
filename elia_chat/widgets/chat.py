@@ -33,7 +33,7 @@ from elia_chat.widgets.chatbox import Chatbox
 
 
 class Chat(Widget):
-    BINDINGS = [Binding("escape", "pop_screen", "Home")]
+    BINDINGS = [Binding("escape", "pop_screen", "Home", key_display="esc")]
 
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
@@ -119,6 +119,7 @@ class Chat(Widget):
 
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
+        # TODO - lock the prompt input box here?
         self.scroll_to_latest_message()
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"

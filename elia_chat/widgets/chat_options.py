@@ -13,7 +13,7 @@ from elia_chat.runtime_options import RuntimeOptions
 
 
 class OptionsModal(ModalScreen[RuntimeOptions]):
-    BINDINGS = [Binding("escape", "app.pop_screen", "Close modal")]
+    BINDINGS = [Binding("escape", "app.pop_screen", "Close modal", key_display="esc")]
 
     def __init__(
         self,

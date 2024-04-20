@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -13,10 +12,6 @@ from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.app_header import AppHeader
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.widgets.chat_options import OptionsModal
-
-if TYPE_CHECKING:
-    from elia_chat.app import Elia
-    from typing import cast
 
 
 class HomeScreen(Screen[None]):
@@ -60,9 +55,10 @@ ChatList {
 
     @on(PromptInput.PromptSubmitted)
     def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
-        app = self.app
-        app = cast(Elia, app)
-        app.launch_chat(prompt=event.text, model_name="gpt-3.5-turbo")
+        self.app.launch_chat(
+            prompt=event.text,
+            model_name="gpt-3.5-turbo",
+        )  # type: ignore
 
     def action_send_message(self) -> None:
         prompt_input = self.query_one(PromptInput)
