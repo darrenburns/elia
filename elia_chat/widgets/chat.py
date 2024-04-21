@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, cast
 
 from langchain.chat_models.base import BaseChatModel
 from langchain.llms.base import LLM
@@ -31,6 +32,9 @@ from elia_chat.models import (
 )
 from elia_chat.widgets.chatbox import Chatbox
 
+if TYPE_CHECKING:
+    from elia_chat.app import Elia
+
 
 class Chat(Widget):
     BINDINGS = [Binding("escape", "pop_screen", "Home", key_display="esc")]
@@ -42,6 +46,7 @@ class Chat(Widget):
         super().__init__()
         self.chat_data = chat_data
         self.chat_container: ScrollableContainer | None = None
+        self.elia = cast("Elia", self.app)
 
     @dataclass
     class AgentResponseStarted(Message):
@@ -125,7 +130,9 @@ class Chat(Widget):
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
         selected_model: GPTModel = get_model_by_name(self.chat_data.model_name)
-        llm: BaseChatModel = selected_model.model
+        llm: BaseChatModel = selected_model.get_langchain_chat_model(
+            self.elia.launch_config
+        )
         trimmed_messages = self.trim_messages(
             model=llm,
             messages=self.chat_data.messages,

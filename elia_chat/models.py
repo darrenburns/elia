@@ -2,16 +2,15 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
-import os
 
 from langchain.schema import BaseMessage
 from langchain.callbacks import AsyncIteratorCallbackHandler
 from langchain_openai import ChatOpenAI
 from langchain.chat_models.base import BaseChatModel
-from langchain.llms.base import LLM
+
+from elia_chat.config import LaunchConfig
 
 callback = AsyncIteratorCallbackHandler()
-ORGANIZATION_ID = os.getenv("OPENAI_ORGANIZATION")
 
 
 @dataclass
@@ -20,8 +19,18 @@ class GPTModel:
     provider: str
     product: str
     description: str
-    model: BaseChatModel | LLM
     context_window: int
+
+    def get_langchain_chat_model(
+        self,
+        launch_config: LaunchConfig,
+    ) -> BaseChatModel:
+        return ChatOpenAI(
+            model=self.name,
+            organization=launch_config.open_ai.organization,
+            streaming=True,
+            callbacks=[callback],
+        )
 
 
 DEFAULT_MODEL = GPTModel(
@@ -29,12 +38,6 @@ DEFAULT_MODEL = GPTModel(
     provider="OpenAI",
     product="ChatGPT",
     description="The fastest ChatGPT model, great for most everyday tasks.",
-    model=ChatOpenAI(
-        model="gpt-3.5-turbo",
-        organization=ORGANIZATION_ID,
-        streaming=True,
-        callbacks=[callback],
-    ),
     context_window=16385,
 )
 AVAILABLE_MODELS = [
@@ -45,12 +48,6 @@ AVAILABLE_MODELS = [
         product="ChatGPT",
         description="The most powerful ChatGPT model, capable of "
         "complex tasks which require advanced reasoning.",
-        model=ChatOpenAI(
-            model="gpt-4-turbo",
-            organization=ORGANIZATION_ID,
-            streaming=True,
-            callbacks=[callback],
-        ),
         context_window=128000,
     ),
 ]

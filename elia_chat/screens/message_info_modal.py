@@ -11,12 +11,12 @@ from textual.containers import Vertical, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Footer, Static, Tabs, ContentSwitcher, Tab, TextArea
 
-from elia_chat.runtime_options import RuntimeOptions
+from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.time_display import format_timestamp
 from elia_chat.widgets.token_analysis import TokenAnalysis
 
 
-class MessageInfo(ModalScreen[RuntimeOptions]):
+class MessageInfo(ModalScreen[RuntimeConfig]):
     BINDINGS = [Binding("escape", "app.pop_screen", "Close Modal")]
 
     def __init__(
@@ -62,15 +62,14 @@ class MessageInfo(ModalScreen[RuntimeOptions]):
                     yield Static("Metadata", id="metadata")
 
             with Horizontal(id="message-info-footer"):
-                if self.model_name:
-                    token_count = len(tokens)
-
+                token_count = len(tokens)
                 timestamp = cast(
                     datetime.datetime,
-                    self.message.additional_kwargs.get("timestamp", 0.0),
+                    self.message.additional_kwargs.get("timestamp"),
                 )
-                timestamp_string = format_timestamp(timestamp if timestamp else 0.0)
-                yield Static(f"Message sent at {timestamp_string}", id="timestamp")
+                if timestamp:
+                    timestamp_string = format_timestamp(timestamp if timestamp else 0.0)
+                    yield Static(f"Message sent at {timestamp_string}", id="timestamp")
                 yield Static(f"{token_count} tokens", id="token-count")
 
         yield Footer()

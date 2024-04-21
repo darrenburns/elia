@@ -1,17 +1,22 @@
+from typing import TYPE_CHECKING, cast
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.events import ScreenResume
 from textual.screen import Screen
+from textual.signal import Signal
 from textual.widgets import Footer
 
-from elia_chat.runtime_options import RuntimeOptions
+from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.widgets.chat_list import ChatList
 from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.app_header import AppHeader
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.widgets.chat_options import OptionsModal
+
+if TYPE_CHECKING:
+    from elia_chat.app import Elia
 
 
 class HomeScreen(Screen[None]):
@@ -31,12 +36,22 @@ ChatList {
         Binding("o,ctrl+o", "options", "Options", key_display="^o"),
     ]
 
+    def __init__(
+        self,
+        config_signal: Signal,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+    ) -> None:
+        super().__init__(name, id, classes)
+        self.config_signal = config_signal
+        self.elia = cast("Elia", self.app)
+
     def on_mount(self) -> None:
-        self.runtime_options = RuntimeOptions()
         self.chats_manager = ChatsManager()
 
     def compose(self) -> ComposeResult:
-        yield AppHeader()
+        yield AppHeader(self.config_signal)
         yield PromptInput(id="home-prompt")
         yield ChatList()
         yield Footer()
@@ -55,10 +70,10 @@ ChatList {
 
     @on(PromptInput.PromptSubmitted)
     def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
-        self.app.launch_chat(
+        self.app.launch_chat(  # type: ignore
             prompt=event.text,
-            model_name="gpt-3.5-turbo",
-        )  # type: ignore
+            model_name=self.elia.runtime_config.selected_model,
+        )
 
     def action_send_message(self) -> None:
         prompt_input = self.query_one(PromptInput)
@@ -66,9 +81,10 @@ ChatList {
 
     def action_options(self) -> None:
         self.app.push_screen(
-            OptionsModal(self.runtime_options),
+            OptionsModal(),
             callback=self.update_config,
         )
 
-    def update_config(self, runtime_options: RuntimeOptions) -> None:
-        self.runtime_options = runtime_options
+    def update_config(self, runtime_config: RuntimeConfig) -> None:
+        app = cast("Elia", self.app)
+        app.runtime_config = runtime_config
