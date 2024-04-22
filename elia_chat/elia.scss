@@ -17,6 +17,11 @@ $left-border-trim: vkey $main-lighten-2 15%;
   scrollbar-background-hover: $background;
 }
 
+Tabs .underline--bar {
+  color: $main-lighten-2 50%;
+  background: $main 75%;
+}
+
 Screen {
   background: $panel-darken-1;
 }
@@ -96,6 +101,14 @@ TextArea {
   & .text-area--selection {
     background: $main-lighten-2 25%;
   }
+
+  &.selection-mode {
+    border: none;
+    height: auto;
+    max-height: 75vh;
+    width: 100%;
+    padding: 0;
+  }
 }
 
 HomeScreen PromptInput {
@@ -165,31 +178,42 @@ Chatbox {
   width: auto;
   max-width: 1fr;
   margin: 0 1;
-  padding: 1 2;
+  padding: 0 2;
+
+  &.selecting {
+  }
 
   &.assistant-message.response-in-progress {
     background: greenyellow 3%;
     border: wide greenyellow 50%;
+    min-width: 30%;
   }
 
   &.assistant-message {
     border: round greenyellow 60%;
-    &:focus {
+    &:focus-within {
       border: round greenyellow;
       border-left: thick greenyellow 50%;
     }
+
+    & TextArea {
+      & .text-area--selection {
+        background: greenyellow 23%;
+        color: white 93%;
+      }
+    }
+
   }
 
   &.human-message {
     border: round $main-border-color;
-    &:focus {
+    &:focus-within {
       border: round $main-border-color-focus;
       border-left: thick $main-border-color-focus;
     }
   }
+
 }
-
-
 
 
 Footer {

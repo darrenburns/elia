@@ -164,7 +164,7 @@ tenacity==8.2.3
     # via langchain
     # via langchain-community
     # via langchain-core
-textual==0.57.0
+textual==0.57.1
     # via elia
     # via textual-dev
 textual-dev==1.4.0
@@ -173,6 +173,11 @@ tiktoken==0.5.2
     # via langchain-openai
 tqdm==4.66.2
     # via openai
+tree-sitter==0.20.4
+    # via textual
+    # via tree-sitter-languages
+tree-sitter-languages==1.10.2
+    # via textual
 types-peewee==3.17.0.20240207
 typing-extensions==4.9.0
     # via mypy

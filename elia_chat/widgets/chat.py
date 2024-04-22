@@ -92,7 +92,7 @@ class Chat(Widget):
     def scroll_to_latest_message(self):
         if self.chat_container is not None:
             self.chat_container.refresh()
-            self.chat_container.scroll_end(animate=False)
+            self.chat_container.scroll_end(animate=False, force=True)
 
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")

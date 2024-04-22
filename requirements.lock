@@ -135,13 +135,18 @@ tenacity==8.2.3
     # via langchain
     # via langchain-community
     # via langchain-core
-textual==0.57.0
+textual==0.57.1
     # via elia
 tiktoken==0.5.2
     # via elia
     # via langchain-openai
 tqdm==4.66.2
     # via openai
+tree-sitter==0.20.4
+    # via textual
+    # via tree-sitter-languages
+tree-sitter-languages==1.10.2
+    # via textual
 typing-extensions==4.9.0
     # via openai
     # via pydantic
