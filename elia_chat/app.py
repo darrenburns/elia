@@ -19,11 +19,10 @@ class Elia(App[None]):
     ENABLE_COMMAND_PALETTE = False
     CSS_PATH = Path(__file__).parent / "elia.scss"
 
-    def __init__(self, config: LaunchConfig | None = None, startup_prompt: str = ""):
+    def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
         # TODO - some of the initial values should be set below
         #  if supplied in the configuration.
         super().__init__()
-        config = config if config is not None else LaunchConfig()
         self.launch_config = config
         self._runtime_config = RuntimeConfig(
             selected_model=config.default_model,
@@ -83,5 +82,5 @@ class Elia(App[None]):
 
 
 if __name__ == "__main__":
-    app = Elia()
+    app = Elia(LaunchConfig())
     app.run()

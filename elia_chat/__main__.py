@@ -8,10 +8,11 @@ from typing import Tuple
 import click
 
 from elia_chat.app import Elia
+from elia_chat.config import LaunchConfig
 from elia_chat.database.create_database import create_database
 from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.database.models import sqlite_file_name
-from elia_chat.context import EliaContext
+from elia_chat.launch_args import QuickLaunchArgs
 from elia_chat.models import DEFAULT_MODEL, MODEL_MAPPING
 
 
@@ -21,10 +22,14 @@ def cli(context: click.Context) -> None:
     """
     Elia: A terminal ChatGPT client built with Textual
     """
-    app = Elia(None)
+    # TODO - we should pull defaults from a file
+    app = Elia(LaunchConfig())
     # Run the app if no subcommand is provided
+
     if context.invoked_subcommand is None:
         # Create the database if it doesn't exist
+        # TODO - we should run a migration file so we can update
+        #  the end users database when required.
         if sqlite_file_name.exists() is False:
             create_database()
         app.run()
@@ -74,8 +79,14 @@ def chat(message: Tuple[str, ...], model: str) -> None:
     """
     Start Elia with a chat message
     """
-    context = EliaContext(chat_message=" ".join(message), model_name=model)
-    app = Elia(context)
+    quick_launch_args = QuickLaunchArgs(
+        launch_prompt=" ".join(message),
+        launch_prompt_model_name=model,
+    )
+    launch_config = LaunchConfig(
+        default_model=quick_launch_args.launch_prompt_model_name,
+    )
+    app = Elia(launch_config, quick_launch_args.launch_prompt)
     app.run()
 
 
