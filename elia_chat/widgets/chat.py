@@ -56,6 +56,7 @@ class Chat(Widget):
     class AgentResponseComplete(Message):
         chat_id: str | None
         message: BaseMessage
+        chatbox: Chatbox
 
     @dataclass
     class FirstMessageSent(Message):
@@ -125,6 +126,7 @@ class Chat(Widget):
     @work(exclusive=True)
     async def stream_agent_response(self) -> None:
         # TODO - lock the prompt input box here?
+
         self.scroll_to_latest_message()
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
@@ -151,11 +153,15 @@ class Chat(Widget):
         response_chatbox = Chatbox(
             message=message,
             model_name=self.chat_data.model_name,
+            classes="response-in-progress",
         )
         assert (
             self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
+
         await self.chat_container.mount(response_chatbox)
+        response_chatbox.border_title = "Agent is responding..."
+
         async for token in streaming_response:
             if isinstance(token, BaseMessageChunk):
                 token_str = token.content
@@ -166,10 +172,12 @@ class Chat(Widget):
             max_scroll_y = self.chat_container.max_scroll_y
             if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
                 self.chat_container.scroll_end(animate=False)
+
         self.post_message(
             self.AgentResponseComplete(
                 chat_id=self.chat_data.id,
                 message=response_chatbox.message,
+                chatbox=response_chatbox,
             )
         )
 
@@ -177,6 +185,8 @@ class Chat(Widget):
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:
         # Ensure the thread is updated with the message from the agent
         self.chat_data.messages.append(event.message)
+        event.chatbox.border_title = "Agent"
+        event.chatbox.remove_class("response-in-progress")
 
     @on(PromptInput.PromptSubmitted)
     async def user_chat_message_submitted(

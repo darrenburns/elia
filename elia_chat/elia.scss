@@ -166,23 +166,30 @@ Chatbox {
   max-width: 1fr;
   margin: 0 1;
   padding: 1 2;
-}
 
-Chatbox.assistant-message {
-  border: round greenyellow 60%;
-  &:focus {
-    border: round greenyellow;
-    border-left: thick greenyellow 50%;
+  &.assistant-message.response-in-progress {
+    background: greenyellow 3%;
+    border: wide greenyellow 50%;
+  }
+
+  &.assistant-message {
+    border: round greenyellow 60%;
+    &:focus {
+      border: round greenyellow;
+      border-left: thick greenyellow 50%;
+    }
+  }
+
+  &.human-message {
+    border: round $main-border-color;
+    &:focus {
+      border: round $main-border-color-focus;
+      border-left: thick $main-border-color-focus;
+    }
   }
 }
 
-Chatbox.human-message {
-  border: round $main-border-color;
-  &:focus {
-    border: round $main-border-color-focus;
-    border-left: thick $main-border-color-focus;
-  }
-}
+
 
 
 Footer {
