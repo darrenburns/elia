@@ -31,7 +31,7 @@ ChatList {
     BINDINGS = [
         Binding("escape,m", "focus('home-prompt')", "Focus prompt", key_display="esc"),
         Binding(
-            "ctrl+n", "send_message", "Send message", priority=True, key_display="^n"
+            "ctrl+j", "send_message", "Send message", priority=True, key_display="^j"
         ),
         Binding("o,ctrl+o", "options", "Options", key_display="^o"),
     ]

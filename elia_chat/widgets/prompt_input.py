@@ -10,7 +10,7 @@ class PromptInput(TextArea):
     class PromptSubmitted(Message):
         text: str
 
-    BINDINGS = [Binding("ctrl+n", "submit_prompt", "Send message", key_display="^n")]
+    BINDINGS = [Binding("ctrl+j", "submit_prompt", "Send message", key_display="j")]
 
     def __init__(
         self,
@@ -28,7 +28,7 @@ class PromptInput(TextArea):
     def prompt_changed(self, event: TextArea.Changed) -> None:
         text_area = event.text_area
         if text_area.text != "":
-            text_area.border_subtitle = "[[white]^n[/]] Send Message"
+            text_area.border_subtitle = "[[white]^j[/]] Send Message"
         else:
             text_area.border_subtitle = None
 
