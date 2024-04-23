@@ -43,7 +43,7 @@ class ChatScreen(Screen[None]):
         self.query_one(Chat).allow_input_submit = False
 
     @on(Chat.AgentResponseComplete)
-    def agent_response_complete(self, event: Chat.AgentResponseComplete) -> None:
+    async def agent_response_complete(self, event: Chat.AgentResponseComplete) -> None:
         """Allow the user to send messages again."""
         chat = self.query_one(Chat)
         agent_is_typing = self.query_one(AgentIsTyping)
@@ -53,6 +53,6 @@ class ChatScreen(Screen[None]):
             f"Agent response complete. Adding message "
             f"to chat_id {event.chat_id!r}: {event.message}"
         )
-        self.chats_manager.add_message_to_chat(
+        await self.chats_manager.add_message_to_chat(
             chat_id=self.chat_data.id, message=event.message
         )

@@ -103,7 +103,7 @@ class Chat(Widget):
             },
         )
         self.chat_data.messages.append(user_message)
-        ChatsManager.add_message_to_chat(
+        await ChatsManager.add_message_to_chat(
             chat_id=str(self.chat_data.id), message=user_message
         )
 

@@ -63,17 +63,17 @@ class ChatList(OptionList):
     class ChatOpened(Message):
         chat: ChatData
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         self.border_title = "Chat [u]h[/]istory"
-        self.options = self.load_chat_list_items()
+        self.options = await self.load_chat_list_items()
         self.add_options(self.options)
 
     @on(OptionList.OptionSelected)
-    def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
+    async def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
         assert isinstance(event.option, ChatListItem)
         chat = event.option.chat
         self.current_chat_id = chat.id
-        self.reload_and_refresh()
+        await self.reload_and_refresh()
         self.post_message(ChatList.ChatOpened(chat=chat))
 
     @on(OptionList.OptionHighlighted)
@@ -87,14 +87,14 @@ class ChatList(OptionList):
     def on_blur(self) -> None:
         self.border_subtitle = None
 
-    def reload_and_refresh(self, new_highlighted: int = -1) -> None:
+    async def reload_and_refresh(self, new_highlighted: int = -1) -> None:
         """Reload the chats and refresh the widget. Can be used to
         update the ordering/previews/titles etc contained in the list.
 
         Args:
             new_highlighted: The index to highlight after refresh.
         """
-        self.options = self.load_chat_list_items()
+        self.options = await self.load_chat_list_items()
         old_highlighted = self.highlighted
         self.clear_options()
         self.add_options(self.options)
@@ -103,15 +103,15 @@ class ChatList(OptionList):
         else:
             self.highlighted = old_highlighted
 
-    def load_chat_list_items(self) -> list[ChatListItem]:
-        chats = self.load_chats()
+    async def load_chat_list_items(self) -> list[ChatListItem]:
+        chats = await self.load_chats()
         return [
             ChatListItem(chat, is_open=self.current_chat_id == chat.id)
             for chat in chats
         ]
 
-    def load_chats(self) -> list[ChatData]:
-        all_chats = ChatsManager.all_chats()
+    async def load_chats(self) -> list[ChatData]:
+        all_chats = await ChatsManager.all_chats()
         return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:

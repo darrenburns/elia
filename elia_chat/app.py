@@ -48,15 +48,15 @@ class Elia(App[None]):
         self._runtime_config = new_runtime_config
         self.runtime_config_signal.publish()
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         if self.startup_prompt:
-            self.launch_chat(
+            await self.launch_chat(
                 prompt=self.startup_prompt,
                 model_name=self.runtime_config.selected_model,
             )
         self.push_screen(HomeScreen(self.runtime_config_signal))
 
-    def launch_chat(self, prompt: str, model_name: str) -> None:
+    async def launch_chat(self, prompt: str, model_name: str) -> None:
         current_time = datetime.datetime.now(datetime.UTC).timestamp()
         chat = ChatData(
             id=None,
@@ -77,8 +77,8 @@ class Elia(App[None]):
                 ),
             ],
         )
-        chat.id = str(ChatsManager.create_chat(chat_data=chat))
-        self.push_screen(ChatScreen(chat))
+        chat.id = str((await ChatsManager.create_chat(chat_data=chat)))
+        await self.push_screen(ChatScreen(chat))
 
 
 if __name__ == "__main__":

@@ -1,13 +1,15 @@
-import pathlib
 from datetime import datetime
 from typing import Any, Optional
 
 from sqlalchemy import Column, DateTime, func, JSON, desc
+from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import selectinload
-from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, select
+from sqlmodel import Field, Relationship, SQLModel, select
+
+from elia_chat.database.database import get_session
 
 
-class MessageDao(SQLModel, table=True):
+class MessageDao(AsyncAttrs, SQLModel, table=True):
     __tablename__ = "message"
 
     id: int = Field(default=None, primary_key=True)
@@ -25,7 +27,7 @@ class MessageDao(SQLModel, table=True):
     recipient: str | None
 
 
-class ChatDao(SQLModel, table=True):
+class ChatDao(AsyncAttrs, SQLModel, table=True):
     __tablename__ = "chat"
 
     id: int = Field(default=None, primary_key=True)
@@ -37,8 +39,8 @@ class ChatDao(SQLModel, table=True):
     messages: list[MessageDao] = Relationship(back_populates="chat")
 
     @staticmethod
-    def all() -> list["ChatDao"]:
-        with Session(engine) as session:
+    async def all() -> list["ChatDao"]:
+        async with get_session() as session:
             # Create a subquery that finds the maximum
             # (most recent) timestamp for each chat.
             max_timestamp: Any = func.max(MessageDao.timestamp).label("max_timestamp")
@@ -54,22 +56,16 @@ class ChatDao(SQLModel, table=True):
                 .order_by(desc(subquery.c.max_timestamp))
                 .options(selectinload(ChatDao.messages))
             )
-            results = session.exec(statement)
+            results = await session.exec(statement)
             return list(results)
 
     @staticmethod
-    def from_id(chat_id: str) -> "ChatDao":
-        with Session(engine) as session:
+    async def from_id(chat_id: str) -> "ChatDao":
+        async with get_session() as session:
             statement = (
                 select(ChatDao)
                 .where(ChatDao.id == int(chat_id))
                 .options(selectinload(ChatDao.messages))
             )
-            result = session.exec(statement).one()
-            return result
-
-
-_this_dir = pathlib.Path(__file__).resolve().parent
-sqlite_file_name = _this_dir / "elia.sqlite"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-engine = create_engine(sqlite_url)
+            result = await session.exec(statement)
+            return result.one()

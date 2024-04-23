@@ -39,7 +39,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
                     active = self.runtime_config.selected_model == model.name
                     yield RadioButton(
                         f"[dim]{escape(model.name)}",
-                        value=active,
+                        value=active is True,
                     )
             system_prompt_ta = TextArea(
                 self.runtime_config.system_prompt, id="system-prompt-ta"
@@ -66,3 +66,4 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
                 "selected_model": selected_model_rs.pressed_button.label.plain,
             }
         )
+        self.refresh()

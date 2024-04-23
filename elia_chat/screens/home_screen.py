@@ -57,20 +57,20 @@ ChatList {
         yield Footer()
 
     @on(ScreenResume)
-    def reload_screen(self) -> None:
+    async def reload_screen(self) -> None:
         chat_list = self.query_one(ChatList)
-        chat_list.reload_and_refresh()
+        await chat_list.reload_and_refresh()
 
     @on(ChatList.ChatOpened)
-    def open_chat_screen(self, event: ChatList.ChatOpened):
+    async def open_chat_screen(self, event: ChatList.ChatOpened):
         chat_id = event.chat.id
         assert chat_id is not None
-        chat = self.chats_manager.get_chat(chat_id)
+        chat = await self.chats_manager.get_chat(chat_id)
         self.app.push_screen(ChatScreen(chat))
 
     @on(PromptInput.PromptSubmitted)
-    def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
-        self.app.launch_chat(  # type: ignore
+    async def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
+        await self.elia.launch_chat(  # type: ignore
             prompt=event.text,
             model_name=self.elia.runtime_config.selected_model,
         )
@@ -79,8 +79,8 @@ ChatList {
         prompt_input = self.query_one(PromptInput)
         prompt_input.action_submit_prompt()
 
-    def action_options(self) -> None:
-        self.app.push_screen(
+    async def action_options(self) -> None:
+        await self.app.push_screen(
             OptionsModal(),
             callback=self.update_config,
         )
