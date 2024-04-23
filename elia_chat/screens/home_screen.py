@@ -66,7 +66,7 @@ ChatList {
         chat_id = event.chat.id
         assert chat_id is not None
         chat = await self.chats_manager.get_chat(chat_id)
-        self.app.push_screen(ChatScreen(chat))
+        await self.app.push_screen(ChatScreen(chat))
 
     @on(PromptInput.PromptSubmitted)
     async def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
