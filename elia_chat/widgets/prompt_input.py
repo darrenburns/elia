@@ -25,13 +25,16 @@ class PromptInput(TextArea):
 
     def on_mount(self):
         self.border_title = "Enter your [u]m[/]essage..."
+        self.submit_ready = False
 
     @on(TextArea.Changed)
     def prompt_changed(self, event: TextArea.Changed) -> None:
         text_area = event.text_area
-        if text_area.text != "":
+        if text_area.text.strip() != "":
+            self.submit_ready = True
             text_area.border_subtitle = "[[white]^j[/]] Send Message"
         else:
+            self.submit_ready = False
             text_area.border_subtitle = None
 
         # TODO - when the height of the textarea changes
@@ -41,6 +44,7 @@ class PromptInput(TextArea):
         self.parent.refresh()
 
     def action_submit_prompt(self) -> None:
-        message = self.PromptSubmitted(self.text)
-        self.post_message(message)
-        self.text = ""
+        if self.submit_ready:
+            message = self.PromptSubmitted(self.text)
+            self.post_message(message)
+            self.text = ""
