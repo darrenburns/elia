@@ -363,6 +363,18 @@ OptionsModal #form-scrollable {
     border-title-color: yellowgreen;
     background: red 0%;
     padding: 1 2;
+
+    &:focus {
+      border: round $main-border-color-focus;
+      border-title-style: bold;
+    }
+  }
+
+  #xdg-info {
+    padding: 1 2;
+    border: round $main-border-color;
+    height: auto;
+    border-title-color: $main-border-text-color;
   }
 
 }
