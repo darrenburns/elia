@@ -129,12 +129,12 @@ HomeScreen ChatList {
 
 AppHeader #cl-header-container {
   height: auto;
-  padding: 1 2;
 }
 
 AppHeader {
   dock: top;
   width: 1fr;
+  padding: 1 2;
   height: auto;
   & .app-title {
     color: $text-muted;
@@ -150,9 +150,8 @@ AppHeader {
     height: auto;
   }
 
-  & #model {
+  & #model-label {
     border: none;
-    margin: 1 2;
     background: $main-darken-2 0%;
     text-style: dim;
   }

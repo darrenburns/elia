@@ -19,7 +19,9 @@ class PromptInput(TextArea):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
+        super().__init__(
+            name=name, id=id, classes=classes, disabled=disabled, language="markdown"
+        )
 
     def on_mount(self):
         self.border_title = "Enter your [u]m[/]essage..."
