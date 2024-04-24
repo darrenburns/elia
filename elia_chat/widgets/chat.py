@@ -210,8 +210,8 @@ class Chat(Widget):
             self.stream_agent_response()
 
         chat_header = self.query_one(ChatHeader)
-        chat_header.title = (
-            chat_data.short_preview.replace("\n", " ") or "Untitled Chat"
+        chat_header.title = chat_data.title or chat_data.short_preview.replace(
+            "\n", " "
         )
         chat_header.model_name = chat_data.model_name or "unknown model"
 

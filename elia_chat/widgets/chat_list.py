@@ -31,10 +31,11 @@ class ChatListItemRenderable:
         subtitle = Text.from_markup(
             f"[dim]{time_ago} [i not b]via[/] {self.chat.model_name}[/]"
         )
+        title = self.chat.title
         yield Padding(
             Text.assemble(
                 (
-                    self.chat.short_preview.replace("\n", " "),
+                    title or self.chat.short_preview.replace("\n", " "),
                     "" if not self.is_open else "b",
                 ),
                 "\n",

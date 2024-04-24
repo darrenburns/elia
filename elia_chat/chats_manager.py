@@ -56,7 +56,7 @@ class ChatsManager:
     async def create_chat(chat_data: ChatData) -> int:
         log.debug(f"Creating chat in database: {chat_data!r}")
 
-        chat = ChatDao(model=chat_data.model_name, title="Untitled chat")
+        chat = ChatDao(model=chat_data.model_name, title="")
 
         for message in chat_data.messages:
             new_message = MessageDao(role=message.type, content=message.content)
