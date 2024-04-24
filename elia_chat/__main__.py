@@ -26,8 +26,9 @@ def cli(context: click.Context) -> None:
     if not sqlite_file_name.exists():
         asyncio.run(create_database())
 
-    app = Elia(LaunchConfig())
-    app.run()
+    if context.invoked_subcommand is None:
+        app = Elia(LaunchConfig())
+        app.run()
 
 
 @cli.command()
@@ -81,6 +82,7 @@ def chat(message: Tuple[str, ...], model: str) -> None:
     launch_config = LaunchConfig(
         default_model=quick_launch_args.launch_prompt_model_name,
     )
+    # TODO - ensure this launches and remains on the chat screen
     app = Elia(launch_config, quick_launch_args.launch_prompt)
     app.run()
 

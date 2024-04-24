@@ -3,7 +3,7 @@ from __future__ import annotations
 import datetime
 from pathlib import Path
 
-from langchain.schema import HumanMessage, SystemMessage
+from langchain_core.messages import HumanMessage, SystemMessage
 from textual.app import App
 from textual.signal import Signal
 

@@ -11,11 +11,11 @@ dependencies = [
     "humanize>=4.6.0",
     "tiktoken>=0.4.0",
     "click>=8.1.6",
-    "langchain>=0.0.331",
     "langchain-openai>=0.0.5",
     "xdg-base-dirs>=6.0.1",
     "pydantic-settings>=2.2.1",
     "aiosqlite>=0.20.0",
+    "langchain-core>=0.1.45",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

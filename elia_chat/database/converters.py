@@ -1,5 +1,10 @@
+from langchain_core.messages import (
+    BaseMessage,
+    SystemMessage,
+    AIMessage,
+    HumanMessage,
+)
 
-from langchain.schema import BaseMessage, SystemMessage, AIMessage, HumanMessage
 
 from elia_chat.database.models import ChatDao, MessageDao
 from elia_chat.models import ChatData
@@ -51,5 +56,7 @@ def message_dao_to_chat_message(message_dao: MessageDao) -> BaseMessage:
         return AIMessage(**kwargs)
     elif message_dao.role == "human":
         return HumanMessage(**kwargs)
+    elif message_dao.role == "tool":
+        return AIMessage(**kwargs)
     else:
-        raise ValueError(f"Invalid role {message_dao.role!r}")
+        return AIMessage(**kwargs)

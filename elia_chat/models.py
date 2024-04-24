@@ -3,14 +3,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import UTC, datetime
 
-from langchain.schema import BaseMessage
-from langchain.callbacks import AsyncIteratorCallbackHandler
+from langchain_core.messages import BaseMessage
+from langchain_core.callbacks import AsyncCallbackHandler
 from langchain_openai import ChatOpenAI
-from langchain.chat_models.base import BaseChatModel
+from langchain_core.language_models.chat_models import BaseChatModel
 
 from elia_chat.config import LaunchConfig
 
-callback = AsyncIteratorCallbackHandler()
+callback = AsyncCallbackHandler()
 
 
 @dataclass

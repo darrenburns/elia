@@ -1,7 +1,7 @@
 from __future__ import annotations
 import html
 
-from langchain.schema import BaseMessage
+from langchain_core.messages import BaseMessage
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from textual.binding import Binding

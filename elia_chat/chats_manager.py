@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from langchain.schema import BaseMessage
+from langchain_core.messages import BaseMessage
 from textual import log
 
 from elia_chat.database.converters import (

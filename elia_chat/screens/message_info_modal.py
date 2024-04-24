@@ -3,7 +3,7 @@ import datetime
 from typing import cast
 
 import tiktoken
-from langchain.schema import BaseMessage
+from langchain_core.messages import BaseMessage
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding

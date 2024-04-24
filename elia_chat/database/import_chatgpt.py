@@ -16,7 +16,9 @@ async def import_chatgpt_data(file: Path) -> None:
         for chat_data in data:
             # Create a new ChatDao instance and add it to the session
             chat = ChatDao(
-                model=None, started_at=datetime.fromtimestamp(chat_data["create_time"])
+                title=chat_data.get("title"),
+                model="gpt-3.5-turbo",
+                started_at=datetime.fromtimestamp(chat_data.get("create_time", 0) or 0),
             )
             session.add(chat)
             await session.commit()  # Make sure to commit so that chat.id is assigned
@@ -27,16 +29,25 @@ async def import_chatgpt_data(file: Path) -> None:
                     metadata = message_info.get("metadata", {})
                     if metadata:
                         model = metadata.get("model_slug")
-                        if model is not None:
-                            chat.model = model
-                            session.add(chat)
-                            await session.commit()
+                        chat.model = (
+                            "gpt-4-turbo" if model == "gpt-4" else "gpt-3.5-turbo"
+                        )
+                        session.add(chat)
+                        await session.commit()
 
+                    role = message_info["author"]["role"]
+                    role_mapping = {
+                        "user": "human",
+                        "assistant": "ai",
+                        "system": "system",
+                    }
                     message = MessageDao(
                         chat_id=chat.id,
-                        role=message_info["author"]["role"],
-                        content=message_info["content"]["parts"][0],
-                        timestamp=datetime.fromtimestamp(message_info["create_time"]),
+                        role=role_mapping.get(role, role),
+                        content=str(message_info["content"].get("parts", [""])[0]),
+                        timestamp=datetime.fromtimestamp(
+                            message_info.get("create_time", 0) or 0
+                        ),
                         status=message_info.get("status"),
                         end_turn=message_info.get("end_turn"),
                         weight=message_info.get("weight"),

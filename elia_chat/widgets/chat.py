@@ -4,15 +4,15 @@ import datetime
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from langchain.chat_models.base import BaseChatModel
-from langchain.llms.base import LLM
-from langchain.schema import (
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.language_models import LLM
+from langchain_core.messages import (
     AIMessage,
     BaseMessage,
     HumanMessage,
     SystemMessage,
+    BaseMessageChunk,
 )
-from langchain.schema.messages import BaseMessageChunk
 from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
