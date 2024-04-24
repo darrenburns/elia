@@ -8,7 +8,7 @@ class OpenAI(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     organization: str | None = Field(default=os.getenv("OPENAI_ORGANIZATION"))
-    project: str | None = Field(default=os.getenv("OPENAI_PROJECT"))
+    # project: str | None = Field(default=os.getenv("OPENAI_PROJECT"))
 
 
 class LaunchConfig(BaseModel):
