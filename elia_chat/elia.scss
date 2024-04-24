@@ -30,6 +30,11 @@ ModalScreen {
   background: black 50%;
 }
 
+Toast {
+  background: $background;
+  border-left: outer greenyellow;
+}
+
 Chat {
   height: 1fr;
   width: 1fr;
