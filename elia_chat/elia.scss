@@ -366,7 +366,7 @@ OptionsModal #form-scrollable {
   & #available-models {
     width: 100%;
     border: round $main-border-color;
-    border-title-color: yellowgreen;
+    border-title-color: $main-border-text-color;
     background: red 0%;
     padding: 1 2;
 

@@ -24,8 +24,8 @@ def cli(context: click.Context) -> None:
     """
     Elia: A terminal ChatGPT client built with Textual
     """
-    click.echo(sqlite_file_name)
     if not sqlite_file_name.exists():
+        click.echo(f"Creating database at {sqlite_file_name!r}")
         asyncio.run(create_database())
 
     config = config_file()
