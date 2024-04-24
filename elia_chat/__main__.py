@@ -4,6 +4,7 @@ Elia CLI
 
 import asyncio
 import pathlib
+import tomllib
 from typing import Tuple
 
 import click
@@ -14,6 +15,7 @@ from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.database.database import create_database, sqlite_file_name
 from elia_chat.launch_args import QuickLaunchArgs
 from elia_chat.models import DEFAULT_MODEL, MODEL_MAPPING
+from elia_chat.locations import config_file
 
 
 @click.group(invoke_without_command=True)
@@ -26,8 +28,18 @@ def cli(context: click.Context) -> None:
     if not sqlite_file_name.exists():
         asyncio.run(create_database())
 
+    config = config_file()
+    try:
+        file_config = tomllib.loads(config.read_text())
+    except FileNotFoundError:
+        file_config = {}
+        try:
+            config.touch()
+        except OSError:
+            pass
+
     if context.invoked_subcommand is None:
-        app = Elia(LaunchConfig())
+        app = Elia(LaunchConfig(**file_config))
         app.run()
 
 

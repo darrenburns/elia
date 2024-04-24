@@ -15,7 +15,6 @@ engine = create_async_engine(sqlite_url)
 async def create_database():
     async with engine.begin() as conn:
         # TODO - check if exists, use Alembic.
-        print(data_directory())
         await conn.run_sync(SQLModel.metadata.create_all)
 
 

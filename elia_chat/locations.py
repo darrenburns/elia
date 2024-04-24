@@ -17,3 +17,7 @@ def data_directory() -> Path:
 def config_directory() -> Path:
     """Return (possibly creating) the application config directory."""
     return _elia_directory(xdg_config_home())
+
+
+def config_file() -> Path:
+    return config_directory() / "config.toml"

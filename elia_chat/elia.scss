@@ -43,7 +43,7 @@ Chat {
   & ChatHeader {
     dock: top;
     width: 1fr;
-    height: 4;
+    height: auto;
     padding: 1 2 0 2;
     border-bottom: hkey $main-lighten-2 8%;
     background: $panel-darken-2 20%;
