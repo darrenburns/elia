@@ -88,7 +88,7 @@ class Chatbox(Widget, can_focus=True):
             message = f"Copied message ({len(text_to_copy)} characters)."
 
         self.app.copy_to_clipboard(text_to_copy)
-        self.notify(message)
+        self.notify(message, title="Clipboard")
         self.selection_mode = False
 
     async def watch_selection_mode(self, value: bool) -> None:

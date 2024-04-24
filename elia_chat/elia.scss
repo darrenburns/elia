@@ -31,7 +31,8 @@ ModalScreen {
 }
 
 Toast {
-  background: $background;
+  background: $background-darken-1;
+  border: none;
   border-left: outer greenyellow;
 }
 
