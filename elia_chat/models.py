@@ -4,59 +4,26 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 
 from langchain_core.messages import BaseMessage
-from langchain_core.callbacks import AsyncCallbackHandler
-from langchain_openai import ChatOpenAI
-from langchain_core.language_models.chat_models import BaseChatModel
 
-from elia_chat.config import LaunchConfig
-
-callback = AsyncCallbackHandler()
+from elia_chat.config import LaunchConfig, EliaChatModel
 
 
-@dataclass
-class GPTModel:
-    name: str
-    provider: str
-    product: str
-    description: str
-    context_window: int
-
-    def get_langchain_chat_model(
-        self,
-        launch_config: LaunchConfig,
-    ) -> BaseChatModel:
-        return ChatOpenAI(
-            model=self.name,
-            organization=launch_config.open_ai.organization,
-            streaming=True,
-            callbacks=[callback],
-        )
+def get_available_models(config: LaunchConfig) -> list[EliaChatModel]:
+    openai = config.openai
+    anthropic = config.anthropic
+    return [
+        *openai.models,
+        *openai.extra_models,
+        *anthropic.models,
+        *anthropic.extra_models,
+    ]
 
 
-DEFAULT_MODEL = GPTModel(
-    name="gpt-3.5-turbo",
-    provider="OpenAI",
-    product="ChatGPT",
-    description="The fastest ChatGPT model, great for most everyday tasks.",
-    context_window=16385,
-)
-AVAILABLE_MODELS = [
-    DEFAULT_MODEL,
-    GPTModel(
-        name="gpt-4-turbo",
-        provider="OpenAI",
-        product="ChatGPT",
-        description="The most powerful ChatGPT model, capable of "
-        "complex tasks which require advanced reasoning.",
-        context_window=128000,
-    ),
-]
-MODEL_MAPPING: dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}
-
-
-def get_model_by_name(model_name: str) -> GPTModel:
-    """Given the name of a model as a string, return the GPTModel."""
-    return MODEL_MAPPING[model_name]
+def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
+    """Given the name of a model as a string, return the EliaChatModel."""
+    available_models = get_available_models(config)
+    name_mapping = {model.name: model for model in available_models}
+    return name_mapping[model_name]
 
 
 @dataclass

@@ -27,7 +27,7 @@ from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.models import (
-    GPTModel,
+    EliaChatModel,
     get_model_by_name,
 )
 from elia_chat.widgets.chatbox import Chatbox
@@ -131,17 +131,21 @@ class Chat(Widget):
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
-        selected_model: GPTModel = get_model_by_name(self.chat_data.model_name)
+        selected_model: EliaChatModel = get_model_by_name(
+            self.chat_data.model_name, self.elia.launch_config
+        )
         llm: BaseChatModel = selected_model.get_langchain_chat_model(
             self.elia.launch_config
         )
-        trimmed_messages = self.trim_messages(
-            model=llm,
-            messages=self.chat_data.messages,
-            max_tokens=selected_model.context_window,
-            preserve_system_message=True,
-        )
-        streaming_response = llm.astream(input=trimmed_messages)
+        messages = self.chat_data.messages
+        if selected_model.provider != "anthropic":
+            self.trim_messages(
+                model=llm,
+                messages=messages,
+                max_tokens=selected_model.context_window,
+                preserve_system_message=True,
+            )
+        streaming_response = llm.astream(input=messages)
         # TODO - ensure any metadata available in streaming response is passed through
         message = AIMessage(
             content="",

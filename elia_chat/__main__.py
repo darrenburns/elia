@@ -14,7 +14,6 @@ from elia_chat.config import LaunchConfig
 from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.database.database import create_database, sqlite_file_name
 from elia_chat.launch_args import QuickLaunchArgs
-from elia_chat.models import DEFAULT_MODEL, MODEL_MAPPING
 from elia_chat.locations import config_file
 
 
@@ -79,8 +78,8 @@ def import_file_to_db(file: pathlib.Path) -> None:
 @click.option(
     "-m",
     "--model",
-    type=click.Choice(choices=list(MODEL_MAPPING.keys())),
-    default=DEFAULT_MODEL.name,
+    type=str,
+    default="gpt-3.5-turbo",
     help="The model to use for the chat",
 )
 def chat(message: Tuple[str, ...], model: str) -> None:

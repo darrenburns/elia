@@ -1,3 +1,5 @@
 {
-    "python.analysis.autoImportCompletions": false
+    "python.analysis.include": [
+        "elia_chat/**/*.py",
+    ]
 }

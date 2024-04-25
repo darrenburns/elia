@@ -16,6 +16,7 @@ dependencies = [
     "pydantic-settings>=2.2.1",
     "aiosqlite>=0.20.0",
     "langchain-core>=0.1.45",
+    "langchain-anthropic>=0.1.11",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
