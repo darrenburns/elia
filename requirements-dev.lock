@@ -143,7 +143,7 @@ sqlmodel==0.0.14
     # via elia
 tenacity==8.2.3
     # via langchain-core
-textual==0.57.1
+textual==0.58.0
     # via elia
     # via textual-dev
 textual-dev==1.4.0

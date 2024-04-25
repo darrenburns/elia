@@ -7,6 +7,8 @@ from textual.widget import Widget
 from textual.widgets import Label
 
 from rich.text import Text
+from elia_chat.runtime_config import RuntimeConfig
+
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
@@ -17,27 +19,22 @@ class AppHeader(Widget):
 
     def __init__(
         self,
-        config_signal: Signal,
+        config_signal: Signal[RuntimeConfig],
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
         super().__init__(name=name, id=id, classes=classes, disabled=disabled)
-        self.config_signal = config_signal
+        self.config_signal: Signal[RuntimeConfig] = config_signal
         self.elia = cast("Elia", self.app)
 
     def on_mount(self) -> None:
-        self.config_signal.subscribe(self, self.on_app_state_updated)
+        def on_config_change(config: RuntimeConfig) -> None:
+            model_label = self.query_one("#model-label", Label)
+            model_label.update(config.selected_model)
 
-    def on_app_state_updated(self) -> None:
-        # TODO - a textual PR to add a Signal.publish_message(...) method
-        #  or optionally include arguments which will be passed to the
-        #  triggered callbacks? Basically want a way of sending data from
-        #  the publisher to the subscribers, rather than just triggering a callback,
-        #  and then the subscribers having to get the associated data themselves.
-        model_label = self.query_one("#model-label", Label)
-        model_label.update(self.elia.runtime_config.selected_model)
+        self.config_signal.subscribe(self, on_config_change)
 
     def compose(self) -> ComposeResult:
         title_style = self.get_component_rich_style("app-title")

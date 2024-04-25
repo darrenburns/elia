@@ -20,15 +20,15 @@ class Elia(App[None]):
     CSS_PATH = Path(__file__).parent / "elia.scss"
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
-        # TODO - some of the initial values should be set below
-        #  if supplied in the configuration.
         super().__init__()
         self.launch_config = config
         self._runtime_config = RuntimeConfig(
             selected_model=config.default_model,
             system_prompt=config.system_prompt,
         )
-        self.runtime_config_signal = Signal(self, "runtime-config-updated")
+        self.runtime_config_signal = Signal[RuntimeConfig](
+            self, "runtime-config-updated"
+        )
         """Widgets can subscribe to this signal to be notified of
         when the user has changed configuration at runtime (e.g. using the UI)."""
 
@@ -46,7 +46,7 @@ class Elia(App[None]):
     @runtime_config.setter
     def runtime_config(self, new_runtime_config: RuntimeConfig) -> None:
         self._runtime_config = new_runtime_config
-        self.runtime_config_signal.publish()
+        self.runtime_config_signal.publish(self.runtime_config)
 
     async def on_mount(self) -> None:
         if self.startup_prompt:
