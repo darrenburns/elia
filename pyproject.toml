@@ -15,6 +15,7 @@ humanize = "^4.6.0"
 tiktoken = "^0.4.0"
 click = "^8.1.6"
 langchain = "^0.0.331"
+pyperclip = "^1.8.2"
 
 [tool.poetry.scripts]
 elia = "elia_chat.__main__:cli"

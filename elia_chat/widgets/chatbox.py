@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pyperclip
 from langchain.schema import BaseMessage
 from rich.console import RenderableType
 from rich.markdown import Markdown
@@ -12,7 +13,10 @@ from elia_chat.time_display import format_timestamp
 
 
 class Chatbox(Widget, can_focus=True):
-    BINDINGS = [Binding(key="d", action="details", description="Message details")]
+    BINDINGS = [
+        Binding(key="d", action="details", description="Message details"),
+        Binding(key="c", action="copy_to_clipboard", description="Copy Content"),
+    ]
 
     def __init__(
         self,
@@ -60,3 +64,7 @@ class Chatbox(Widget, can_focus=True):
         new_content = existing_content + chunk
         self.message.content = new_content
         self.refresh(layout=True)
+
+    def action_copy_to_clipboard(self):
+        content_to_copy = self.message.content or ""
+        pyperclip.copy(content_to_copy)
