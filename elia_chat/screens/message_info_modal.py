@@ -50,14 +50,20 @@ class MessageInfo(ModalScreen[RuntimeConfig]):
             encoder, tokens = None, None
         with Vertical(id="outermost-container"):
             with Horizontal(id="message-info-header"):
-                with Tabs():
-                    yield Tab("Markdown", id="markdown-content")
-                    if model.provider == "openai":
-                        yield Tab("Tokens", id="tokens")
-                    yield Tab("Metadata", id="metadata")
+                tabs = [
+                    Tab("Details", id="metadata"),
+                    Tab("Markdown", id="markdown-content"),
+                ]
+                tabs = (
+                    [*tabs, Tab("Tokens", id="tokens")]
+                    if model.provider == "openai"
+                    else tabs
+                )
+                yield Tabs(*tabs)
 
             with Vertical(id="inner-container"):
                 with ContentSwitcher(initial="markdown-content"):
+                    yield Static("Details", id="metadata")
                     text_area = TextArea(
                         markdown_content,
                         read_only=True,
@@ -72,7 +78,6 @@ class MessageInfo(ModalScreen[RuntimeConfig]):
                         and encoder is not None
                     ):
                         yield TokenAnalysis(tokens, encoder, id="tokens")
-                    yield Static("Metadata", id="metadata")
 
             with Horizontal(id="message-info-footer"):
                 timestamp = cast(
