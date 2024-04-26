@@ -17,6 +17,7 @@ from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import ScrollableContainer, VerticalScroll
+from textual.css.query import NoMatches
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
@@ -200,6 +201,19 @@ class Chat(Widget):
             user_message = event.text
             await self.new_user_message(user_message)
 
+    @on(PromptInput.CursorEscapingTop)
+    async def on_cursor_up_from_prompt(self) -> None:
+        self.focus_latest_message()
+
+    def focus_latest_message(self) -> None:
+        try:
+            self.query(Chatbox).last().focus()
+        except NoMatches:
+            pass
+
+    def action_focus_latest_message(self) -> None:
+        self.focus_latest_message()
+
     async def load_chat(self, chat_data: ChatData) -> None:
         assert self.chat_container is not None
         chatboxes = [
@@ -207,7 +221,7 @@ class Chat(Widget):
             for chat_message in self.chat_data.non_system_messages
         ]
         await self.chat_container.mount_all(chatboxes)
-        self.chat_container.scroll_end(animate=False)
+        self.chat_container.scroll_end(animate=False, force=True)
 
         if chat_data.messages and chat_data.messages[-1].type == "human":
             self.post_message(self.AgentResponseStarted())

@@ -75,6 +75,10 @@ ChatList {
             model_name=self.elia.runtime_config.selected_model,
         )
 
+    @on(PromptInput.CursorEscapingBottom)
+    async def move_focus_below(self) -> None:
+        self.focus_next(ChatList)
+
     def action_send_message(self) -> None:
         prompt_input = self.query_one(PromptInput)
         prompt_input.action_submit_prompt()

@@ -11,9 +11,6 @@ from elia_chat.models import ChatData
 
 
 class ChatScreen(Screen[None]):
-    """This screen doesn't correspond to a single chat. It's just the screen
-    where chatting takes place. It includes the list of chats in the sidebar."""
-
     AUTO_FOCUS = None
     BINDINGS = [
         Binding(

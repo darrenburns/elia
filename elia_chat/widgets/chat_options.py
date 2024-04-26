@@ -66,6 +66,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
         if selected_model_rs.pressed_button is None:
             selected_model_rs._selected = 0
             assert selected_model_rs.pressed_button is not None
+
         self.elia.runtime_config = self.elia.runtime_config.model_copy(
             update={
                 "system_prompt": system_prompt_ta.text,

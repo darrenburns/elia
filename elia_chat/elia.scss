@@ -23,7 +23,7 @@ Tabs .underline--bar {
 }
 
 Screen {
-  background: $panel-darken-1;
+  background: $background;
 }
 
 ModalScreen {
@@ -46,7 +46,7 @@ Chat {
     height: auto;
     padding: 1 2 0 2;
     border-bottom: hkey $main-lighten-2 8%;
-    background: $panel-darken-2 20%;
+    background: $background;
 
     & #model-static {
       color: $text-muted;
@@ -60,7 +60,7 @@ Chat {
   }
 
   VerticalScroll {
-    background: $panel-darken-1;
+    background: $background;
   }
 
 }
@@ -144,7 +144,6 @@ AppHeader {
   height: auto;
   & .app-title {
     color: $text-muted;
-    background: $main-darken-2 10%;
   }
 
   & .app-subtitle {
@@ -220,25 +219,23 @@ Chatbox {
 
 }
 
-
 Footer {
-  background: $panel-darken-1;
+  background: $main-darken-1 0%;
 }
 
 Footer > .footer--highlight {
-  background: $main-darken-1;
+  background: $main-lighten-2 20%;
 }
 
 Footer > .footer--key {
-  text-style: bold;
-  background: $main-darken-2;
-  color: $text;
+  text-style: none;
+  background: $main-darken-2 0%;
+  color: $main-border-text-color;
 }
 
 Footer > .footer--highlight-key {
-  background: $success;
-  text-style: bold;
-  color: $text;
+  background: $main-lighten-2 30%;
+  color: greenyellow;
 }
 
 OptionList {
@@ -361,7 +358,7 @@ OptionsModal #form-scrollable {
   padding: 1 2;
   width: 60%;
   height: auto;
-  max-height: 80%;
+  max-height: 90%;
   border: wide $main-darken-2 80%;
   & #available-models {
     width: 100%;
@@ -376,6 +373,11 @@ OptionsModal #form-scrollable {
     }
   }
 
+  & TextArea {
+    min-height: 6;
+  }
+
+
   #xdg-info {
     padding: 1 2;
     border: round $main-border-color;
@@ -383,4 +385,62 @@ OptionsModal #form-scrollable {
     border-title-color: $main-border-text-color;
   }
 
+}
+
+.code_inline {
+  text-style: none;
+  color: greenyellow;
+}
+
+HelpScreen {
+  width:1fr;
+  height: auto;
+  align: center middle;
+
+  & #help-scroll-keys-info {
+    dock: bottom;
+    border-top: solid $main 50%;
+    text-style: dim;
+    padding: 0 2;
+    background: $background 0%;
+  }
+  & > Vertical {
+    border: wide $main-border-color 80%;
+    border-title-color: $main-border-text-color;
+    border-title-background: $background;
+    border-title-style: bold;
+    width: 80%;
+    height: 90%;
+    background: $background;
+  }
+
+  & Markdown {
+    margin: 0;
+    padding: 1 2;
+
+    & MarkdownH3 {
+      background: $background 0%;
+      margin: 0;
+      margin-top: 1;
+      padding: 0;
+    }
+    & MarkdownBlockQuote {
+      background: $boost;
+      border-left: outer $main;
+      padding-top: 1;
+      padding-left: 1;
+    }
+    & MarkdownParagraph {
+      margin: 0 0 1 0;
+    }
+    & MarkdownTable {
+      background: $background 0%;
+      margin: 0;
+      padding: 0;
+      offset-x: -2;
+      offset-y: -1;
+
+
+    }
+  }
 }

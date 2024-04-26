@@ -5,6 +5,7 @@ from pathlib import Path
 
 from langchain_core.messages import HumanMessage, SystemMessage
 from textual.app import App
+from textual.binding import Binding
 from textual.signal import Signal
 
 from elia_chat.chats_manager import ChatsManager
@@ -12,12 +13,16 @@ from elia_chat.models import ChatData
 from elia_chat.config import LaunchConfig
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
+from elia_chat.screens.help_screen import HelpScreen
 from elia_chat.screens.home_screen import HomeScreen
 
 
 class Elia(App[None]):
     ENABLE_COMMAND_PALETTE = False
     CSS_PATH = Path(__file__).parent / "elia.scss"
+    BINDINGS = [
+        Binding("f1", "help", "Help"),
+    ]
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
         super().__init__()
@@ -79,6 +84,9 @@ class Elia(App[None]):
         )
         chat.id = str((await ChatsManager.create_chat(chat_data=chat)))
         await self.push_screen(ChatScreen(chat))
+
+    async def action_help(self) -> None:
+        await self.app.push_screen(HelpScreen())
 
 
 if __name__ == "__main__":

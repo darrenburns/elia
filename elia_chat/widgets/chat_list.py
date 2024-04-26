@@ -65,7 +65,7 @@ class ChatList(OptionList):
         chat: ChatData
 
     async def on_mount(self) -> None:
-        self.border_title = "Chat [u]h[/]istory"
+        self.border_title = "Chat history"
         self.options = await self.load_chat_list_items()
         self.add_options(self.options)
 

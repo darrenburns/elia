@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from textual import on
+from textual import events, on
 from textual.binding import Binding
 from textual.widgets import TextArea
 from textual.message import Message
@@ -9,6 +9,14 @@ class PromptInput(TextArea):
     @dataclass
     class PromptSubmitted(Message):
         text: str
+
+    @dataclass
+    class CursorEscapingTop(Message):
+        pass
+
+    @dataclass
+    class CursorEscapingBottom(Message):
+        pass
 
     BINDINGS = [Binding("ctrl+j", "submit_prompt", "Send message", key_display="^j")]
 
@@ -22,6 +30,14 @@ class PromptInput(TextArea):
         super().__init__(
             name=name, id=id, classes=classes, disabled=disabled, language="markdown"
         )
+
+    def _on_key(self, event: events.Key) -> None:
+        if self.cursor_location == (0, 0) and event.key == "up":
+            event.prevent_default()
+            self.post_message(self.CursorEscapingTop())
+        elif self.cursor_at_end_of_text and event.key == "down":
+            event.prevent_default()
+            self.post_message(self.CursorEscapingBottom())
 
     def on_mount(self):
         self.border_title = "Enter your [u]m[/]essage..."
