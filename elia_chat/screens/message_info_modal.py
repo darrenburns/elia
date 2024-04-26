@@ -63,7 +63,7 @@ class MessageInfo(ModalScreen[RuntimeConfig]):
 
             with Vertical(id="inner-container"):
                 with ContentSwitcher(initial="markdown-content"):
-                    yield Static("Details", id="metadata")
+                    yield Static(f"{self.message!r}", id="metadata")
                     text_area = TextArea(
                         markdown_content,
                         read_only=True,
