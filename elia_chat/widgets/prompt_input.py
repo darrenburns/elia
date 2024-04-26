@@ -10,7 +10,7 @@ class PromptInput(TextArea):
     class PromptSubmitted(Message):
         text: str
 
-    BINDINGS = [Binding("ctrl+j", "submit_prompt", "Send message", key_display="j")]
+    BINDINGS = [Binding("ctrl+j", "submit_prompt", "Send message", key_display="^j")]
 
     def __init__(
         self,
