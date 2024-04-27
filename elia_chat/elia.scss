@@ -19,7 +19,7 @@ $left-border-trim: vkey $main-lighten-2 15%;
   link-style: none;
   link-color-hover: greenyellow;
   link-background-hover: $main 0%;
-  link-style-hover: not dim bold;
+  link-style-hover: u not dim bold;
 }
 
 Tabs .underline--bar {
@@ -355,11 +355,14 @@ OptionsModal {
 }
 
 OptionsModal #form-scrollable {
+  background: $background;
   padding: 1 2;
   width: 60%;
   height: auto;
   max-height: 90%;
   border: wide $main-darken-2 80%;
+  border-title-color: $main-border-text-color;
+  border-title-background: $background;
   & #available-models {
     width: 100%;
     border: round $main-border-color;
@@ -406,7 +409,7 @@ RadioSet > RadioButton.-on {
 
 RadioButton .toggle--button {
   color: greenyellow 80%;
-  background: $background;
+  background: $background-lighten-1;
 }
 
 HelpScreen {

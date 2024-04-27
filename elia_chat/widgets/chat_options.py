@@ -34,6 +34,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
 
     def compose(self) -> ComposeResult:
         with VerticalScroll(id="form-scrollable") as vs:
+            vs.border_title = "Session Options"
             vs.can_focus = False
             with RadioSet(id="available-models") as models_rs:
                 models_rs.border_title = "Available Models"
