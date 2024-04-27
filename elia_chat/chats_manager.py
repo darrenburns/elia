@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import datetime
 
 from langchain_core.messages import BaseMessage
 from textual import log
@@ -56,10 +57,18 @@ class ChatsManager:
     async def create_chat(chat_data: ChatData) -> int:
         log.debug(f"Creating chat in database: {chat_data!r}")
 
-        chat = ChatDao(model=chat_data.model_name, title="")
+        chat = ChatDao(
+            model=chat_data.model_name,
+            title="",
+            started_at=datetime.datetime.now(datetime.UTC),
+        )
 
         for message in chat_data.messages:
-            new_message = MessageDao(role=message.type, content=message.content)
+            new_message = MessageDao(
+                role=message.type,
+                content=message.content,
+                timestamp=message.additional_kwargs.get("timestamp"),
+            )
             chat.messages.append(new_message)
 
         async with get_session() as session:

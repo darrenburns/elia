@@ -6,7 +6,7 @@ from textual.widgets import Footer, Markdown
 
 
 class HelpScreen(ModalScreen[None]):
-    BINDINGS = [Binding("escape,f1", "app.pop_screen()", "Close Help")]
+    BINDINGS = [Binding("escape,f1", "app.pop_screen()", "Close help")]
 
     HELP_MARKDOWN = """\
 

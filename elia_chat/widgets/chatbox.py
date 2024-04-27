@@ -1,5 +1,4 @@
 from __future__ import annotations
-import html
 
 from langchain_core.messages import BaseMessage
 from rich.console import RenderableType
@@ -19,7 +18,7 @@ class Chatbox(Widget, can_focus=True):
         Binding(key="enter", action="details", description="Message details"),
         Binding(key="up,k", action="up", description="Up"),
         Binding(key="down,j", action="down", description="Down"),
-        Binding(key="space", action="select", description="Toggle Select"),
+        Binding(key="space", action="select", description="Toggle select mode"),
         Binding(
             key="c",
             action="copy_to_clipboard",
@@ -117,12 +116,7 @@ class Chatbox(Widget, can_focus=True):
 
     @property
     def markdown(self) -> Markdown:
-        message = self.message
-        if message.type == "human":
-            content = html.escape(message.content)
-        else:
-            content = message.content
-        return Markdown(content)
+        return Markdown(self.message.content)
 
     def render(self) -> RenderableType:
         return self.markdown

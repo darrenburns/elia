@@ -14,7 +14,7 @@ def chat_message_to_message_dao(chat_message: BaseMessage) -> MessageDao:
     return MessageDao(
         role=chat_message.type,
         content=chat_message.content,
-        timestamp=chat_message.additional_kwargs.get("timestamp", 0),
+        timestamp=chat_message.additional_kwargs.get("timestamp"),
         status=chat_message.additional_kwargs.get("status"),
         end_turn=chat_message.additional_kwargs.get("end_turn"),
         weight=chat_message.additional_kwargs.get("weight"),
@@ -28,9 +28,7 @@ def chat_dao_to_chat_data(chat_dao: ChatDao) -> ChatData:
         id=str(chat_dao.id),
         title=chat_dao.title,
         model_name=chat_dao.model,
-        create_timestamp=chat_dao.started_at.timestamp()
-        if chat_dao.started_at
-        else None,
+        create_timestamp=chat_dao.started_at if chat_dao.started_at else None,
         messages=[
             message_dao_to_chat_message(message) for message in chat_dao.messages
         ],
@@ -38,11 +36,10 @@ def chat_dao_to_chat_data(chat_dao: ChatDao) -> ChatData:
 
 
 def message_dao_to_chat_message(message_dao: MessageDao) -> BaseMessage:
-    ts = message_dao.timestamp.timestamp() if message_dao.timestamp else 0
     kwargs = {
         "content": message_dao.content,
         "additional_kwargs": {
-            "timestamp": ts,
+            "timestamp": message_dao.timestamp,
             "status": message_dao.status,
             "end_turn": message_dao.end_turn,
             "weight": message_dao.weight,

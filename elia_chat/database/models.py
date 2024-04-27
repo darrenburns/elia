@@ -18,7 +18,7 @@ class MessageDao(AsyncAttrs, SQLModel, table=True):
     role: str
     content: str
     timestamp: datetime | None = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now())
+        sa_column=Column(DateTime(), server_default=func.now())
     )
     status: str | None
     end_turn: bool | None
@@ -34,7 +34,7 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
     model: str
     title: str | None
     started_at: datetime | None = Field(
-        sa_column=Column(DateTime(timezone=True), server_default=func.now())
+        sa_column=Column(DateTime(), server_default=func.now())
     )
     messages: list[MessageDao] = Relationship(back_populates="chat")
 

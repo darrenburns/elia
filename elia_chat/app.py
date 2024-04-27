@@ -21,7 +21,7 @@ class Elia(App[None]):
     ENABLE_COMMAND_PALETTE = False
     CSS_PATH = Path(__file__).parent / "elia.scss"
     BINDINGS = [
-        Binding("f1", "help", "Help"),
+        Binding("f1", "help", "Help", priority=True),
     ]
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
@@ -62,7 +62,7 @@ class Elia(App[None]):
         self.push_screen(HomeScreen(self.runtime_config_signal))
 
     async def launch_chat(self, prompt: str, model_name: str) -> None:
-        current_time = datetime.datetime.now(datetime.UTC).timestamp()
+        current_time = datetime.datetime.now(datetime.UTC)
         chat = ChatData(
             id=None,
             title=None,
@@ -86,7 +86,10 @@ class Elia(App[None]):
         await self.push_screen(ChatScreen(chat))
 
     async def action_help(self) -> None:
-        await self.app.push_screen(HelpScreen())
+        if isinstance(self.screen, HelpScreen):
+            self.app.pop_screen()
+        else:
+            await self.app.push_screen(HelpScreen())
 
 
 if __name__ == "__main__":

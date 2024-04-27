@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class OptionsModal(ModalScreen[RuntimeConfig]):
-    BINDINGS = [Binding("escape", "app.pop_screen", "Close modal", key_display="esc")]
+    BINDINGS = [Binding("escape", "app.pop_screen", "Close options", key_display="esc")]
 
     def __init__(
         self,

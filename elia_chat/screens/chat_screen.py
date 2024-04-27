@@ -16,7 +16,7 @@ class ChatScreen(Screen[None]):
         Binding(
             key="m",
             action="focus('prompt')",
-            description="Focus Prompt",
+            description="Focus prompt",
             key_display="m",
         ),
     ]

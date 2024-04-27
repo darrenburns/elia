@@ -13,8 +13,13 @@ $left-border-trim: vkey $main-lighten-2 15%;
   scrollbar-color: $panel;
   scrollbar-color-hover: $main-lighten-1 40%;
   scrollbar-color-active: $main-darken-1;
-  scrollbar-background-active: $background;
-  scrollbar-background-hover: $background;
+  scrollbar-background: #0E0E0E;
+  scrollbar-background-active: $background-darken-1;
+  scrollbar-background-hover: #0C0C0C;
+  link-style: none;
+  link-color-hover: greenyellow;
+  link-background-hover: $main 0%;
+  link-style-hover: not dim bold;
 }
 
 Tabs .underline--bar {
@@ -127,12 +132,6 @@ HomeScreen PromptInput {
   }
 }
 
-HomeScreen ChatList {
-  height: 2fr;
-  width: 1fr;
-  padding: 1 2;
-}
-
 AppHeader #cl-header-container {
   height: auto;
 }
@@ -162,7 +161,8 @@ AppHeader {
   }
 }
 
-ChatList {
+HomeScreen ChatList {
+  padding: 1 0 0 2;
   height: 1fr;
   width: 1fr;
   border: round $main-border-color;
@@ -249,7 +249,7 @@ OptionList > .option-list--option-highlighted {
 }
 
 OptionList:focus > .option-list--option-highlighted {
-  background: $main-lighten-1 60%;
+  background: $main-darken-2 80%;
 }
 
 OptionList > .option-list--option-disabled {
@@ -392,6 +392,23 @@ OptionsModal #form-scrollable {
   color: greenyellow;
 }
 
+RadioSet:focus > RadioButton.-on {
+  & > .toggle--label {
+    text-style: bold not dim;
+    color: greenyellow;
+  }
+}
+
+RadioSet > RadioButton.-on {
+  text-style: bold not dim;
+  color: greenyellow;
+}
+
+RadioButton .toggle--button {
+  color: greenyellow 80%;
+  background: $background;
+}
+
 HelpScreen {
   width:1fr;
   height: auto;
@@ -439,8 +456,6 @@ HelpScreen {
       padding: 0;
       offset-x: -2;
       offset-y: -1;
-
-
     }
   }
 }

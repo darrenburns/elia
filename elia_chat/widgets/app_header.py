@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, cast
+from rich.markup import escape
 from rich.style import Style
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
@@ -31,8 +32,7 @@ class AppHeader(Widget):
 
     def on_mount(self) -> None:
         def on_config_change(config: RuntimeConfig) -> None:
-            model_label = self.query_one("#model-label", Label)
-            model_label.update(config.selected_model)
+            self._update_selected_model(config.selected_model)
 
         self.config_signal.subscribe(self, on_config_change)
 
@@ -49,4 +49,14 @@ class AppHeader(Widget):
                         (" llm tools", title_style),
                     )
                 )
-            yield Label(self.elia.runtime_config.selected_model, id="model-label")
+            model_name = self.elia.runtime_config.selected_model
+            yield Label(
+                self._get_selected_model_link_text(model_name), id="model-label"
+            )
+
+    def _get_selected_model_link_text(self, model_name: str) -> str:
+        return f"[@click=screen.options]{escape(model_name)}[/]"
+
+    def _update_selected_model(self, model_name: str) -> None:
+        model_label = self.query_one("#model-label", Label)
+        model_label.update(self._get_selected_model_link_text(model_name))

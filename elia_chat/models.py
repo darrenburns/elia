@@ -31,7 +31,7 @@ class ChatData:
     id: str | None
     model_name: str
     title: str | None
-    create_timestamp: float | None
+    create_timestamp: datetime | None
     messages: list[BaseMessage]
 
     @property
@@ -60,12 +60,7 @@ class ChatData:
 
     @property
     def update_time(self) -> datetime:
-        return (
-            datetime.fromtimestamp(
-                self.messages[-1].additional_kwargs.get("timestamp", 0)
-                if self.messages
-                else 0
-            )
-            .astimezone()
-            .replace(tzinfo=UTC)
-        )
+        if self.messages:
+            message_timestamp = self.messages[-1].additional_kwargs.get("timestamp")
+
+        return message_timestamp.astimezone().replace(tzinfo=UTC)

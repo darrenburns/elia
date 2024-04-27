@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class MessageInfo(ModalScreen[RuntimeConfig]):
-    BINDINGS = [Binding("escape", "app.pop_screen", "Close Modal")]
+    BINDINGS = [Binding("escape", "app.pop_screen", "Back to chat")]
 
     def __init__(
         self,
@@ -51,7 +51,6 @@ class MessageInfo(ModalScreen[RuntimeConfig]):
         with Vertical(id="outermost-container"):
             with Horizontal(id="message-info-header"):
                 tabs = [
-                    Tab("Details", id="metadata"),
                     Tab("Markdown", id="markdown-content"),
                 ]
                 tabs = (
@@ -63,7 +62,6 @@ class MessageInfo(ModalScreen[RuntimeConfig]):
 
             with Vertical(id="inner-container"):
                 with ContentSwitcher(initial="markdown-content"):
-                    yield Static(f"{self.message!r}", id="metadata")
                     text_area = TextArea(
                         markdown_content,
                         read_only=True,
@@ -80,13 +78,15 @@ class MessageInfo(ModalScreen[RuntimeConfig]):
                         yield TokenAnalysis(tokens, encoder, id="tokens")
 
             with Horizontal(id="message-info-footer"):
-                timestamp = cast(
-                    datetime.datetime,
-                    self.message.additional_kwargs.get("timestamp"),
-                )
-                if timestamp:
-                    timestamp_string = format_timestamp(timestamp if timestamp else 0.0)
-                    yield Static(f"Message sent at {timestamp_string}", id="timestamp")
+                if timestamp := self.message.additional_kwargs.get("timestamp"):
+                    timestamp: datetime.datetime = timestamp.replace(
+                        tzinfo=datetime.UTC
+                    )
+                    timestamp_string = format_timestamp(timestamp) if timestamp else ""
+                    if timestamp_string:
+                        yield Static(
+                            f"Message sent at {timestamp_string}", id="timestamp"
+                        )
 
                 if tokens is not None:
                     yield Static(f"{len(tokens)} tokens", id="token-count")

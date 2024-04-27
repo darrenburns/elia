@@ -11,7 +11,6 @@ from langchain_core.messages import (
     BaseMessage,
     HumanMessage,
     SystemMessage,
-    BaseMessageChunk,
 )
 from textual import log, on, work, events
 from textual.app import ComposeResult
@@ -38,7 +37,7 @@ if TYPE_CHECKING:
 
 
 class Chat(Widget):
-    BINDINGS = [Binding("escape", "pop_screen", "Home", key_display="esc")]
+    BINDINGS = [Binding("escape", "pop_screen", "Close chat", key_display="esc")]
 
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
@@ -97,11 +96,11 @@ class Chat(Widget):
 
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
+        now_utc = datetime.datetime.now(datetime.UTC)
+        print("now_utc", now_utc)
         user_message = HumanMessage(
             content=content,
-            additional_kwargs={
-                "timestamp": datetime.datetime.now(datetime.UTC),
-            },
+            additional_kwargs={"timestamp": now_utc},
         )
         self.chat_data.messages.append(user_message)
         await ChatsManager.add_message_to_chat(
@@ -124,7 +123,7 @@ class Chat(Widget):
         self.post_message(self.AgentResponseStarted())
         self.stream_agent_response()
 
-    @work(exclusive=True)
+    @work
     async def stream_agent_response(self) -> None:
         # TODO - lock the prompt input box here?
 
@@ -166,12 +165,9 @@ class Chat(Widget):
 
         await self.chat_container.mount(response_chatbox)
         response_chatbox.border_title = "Agent is responding..."
-
         async for token in streaming_response:
-            if isinstance(token, BaseMessageChunk):
-                token_str = token.content
-            else:
-                token_str = str(token)
+            print(token.json())
+            token_str = str(token.content)
             response_chatbox.append_chunk(token_str)
             scroll_y = self.chat_container.scroll_y
             max_scroll_y = self.chat_container.max_scroll_y
