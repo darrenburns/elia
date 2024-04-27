@@ -440,7 +440,7 @@ HelpScreen {
 
   & Markdown {
     margin: 0;
-    padding: 1 2;
+    padding: 0 2;
 
     & MarkdownH3 {
       background: $background 0%;
@@ -451,18 +451,10 @@ HelpScreen {
     & MarkdownBlockQuote {
       background: $boost;
       border-left: outer $main;
-      padding-top: 1;
-      padding-left: 1;
+      padding: 1;
     }
-    & MarkdownParagraph {
-      margin: 0 0 1 0;
-    }
-    & MarkdownTable {
-      background: $background 0%;
-      margin: 0;
-      padding: 0;
-      offset-x: -2;
-      offset-y: -1;
+    & MarkdownBulletList {
+      margin-left: 1;
     }
   }
 }

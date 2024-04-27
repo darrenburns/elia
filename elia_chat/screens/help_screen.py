@@ -10,6 +10,12 @@ class HelpScreen(ModalScreen[None]):
 
     HELP_MARKDOWN = """\
 
+### General navigation
+
+Use `tab` and `shift+tab` to move between different widgets on screen.
+
+In some places you can make use of the arrow keys or Vim nav keys to move around.
+
 ### The options window
 
 Press `ctrl+o` to open the _options window_.
@@ -31,46 +37,64 @@ The shortcuts below work when the _prompt editor_ is focused.
 The prompt editor is the box where you type your message.
 It's present on both the home screen and the chat page.
 
-| Key(s)                   | Description                                  |
-| :-                       | :-                                           |
-| `ctrl+j`                 | Submit the prompt.                           |
-| `up`                     | Move the cursor up.                          |
-| `down`                   | Move the cursor down.                        |
-| `left`                   | Move the cursor left.                        |
-| `ctrl+left`              | Move the cursor to the start of the word.    |
-| `ctrl+shift+left`        | Move the cursor to the start of the word and select.    |
-| `right`                  | Move the cursor right.                       |
-| `ctrl+right`             | Move the cursor to the end of the word.      |
-| `ctrl+shift+right`       | Move the cursor to the end of the word and select.      |
-| `home,ctrl+a`            | Move the cursor to the start of the line.    |
-| `end,ctrl+e`             | Move the cursor to the end of the line.      |
-| `shift+home`             | Move the cursor to the start of the line and select.      |
-| `shift+end`              | Move the cursor to the end of the line and select.      |
-| `pageup`                 | Move the cursor one page up.                 |
-| `pagedown`               | Move the cursor one page down.               |
-| `shift+up`               | Select while moving the cursor up.           |
-| `shift+down`             | Select while moving the cursor down.         |
-| `shift+left`             | Select while moving the cursor left.         |
-| `shift+right`            | Select while moving the cursor right.        |
-| `backspace`              | Delete character to the left of cursor.      |
-| `ctrl+w`                 | Delete from cursor to start of the word.     |
-| `delete,ctrl+d`          | Delete character to the right of cursor.     |
-| `ctrl+f`                 | Delete from cursor to end of the word.       |
-| `ctrl+x`                 | Delete the current line.                     |
-| `ctrl+u`                 | Delete from cursor to the start of the line. |
-| `ctrl+k`                 | Delete from cursor to the end of the line.   |
-| `f6`                     | Select the current line.                     |
-| `f7`                     | Select all text in the document.             |
-| `ctrl+z`                 | Undo last edit.                              |
-| `ctrl+y`                 | Redo last undo.                              |
-| `cmd+v` (mac)            | Paste |
-| `ctrl+v` (windows/linux) | Paste |
+- `ctrl+j`: Submit the prompt
+- `up`: Move the cursor up
+- `down`: Move the cursor down
+- `left`: Move the cursor left
+- `ctrl+left`: Move the cursor to the start of the word
+- `ctrl+shift+left`: Move the cursor to the start of the word and select
+- `right`: Move the cursor right
+- `ctrl+right`: Move the cursor to the end of the word
+- `ctrl+shift+right`: Move the cursor to the end of the word and select
+- `home,ctrl+a`: Move the cursor to the start of the line
+- `end,ctrl+e`: Move the cursor to the end of the line
+- `shift+home`: Move the cursor to the start of the line and select
+- `shift+end`: Move the cursor to the end of the line and select
+- `pageup`: Move the cursor one page up
+- `pagedown`: Move the cursor one page down
+- `shift+up`: Select while moving the cursor up
+- `shift+down`: Select while moving the cursor down
+- `shift+left`: Select while moving the cursor left
+- `shift+right`: Select while moving the cursor right
+- `backspace`: Delete character to the left of cursor
+- `ctrl+w`: Delete from cursor to start of the word
+- `delete,ctrl+d`: Delete character to the right of cursor
+- `ctrl+f`: Delete from cursor to end of the word
+- `ctrl+x`: Delete the current line
+- `ctrl+u`: Delete from cursor to the start of the line
+- `ctrl+k`: Delete from cursor to the end of the line
+- `f6`: Select the current line
+- `f7`: Select all text in the document
+- `ctrl+z`: Undo last edit
+- `ctrl+y`: Redo last undo
+- `cmd+v` (mac): Paste
+- `ctrl+v` (windows/linux): Paste
+
 
 You can also click to move the cursor, and click and drag to select text.
 
 The arrow keys can also be used to move focus _out_ of the prompt box.
 For example, pressing `up` while the prompt is focussed on the chat screen
 and the cursor is at (0, 0) will move focus to the latest message.
+
+### The chat screen
+
+Press `shift+tab` to focus the latest message (or move the cursor `up` from (0, 0)).
+
+You can use the arrow keys to move up and down through messages.
+
+_With a message focused_:
+
+- `c`: Copy the raw Markdown of the message to the clipboard.
+    - This requires terminal support. The default MacOS terminal is not supported.
+- `space`: Enter _select mode_.
+    - In this mode, you can move a cursor through the text, optionally holding shift to
+        select text as you move.
+    - With some text selected, press `c` to copy.
+- `up,down,k,j`: Navigate through messages.
+- `enter`: View more details about a message.
+    - The amount of details available may vary depending on the model
+        or provider being used.
 
 """
 
