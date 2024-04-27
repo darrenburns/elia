@@ -121,7 +121,9 @@ class LaunchConfig(BaseModel):
     # TODO - load from config+cli args+envvars too
     default_model: str = Field(default="gpt-3.5-turbo")
     system_prompt: str = Field(
-        default=os.getenv("ELIA_DIRECTIVE", "You are a helpful assistant named Elia.")
+        default=os.getenv(
+            "ELIA_SYSTEM_PROMPT", "You are a helpful assistant named Elia."
+        )
     )
     openai: OpenAI = Field(default_factory=OpenAI)
     anthropic: Anthropic = Field(default_factory=Anthropic)
