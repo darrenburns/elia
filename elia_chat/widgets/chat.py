@@ -37,7 +37,22 @@ if TYPE_CHECKING:
 
 
 class Chat(Widget):
-    BINDINGS = [Binding("escape", "pop_screen", "Close", key_display="esc")]
+    BINDINGS = [
+        Binding("escape", "pop_screen", "Close", key_display="esc"),
+        Binding(
+            key="g",
+            action="focus_first_message",
+            description="First message",
+            key_display="g",
+            show=False,
+        ),
+        Binding(
+            key="G",
+            action="focus_latest_message",
+            description="Latest message",
+            show=False,
+        ),
+    ]
 
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
@@ -205,6 +220,12 @@ class Chat(Widget):
 
     def action_focus_latest_message(self) -> None:
         self.focus_latest_message()
+
+    def action_focus_first_message(self) -> None:
+        try:
+            self.query(Chatbox).first().focus()
+        except NoMatches:
+            pass
 
     async def load_chat(self, chat_data: ChatData) -> None:
         assert self.chat_container is not None

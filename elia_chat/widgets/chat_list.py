@@ -8,6 +8,7 @@ from rich.console import RenderResult, Console, ConsoleOptions
 from rich.padding import Padding
 from rich.text import Text
 from textual import events, log, on
+from textual.binding import Binding
 from textual.message import Message
 from textual.widgets import OptionList
 from textual.widgets.option_list import Option
@@ -50,7 +51,15 @@ class ChatListItem(Option):
 
 
 class ChatList(OptionList):
-    BINDINGS = []
+    BINDINGS = [
+        Binding("j,down", "cursor_down", "Down", show=False),
+        Binding("k,up", "cursor_up", "Up", show=False),
+        Binding("G,end", "last", "Last", show=False),
+        Binding("l,enter", "select", "Select", show=False),
+        Binding("g,home", "first", "First", show=False),
+        Binding("pagedown", "page_down", "Page Down", show=False),
+        Binding("pageup", "page_up", "Page Up", show=False),
+    ]
 
     @dataclass
     class ChatOpened(Message):
