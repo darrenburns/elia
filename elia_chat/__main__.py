@@ -93,7 +93,7 @@ def import_file_to_db(file: pathlib.Path) -> None:
     JSON file into the database.
     """
     asyncio.run(import_chatgpt_data(file=file))
-    click.echo(f"✅  ChatGPT data imported into database {file}")
+    console.print(f"[green]ChatGPT data imported from {str(file)!r}")
 
 
 @cli.command()

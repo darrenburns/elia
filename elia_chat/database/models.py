@@ -37,6 +37,7 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
         sa_column=Column(DateTime(), server_default=func.now())
     )
     messages: list[MessageDao] = Relationship(back_populates="chat")
+    archived: bool = Field(default=False)
 
     @staticmethod
     async def all() -> list["ChatDao"]:
