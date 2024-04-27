@@ -31,7 +31,7 @@ class PromptInput(TextArea):
             name=name, id=id, classes=classes, disabled=disabled, language="markdown"
         )
 
-    def _on_key(self, event: events.Key) -> None:
+    def on_key(self, event: events.Key) -> None:
         if self.cursor_location == (0, 0) and event.key == "up":
             event.prevent_default()
             self.post_message(self.CursorEscapingTop())
@@ -44,14 +44,16 @@ class PromptInput(TextArea):
         self.submit_ready = False
 
     @on(TextArea.Changed)
-    def prompt_changed(self, event: TextArea.Changed) -> None:
+    async def prompt_changed(self, event: TextArea.Changed) -> None:
         text_area = event.text_area
         if text_area.text.strip() != "":
             self.submit_ready = True
-            text_area.border_subtitle = "[[white]^j[/]] Send Message"
+            text_area.border_subtitle = "[[white]^j[/]] Send message"
         else:
             self.submit_ready = False
             text_area.border_subtitle = None
+
+        text_area.set_class(text_area.wrapped_document.height > 1, "multiline")
 
         # TODO - when the height of the textarea changes
         #  things don't appear to refresh correctly.

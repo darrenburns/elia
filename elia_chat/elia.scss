@@ -42,12 +42,8 @@ Toast {
 }
 
 Chat {
-  height: 1fr;
-  width: 1fr;
-
-  & ChatHeader {
-    dock: top;
-    width: 1fr;
+  ChatHeader {
+    width: 100%;
     height: auto;
     padding: 1 2 0 2;
     border-bottom: hkey $main-lighten-2 8%;
@@ -58,7 +54,7 @@ Chat {
     }
   }
 
-  & PromptInput {
+  PromptInput {
     height: auto;
     max-height: 50%;
     padding: 0 1;
@@ -120,6 +116,10 @@ TextArea {
     width: 100%;
     padding: 0;
   }
+}
+
+PromptInput.multiline .text-area--cursor-line {
+  background: white 3%;
 }
 
 HomeScreen PromptInput {

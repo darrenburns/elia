@@ -9,18 +9,18 @@ from rich.padding import Padding
 from rich.text import Text
 from textual import events, log, on
 from textual.message import Message
-from textual.reactive import reactive
 from textual.widgets import OptionList
 from textual.widgets.option_list import Option
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData
+from elia_chat.config import LaunchConfig
+from elia_chat.models import ChatData, get_model_by_name
 
 
 @dataclass
 class ChatListItemRenderable:
     chat: ChatData
-    is_open: bool = False
+    config: LaunchConfig
 
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
@@ -28,37 +28,29 @@ class ChatListItemRenderable:
         now = datetime.datetime.now(datetime.UTC)
         delta = now - self.chat.update_time
         time_ago = humanize.naturaltime(delta)
-        subtitle = Text.from_markup(
-            f"[dim]{time_ago} [i not b]via[/] {self.chat.model_name}[/]"
-        )
-        title = self.chat.title
+        time_ago_text = Text(time_ago, style="dim")
+        model = get_model_by_name(self.chat.model_name, self.config)
+        model_text = Text.from_markup(f"[dim]{model.name} [i]by[/] {model.provider}")
+        title = self.chat.title or self.chat.short_preview.replace("\n", " ")
         yield Padding(
-            Text.assemble(
-                (
-                    title or self.chat.short_preview.replace("\n", " "),
-                    "" if not self.is_open else "b",
-                ),
-                "\n",
-                subtitle,
-            ),
-            pad=(0, 1, 1, 1),
+            Text.assemble(title, "\n", model_text, "\n", time_ago_text),
+            pad=(0, 0, 0, 1),
         )
 
 
 class ChatListItem(Option):
-    def __init__(self, chat: ChatData, is_open: bool = False) -> None:
+    def __init__(self, chat: ChatData, config: LaunchConfig) -> None:
         """
         Args:
             chat: The chat associated with this option.
-            is_open: True if this is the chat that's currently open.
         """
-        super().__init__(ChatListItemRenderable(chat, is_open=is_open))
+        super().__init__(ChatListItemRenderable(chat, config))
         self.chat = chat
-        self.is_open = is_open
+        self.config = config
 
 
 class ChatList(OptionList):
-    current_chat_id: reactive[str | None] = reactive(None)
+    BINDINGS = []
 
     @dataclass
     class ChatOpened(Message):
@@ -73,7 +65,6 @@ class ChatList(OptionList):
     async def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
         assert isinstance(event.option, ChatListItem)
         chat = event.option.chat
-        self.current_chat_id = chat.id
         await self.reload_and_refresh()
         self.post_message(ChatList.ChatOpened(chat=chat))
 
@@ -81,7 +72,7 @@ class ChatList(OptionList):
     @on(events.Focus)
     def show_border_subtitle(self) -> None:
         if self.highlighted is not None:
-            self.border_subtitle = "[[white]Enter[/]] Open Chat"
+            self.border_subtitle = "[[white]Enter[/]] Open chat"
         elif self.option_count > 0:
             self.highlighted = 0
 
@@ -106,17 +97,14 @@ class ChatList(OptionList):
 
     async def load_chat_list_items(self) -> list[ChatListItem]:
         chats = await self.load_chats()
-        return [
-            ChatListItem(chat, is_open=self.current_chat_id == chat.id)
-            for chat in chats
-        ]
+        return [ChatListItem(chat, self.app.launch_config) for chat in chats]
 
     async def load_chats(self) -> list[ChatData]:
         all_chats = await ChatsManager.all_chats()
         return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:
-        new_chat_list_item = ChatListItem(chat_data, is_open=True)
+        new_chat_list_item = ChatListItem(chat_data)
         log.debug(f"Creating new chat {new_chat_list_item!r}")
 
         option_list = self.query_one(OptionList)

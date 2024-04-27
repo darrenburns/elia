@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 
 class Chat(Widget):
-    BINDINGS = [Binding("escape", "pop_screen", "Close chat", key_display="esc")]
+    BINDINGS = [Binding("escape", "pop_screen", "Close", key_display="esc")]
 
     allow_input_submit = reactive(True)
     """Used to lock the chat input while the agent is responding."""
@@ -97,7 +97,6 @@ class Chat(Widget):
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
         now_utc = datetime.datetime.now(datetime.UTC)
-        print("now_utc", now_utc)
         user_message = HumanMessage(
             content=content,
             additional_kwargs={"timestamp": now_utc},
@@ -125,8 +124,6 @@ class Chat(Widget):
 
     @work
     async def stream_agent_response(self) -> None:
-        # TODO - lock the prompt input box here?
-
         self.scroll_to_latest_message()
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
@@ -166,7 +163,6 @@ class Chat(Widget):
         await self.chat_container.mount(response_chatbox)
         response_chatbox.border_title = "Agent is responding..."
         async for token in streaming_response:
-            print(token.json())
             token_str = str(token.content)
             response_chatbox.append_chunk(token_str)
             scroll_y = self.chat_container.scroll_y
