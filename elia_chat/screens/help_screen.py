@@ -9,12 +9,33 @@ class HelpScreen(ModalScreen[None]):
     BINDINGS = [Binding("escape,f1", "app.pop_screen()", "Close help")]
 
     HELP_MARKDOWN = """\
+### Environment
+
+To use OpenAI models, the `OPENAI_API_KEY` env var must be set.
+
+To use Anthropic models, the `ANTHROPIC_API_KEY` env var must be set.
+
+### Config file and database
+
+The locations of the config file and the database can be found at the bottom
+of the options screen (`ctrl+o`).
 
 ### General navigation
 
 Use `tab` and `shift+tab` to move between different widgets on screen.
 
 In some places you can make use of the arrow keys or Vim nav keys to move around.
+
+If you can see a scrollbar, `pageup`, `pagedown`, `home`, and `end` can also
+be used to navigate.
+
+### The chat history
+
+- `up,down,k,j`: Navigate through chats.
+- `pageup,pagedown`: Up/down a page.
+- `home,end`: Go to first/last chat.
+- `g,G`: Go to first/last chat.
+- `enter,l`: Open chat.
 
 ### The options window
 
@@ -70,7 +91,6 @@ It's present on both the home screen and the chat page.
 - `cmd+v` (mac): Paste
 - `ctrl+v` (windows/linux): Paste
 
-
 You can also click to move the cursor, and click and drag to select text.
 
 The arrow keys can also be used to move focus _out_ of the prompt box.
@@ -91,10 +111,13 @@ _With a message focused_:
     - In this mode, you can move a cursor through the text, optionally holding shift to
         select text as you move.
     - With some text selected, press `c` to copy.
-- `up,down,k,j`: Navigate through messages.
 - `enter`: View more details about a message.
     - The amount of details available may vary depending on the model
         or provider being used.
+- `g`: Focus the first message.
+- `G`: Focus the latest message.
+- `m`: Move focus to the prompt box.
+- `up,down,k,j`: Navigate through messages.
 
 """
 
