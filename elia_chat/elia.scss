@@ -357,7 +357,7 @@ OptionsModal {
 OptionsModal #form-scrollable {
   background: $background;
   padding: 1 2;
-  width: 60%;
+  width: 75%;
   height: auto;
   max-height: 90%;
   border: wide $main-darken-2 80%;
@@ -378,6 +378,10 @@ OptionsModal #form-scrollable {
 
   & TextArea {
     min-height: 6;
+    border-subtitle-color: $main-border-color;
+    &:focus {
+      border-subtitle-color: $main-border-color-focus;
+    }
   }
 
 

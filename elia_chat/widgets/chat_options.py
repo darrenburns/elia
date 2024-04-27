@@ -59,6 +59,11 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
             #  Perhaps we could store saved prompts in the database.
         yield Footer()
 
+    def on_mount(self) -> None:
+        system_prompt_ta = self.query_one("#system-prompt-ta", TextArea)
+        selected_model_rs = self.query_one("#available-models", RadioSet)
+        self.apply_overridden_subtitles(system_prompt_ta, selected_model_rs)
+
     @on(RadioSet.Changed)
     @on(TextArea.Changed)
     def update_state(self, event: TextArea.Changed | RadioSet.Changed) -> None:
@@ -74,4 +79,22 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
                 "selected_model": selected_model_rs.pressed_button.label.plain,
             }
         )
+
+        self.apply_overridden_subtitles(system_prompt_ta, selected_model_rs)
         self.refresh()
+
+    def apply_overridden_subtitles(
+        self, system_prompt_ta: TextArea, selected_model_rs: RadioSet
+    ) -> None:
+        if (
+            self.elia.launch_config.default_model
+            != self.elia.runtime_config.selected_model
+        ):
+            selected_model_rs.border_subtitle = "overrides config"
+        else:
+            selected_model_rs.border_subtitle = ""
+
+        if system_prompt_ta.text != self.elia.launch_config.system_prompt:
+            system_prompt_ta.border_subtitle = "overrides config"
+        else:
+            system_prompt_ta.border_subtitle = ""
