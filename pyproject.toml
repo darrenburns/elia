@@ -17,6 +17,7 @@ dependencies = [
     "aiosqlite>=0.20.0",
     "langchain-core>=0.1.45",
     "langchain-anthropic>=0.1.11",
+    "greenlet>=3.0.3",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
