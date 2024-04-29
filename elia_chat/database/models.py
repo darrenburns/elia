@@ -9,6 +9,17 @@ from sqlmodel import Field, Relationship, SQLModel, select
 from elia_chat.database.database import get_session
 
 
+class SystemPromptsDao(AsyncAttrs, SQLModel, table=True):
+    __tablename__ = "system_prompt"
+
+    id: int | None = Field(default=None, primary_key=True)
+    title: str
+    prompt: str
+    created_at: datetime | None = Field(
+        sa_column=Column(DateTime(), server_default=func.now())
+    )
+
+
 class MessageDao(AsyncAttrs, SQLModel, table=True):
     __tablename__ = "message"
 
@@ -25,6 +36,20 @@ class MessageDao(AsyncAttrs, SQLModel, table=True):
     weight: float | None
     meta: dict[Any, Any] = Field(sa_column=Column(JSON), default={})
     recipient: str | None
+    parent_id: Optional[int] = Field(
+        foreign_key="message.id", default=None, nullable=True
+    )
+    parent: Optional["MessageDao"] = Relationship(
+        back_populates="replies",
+        sa_relationship_kwargs={"remote_side": "MessageDao.id"},
+    )
+    """The message this message is responding to."""
+    replies: list["MessageDao"] = Relationship(back_populates="parent")
+    """The replies to this message
+    (could be multiple replies e.g. from different models).
+    """
+    model: str | None
+    """The model that wrote this response. (Could switch models mid-chat, possibly)"""
 
 
 class ChatDao(AsyncAttrs, SQLModel, table=True):

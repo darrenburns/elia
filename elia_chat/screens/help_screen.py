@@ -9,6 +9,10 @@ class HelpScreen(ModalScreen[None]):
     BINDINGS = [Binding("escape,f1", "app.pop_screen()", "Close help")]
 
     HELP_MARKDOWN = """\
+### How do I quit Elia?
+
+Press `Ctrl+C` on your keyboard.ga
+
 ### Environment
 
 To use OpenAI models, the `OPENAI_API_KEY` env var must be set.

@@ -55,15 +55,15 @@ export ELIA_SYSTEM_PROMPT="You are a helpful assistant who talks like a pirate."
 
 ## Starting a chat directly from the CLI
 
-There's a quick shortcut to launch directly into a chat:
+You can launch immediately into a chat:
 
 ```bash
-elia chat write python code to detect a palindrome
+elia "What is the Zen of Python?"
 ```
 
 ## Wiping the database
 
-You can delete the data stored by Elia by running:
+You can delete the database:
 
 ```bash
 elia reset
@@ -76,6 +76,9 @@ If you're a member of multiple organizations on the OpenAI platform, you may als
 ```bash
 export OPENAI_ORGANIZATION="org-klj8ashdkJHKJas"
 ```
+
+You can also set the OpenAI organization via the config file,
+as described earlier.
 
 ## Additional notes
 
