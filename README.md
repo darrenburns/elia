@@ -4,13 +4,22 @@ A powerful terminal app for interacting with LLMs such as ChatGPT and Claude 3.
 
 ## Quickstart
 
-Install Elia with [pipx](https://github.com/pypa/pipx), set your `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY` environment variable,
+Install Elia with [pipx](https://github.com/pypa/pipx) (or `rye install elia`), set your `OPENAI_API_KEY` and/or `ANTHROPIC_API_KEY` environment variable(s),
 and start the app:
 
 ```bash
-pipx install git+https://github.com/darrenburns/elia
+pipx install elia
 export OPENAI_API_KEY="xxxxxxxxxxxxxx"
+export ANTHROPIC_API_KEY="yyyyyyyyyyyyy"
 elia
+```
+
+## Starting a chat directly from the CLI
+
+You can launch immediately into a chat:
+
+```bash
+elia "What is the Zen of Python?"
 ```
 
 ## Configuration
@@ -51,14 +60,6 @@ You can also override the system prompt using the `ELIA_SYSTEM_PROMPT` environme
 
 ```bash
 export ELIA_SYSTEM_PROMPT="You are a helpful assistant who talks like a pirate."
-```
-
-## Starting a chat directly from the CLI
-
-You can launch immediately into a chat:
-
-```bash
-elia "What is the Zen of Python?"
 ```
 
 ## Wiping the database
