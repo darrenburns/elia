@@ -18,6 +18,7 @@ dependencies = [
     "langchain-core>=0.1.45",
     "langchain-anthropic>=0.1.11",
     "greenlet>=3.0.3",
+    "click-default-group>=1.2.4",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

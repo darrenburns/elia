@@ -25,6 +25,9 @@ certifi==2024.2.2
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
+    # via click-default-group
+    # via elia
+click-default-group==1.2.4
     # via elia
 defusedxml==0.7.1
     # via langchain-anthropic
@@ -37,6 +40,7 @@ fsspec==2024.3.1
     # via huggingface-hub
 greenlet==3.0.3
     # via elia
+    # via sqlalchemy
 h11==0.14.0
     # via httpcore
 httpcore==1.0.2

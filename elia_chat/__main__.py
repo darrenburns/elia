@@ -6,9 +6,11 @@ import asyncio
 import pathlib
 from textwrap import dedent
 import tomllib
-from typing import Tuple
+from typing import Any, Tuple
 
 import click
+from click_default_group import DefaultGroup
+
 from rich.console import Console
 
 from elia_chat.app import Elia
@@ -21,17 +23,15 @@ from elia_chat.locations import config_file
 console = Console()
 
 
-@click.group(invoke_without_command=True)
-@click.pass_context
-def cli(context: click.Context) -> None:
-    """
-    Elia: A terminal ChatGPT client built with Textual
-    """
+def create_db_if_not_exists() -> None:
     if not sqlite_file_name.exists():
         click.echo(f"Creating database at {sqlite_file_name!r}")
         asyncio.run(create_database())
 
+
+def load_or_create_config_file() -> dict[str, Any]:
     config = config_file()
+
     try:
         file_config = tomllib.loads(config.read_text())
     except FileNotFoundError:
@@ -41,9 +41,23 @@ def cli(context: click.Context) -> None:
         except OSError:
             pass
 
-    if context.invoked_subcommand is None:
-        app = Elia(LaunchConfig(**file_config))
-        app.run()
+    return file_config
+
+
+@click.group(cls=DefaultGroup, default="default", default_if_no_args=True)
+def cli() -> None:
+    """Interact with large language models using your terminal."""
+
+
+@cli.command()
+@click.argument("prompt", nargs=-1, type=str, required=False)
+def default(prompt: tuple[str, ...]):
+    prompt = prompt or ("",)
+    joined_prompt = " ".join(prompt)
+    create_db_if_not_exists()
+    file_config = load_or_create_config_file()
+    app = Elia(LaunchConfig(**file_config), startup_prompt=joined_prompt)
+    app.run()
 
 
 @cli.command()

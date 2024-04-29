@@ -54,12 +54,12 @@ class Elia(App[None]):
         self.runtime_config_signal.publish(self.runtime_config)
 
     async def on_mount(self) -> None:
+        self.push_screen(HomeScreen(self.runtime_config_signal))
         if self.startup_prompt:
             await self.launch_chat(
                 prompt=self.startup_prompt,
                 model_name=self.runtime_config.selected_model,
             )
-        self.push_screen(HomeScreen(self.runtime_config_signal))
 
     async def launch_chat(self, prompt: str, model_name: str) -> None:
         current_time = datetime.datetime.now(datetime.UTC)
