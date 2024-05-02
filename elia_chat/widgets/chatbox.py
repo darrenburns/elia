@@ -130,6 +130,8 @@ class Chatbox(Widget, can_focus=True):
         return Markdown(escaped_content)
 
     def render(self) -> RenderableType:
+        if self.selection_mode:
+            return ""
         return self.markdown
 
     def get_content_width(self, container: Size, viewport: Size) -> int:

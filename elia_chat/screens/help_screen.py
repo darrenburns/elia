@@ -33,6 +33,9 @@ In some places you can make use of the arrow keys or Vim nav keys to move around
 If you can see a scrollbar, `pageup`, `pagedown`, `home`, and `end` can also
 be used to navigate.
 
+On the chat screen, pressing `up` and `down` will navigate through messages,
+but if you just wish to scroll a little bit, you can use `shift+up` and `shift+down`.
+
 ### The chat history
 
 - `up,down,k,j`: Navigate through chats.

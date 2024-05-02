@@ -39,8 +39,8 @@ if TYPE_CHECKING:
 class Chat(Widget):
     BINDINGS = [
         Binding("escape", "pop_screen", "Close", key_display="esc"),
-        Binding("shift+down", "scroll_down", show=False),
-        Binding("shift+up", "scroll_up", show=False),
+        Binding("shift+down", "scroll_container_down", show=False),
+        Binding("shift+up", "scroll_container_up", show=False),
         Binding(
             key="g",
             action="focus_first_message",
@@ -228,6 +228,14 @@ class Chat(Widget):
             self.query(Chatbox).first().focus()
         except NoMatches:
             pass
+
+    def action_scroll_container_up(self) -> None:
+        if self.chat_container:
+            self.chat_container.scroll_up()
+
+    def action_scroll_container_down(self) -> None:
+        if self.chat_container:
+            self.chat_container.scroll_down()
 
     async def load_chat(self, chat_data: ChatData) -> None:
         assert self.chat_container is not None

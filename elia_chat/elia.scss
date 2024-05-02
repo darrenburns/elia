@@ -184,9 +184,6 @@ Chatbox {
   margin: 0 1;
   padding: 0 2;
 
-  &.selecting {
-  }
-
   &.assistant-message.response-in-progress {
     background: greenyellow 3%;
     border: wide greenyellow 50%;
