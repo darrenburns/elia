@@ -39,6 +39,8 @@ if TYPE_CHECKING:
 class Chat(Widget):
     BINDINGS = [
         Binding("escape", "pop_screen", "Close", key_display="esc"),
+        Binding("shift+down", "scroll_down", show=False),
+        Binding("shift+up", "scroll_up", show=False),
         Binding(
             key="g",
             action="focus_first_message",

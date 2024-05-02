@@ -6,7 +6,7 @@ authors = [
     { name = "Darren Burns", email = "darrenb900@gmail.com" }
 ]
 dependencies = [
-    "textual[syntax]==0.58.0",
+    "textual[syntax]==0.58.1",
     "sqlmodel>=0.0.9",
     "humanize>=4.6.0",
     "tiktoken>=0.4.0",

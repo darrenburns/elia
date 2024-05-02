@@ -126,7 +126,7 @@ sqlmodel==0.0.14
     # via elia
 tenacity==8.2.3
     # via langchain-core
-textual==0.58.0
+textual==0.58.1
     # via elia
 tiktoken==0.5.2
     # via elia
