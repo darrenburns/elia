@@ -15,7 +15,7 @@ from elia_chat.screens.message_info_modal import MessageInfo
 
 class Chatbox(Widget, can_focus=True):
     BINDINGS = [
-        Binding(key="enter", action="details", description="Message details"),
+        Binding(key="enter,l", action="details", description="Message details"),
         Binding(key="up,k", action="up", description="Up"),
         Binding(key="down,j", action="down", description="Down"),
         Binding(key="space", action="select", description="Toggle select mode"),
@@ -114,9 +114,20 @@ class Chatbox(Widget, can_focus=True):
 
         self.scroll_visible(animate=False, top=True)
 
+    def watch_has_focus(self, value: bool) -> None:
+        if value:
+            try:
+                child = self.query_one(TextArea)
+            except NoMatches:
+                return None
+            else:
+                child.focus()
+
     @property
     def markdown(self) -> Markdown:
-        return Markdown(self.message.content)
+        escaped_content = self.message.content.replace("<", "\\<")
+        escaped_content = escaped_content.replace(">", "\\>")
+        return Markdown(escaped_content)
 
     def render(self) -> RenderableType:
         return self.markdown
