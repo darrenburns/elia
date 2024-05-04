@@ -183,10 +183,10 @@ class Chat(Widget):
             chunk_count = 0
             async for chunk in response:
                 chunk = cast(ModelResponse, chunk)
+                response_chatbox.border_title = "Agent is responding..."
 
                 if chunk_count == 0:
                     self.post_message(self.AgentResponseStarted())
-                    response_chatbox.border_title = "Agent is responding..."
                     await self.chat_container.mount(response_chatbox)
 
                 chunk_content = chunk.choices[0].delta.content

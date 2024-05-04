@@ -70,9 +70,7 @@ class ChatList(OptionList):
         chat: ChatData
 
     async def on_mount(self) -> None:
-        self.border_title = "Chat history"
-        self.options = await self.load_chat_list_items()
-        self.add_options(self.options)
+        await self.reload_and_refresh()
 
     @on(OptionList.OptionSelected)
     async def post_chat_opened(self, event: OptionList.OptionSelected) -> None:
@@ -103,6 +101,7 @@ class ChatList(OptionList):
         old_highlighted = self.highlighted
         self.clear_options()
         self.add_options(self.options)
+        self.border_title = f"History ({len(self.options)})"
         if new_highlighted > -1:
             self.highlighted = new_highlighted
         else:

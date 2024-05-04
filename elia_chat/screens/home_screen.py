@@ -70,8 +70,10 @@ ChatList {
 
     @on(PromptInput.PromptSubmitted)
     async def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
+        text = event.text
+        event.prompt_input.clear()
         await self.elia.launch_chat(  # type: ignore
-            prompt=event.text,
+            prompt=text,
             model_name=self.elia.runtime_config.selected_model,
         )
 

@@ -25,7 +25,7 @@ class Elia(App[None]):
     ENABLE_COMMAND_PALETTE = False
     CSS_PATH = Path(__file__).parent / "elia.scss"
     BINDINGS = [
-        Binding("?", "help", "Help", priority=True),
+        Binding("f1", "help", "Help", priority=True),
     ]
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):

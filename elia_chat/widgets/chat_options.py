@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
-from rich.markup import escape
 
+from rich.text import Text
 from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -10,12 +10,38 @@ from textual.containers import Vertical, VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Footer, RadioSet, RadioButton, Static, TextArea
 
+from elia_chat.config import EliaChatModel
 from elia_chat.locations import config_file
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.database.database import sqlite_file_name
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
+
+
+class ModelRadioButton(RadioButton):
+    def __init__(
+        self,
+        model: EliaChatModel,
+        label: str | Text = "",
+        value: bool = False,
+        button_first: bool = True,
+        *,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+        disabled: bool = False,
+    ) -> None:
+        super().__init__(
+            label,
+            value,
+            button_first,
+            name=name,
+            id=id,
+            classes=classes,
+            disabled=disabled,
+        )
+        self.model = model
 
 
 class OptionsModal(ModalScreen[RuntimeConfig]):
@@ -36,12 +62,17 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
             vs.border_title = "Session Options"
             vs.can_focus = False
             with RadioSet(id="available-models") as models_rs:
+                selected_model = self.runtime_config.selected_model
                 models_rs.border_title = "Available Models"
                 for model in self.elia.launch_config.all_models:
-                    active = self.runtime_config.selected_model == model.name
-                    yield RadioButton(
-                        f"[dim]{escape(model.name)}",
-                        value=active is True,
+                    label = f"[dim]{model.display_name or model.name}"
+                    provider = model.provider
+                    if provider:
+                        label += f" [i]by[/] {provider}"
+                    yield ModelRadioButton(
+                        model=model,
+                        value=selected_model == model.name,
+                        label=label,
                     )
             system_prompt_ta = TextArea(
                 self.runtime_config.system_prompt, id="system-prompt-ta"
@@ -72,10 +103,11 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
             selected_model_rs._selected = 0
             assert selected_model_rs.pressed_button is not None
 
+        model_button = cast(ModelRadioButton, selected_model_rs.pressed_button)
         self.elia.runtime_config = self.elia.runtime_config.model_copy(
             update={
                 "system_prompt": system_prompt_ta.text,
-                "selected_model": selected_model_rs.pressed_button.label.plain,
+                "selected_model": model_button.model.name,
             }
         )
 

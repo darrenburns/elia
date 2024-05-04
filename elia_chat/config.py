@@ -7,6 +7,8 @@ class EliaChatModel(BaseModel):
     """The name of the model e.g. `gpt-3.5-turbo`.
     This must match the name of the model specified by the provider.
     """
+    display_name: str | None = None
+    """The display name of the model in the UI."""
     provider: str | None = None
     """The provider of the model, e.g. openai, anthropic, etc"""
     required_env: str | None = None

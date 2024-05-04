@@ -49,8 +49,7 @@ Chat {
   ChatHeader {
     width: 100%;
     height: auto;
-    padding: 1 2 0 2;
-    border-bottom: hkey $main-lighten-2 8%;
+    padding: 1 2;
     background: $background;
 
     & #model-static {
@@ -166,7 +165,7 @@ AppHeader {
 }
 
 HomeScreen ChatList {
-  padding: 1 0 0 2;
+padding: 1 0 0 1;
   height: 1fr;
   width: 1fr;
   border: round $main-border-color;
@@ -190,7 +189,6 @@ Chatbox {
 
   &.assistant-message.response-in-progress {
     background: greenyellow 3%;
-    border: wide greenyellow 50%;
     min-width: 30%;
   }
 
@@ -357,7 +355,7 @@ OptionsModal {
 
 OptionsModal #form-scrollable {
   background: $background;
-  padding: 1 2;
+  padding: 1 0;
   width: 75%;
   height: auto;
   max-height: 90%;
@@ -369,7 +367,7 @@ OptionsModal #form-scrollable {
     border: round $main-border-color;
     border-title-color: $main-border-text-color;
     background: red 0%;
-    padding: 1 2;
+    padding: 1 0;
 
     &:focus {
       border: round $main-border-color-focus;
@@ -378,7 +376,8 @@ OptionsModal #form-scrollable {
   }
 
   & TextArea {
-    min-height: 6;
+    height: auto;
+    max-height: 12;
     border-subtitle-color: $main-border-color;
     &:focus {
       border-subtitle-color: $main-border-color-focus;
