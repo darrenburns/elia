@@ -66,7 +66,6 @@ class Elia(App[None]):
                 prompt=self.startup_prompt,
                 model_name=self.runtime_config.selected_model,
             )
-        self.exit()
 
     async def launch_chat(self, prompt: str, model_name: str) -> None:
         current_time = datetime.datetime.now(datetime.UTC)
