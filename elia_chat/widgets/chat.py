@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, cast
 from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import ScrollableContainer, VerticalScroll
+from textual.containers import VerticalScroll
 from textual.css.query import NoMatches
 from textual.message import Message
 from textual.reactive import reactive
@@ -59,8 +59,8 @@ class Chat(Widget):
     def __init__(self, chat_data: ChatData) -> None:
         super().__init__()
         self.chat_data = chat_data
-        self.chat_container: ScrollableContainer | None = None
         self.elia = cast("Elia", self.app)
+        self.model = get_model_by_name(chat_data.model_name, self.elia.launch_config)
 
     @dataclass
     class AgentResponseStarted(Message):
@@ -82,15 +82,12 @@ class Chat(Widget):
         message: ChatMessage
 
     def compose(self) -> ComposeResult:
-        yield ChatHeader()
+        yield ChatHeader(chat=self.chat_data, model=self.model)
 
-        with VerticalScroll() as vertical_scroll:
-            self.chat_container = vertical_scroll
+        with VerticalScroll(id="chat-container") as vertical_scroll:
             vertical_scroll.can_focus = False
 
-        prompt = PromptInput(id="prompt")
-        prompt.focus()
-        yield prompt
+        yield PromptInput(id="prompt")
         yield AgentIsTyping()
 
     async def on_mount(self, _: events.Mount) -> None:
@@ -99,14 +96,32 @@ class Chat(Widget):
         """
         await self.load_chat(self.chat_data)
 
+        # TODO - The code below shouldn't be required.
+        #  Seems like a Textual bug.
+        self.set_timer(
+            0.05,
+            callback=lambda: self.chat_container.scroll_end(animate=False, force=True),
+        )
+
+        self.query_one(PromptInput).focus()
+
+    @property
+    def chat_container(self) -> VerticalScroll:
+        return self.query_one("#chat-container", VerticalScroll)
+
     @property
     def is_empty(self) -> bool:
         """True if the conversation is empty, False otherwise."""
         return len(self.chat_data.messages) == 1  # Contains system message at first.
 
     def scroll_to_latest_message(self):
-        if self.chat_container is not None:
-            self.chat_container.scroll_end(animate=False, force=True)
+        container = self.chat_container
+        container.refresh()
+        container.scroll_end(animate=False, force=True)
+
+    def key_d(self):
+        print(self.chat_container.scroll_y)
+        print(self.chat_container.max_scroll_y)
 
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
@@ -237,9 +252,12 @@ class Chat(Widget):
     async def on_cursor_up_from_prompt(self) -> None:
         self.focus_latest_message()
 
+    def get_latest_chatbox(self) -> Chatbox:
+        return self.query(Chatbox).last()
+
     def focus_latest_message(self) -> None:
         try:
-            self.query(Chatbox).last().focus()
+            self.get_latest_chatbox().focus()
         except NoMatches:
             pass
 
@@ -266,20 +284,18 @@ class Chat(Widget):
             Chatbox(chat_message, self.chat_data.model_name)
             for chat_message in self.chat_data.non_system_messages
         ]
-        async with self.batch():
-            await self.chat_container.mount_all(chatboxes)
-            chat_header = self.query_one(ChatHeader)
-            chat_header.chat = chat_data
-            chat_header.model = get_model_by_name(
-                chat_data.model_name, self.elia.launch_config
-            )
+        await self.chat_container.mount_all(chatboxes)
+        self.chat_container.scroll_end(animate=False, force=True)
+        chat_header = self.query_one(ChatHeader)
+        chat_header.update_header(
+            chat=chat_data,
+            model=get_model_by_name(chat_data.model_name, self.elia.launch_config),
+        )
 
         # If the last message didn't receive a response, try again.
         messages = chat_data.messages
         if messages and messages[-1].message["role"] == "user":
             self.stream_agent_response()
-
-        self.scroll_to_latest_message()
 
     def action_close(self) -> None:
         self.app.clear_notifications()

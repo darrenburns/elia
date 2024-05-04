@@ -56,30 +56,24 @@ Chat {
       color: $text-muted;
     }
   }
-
   PromptInput {
     height: auto;
     max-height: 50%;
     padding: 0 1;
   }
-
-  VerticalScroll {
-    background: $background;
-  }
-
 }
 
 AgentIsTyping {
   dock: top;
-  display: none;
-  color: $text;
-  height: 1;
   align-horizontal: right;
+  display: none;
+  height: 1;
+  width: auto;
+  layer: overlay;
+  margin-top: 1;
+  margin-right: 2;
 }
 
-AgentIsTyping Label {
-  width: auto;
-}
 
 AgentIsTyping LoadingIndicator {
   width: 11;
@@ -180,7 +174,6 @@ padding: 1 0 0 1;
 }
 
 Chatbox {
-  color: $text;
   height: auto;
   width: auto;
   min-width: 12;
