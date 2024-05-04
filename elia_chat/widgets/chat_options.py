@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 
+from rich.markup import escape
 from rich.text import Text
 from textual import on
 from textual.app import ComposeResult
@@ -65,7 +66,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
                 selected_model = self.runtime_config.selected_model
                 models_rs.border_title = "Available Models"
                 for model in self.elia.launch_config.all_models:
-                    label = f"[dim]{model.display_name or model.name}"
+                    label = f"[dim]{escape(model.display_name or model.name)}"
                     provider = model.provider
                     if provider:
                         label += f" [i]by[/] {provider}"

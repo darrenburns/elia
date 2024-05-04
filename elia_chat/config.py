@@ -32,6 +32,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
             name="gpt-3.5-turbo",
+            display_name="GPT-3.5 Turbo",
             required_env="OPENAI_API_KEY",
             provider="OpenAI",
             product="ChatGPT",
@@ -39,6 +40,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
         ),
         EliaChatModel(
             name="gpt-4-turbo",
+            display_name="GPT-4 Turbo",
             required_env="OPENAI_API_KEY",
             provider="OpenAI",
             product="ChatGPT",
@@ -52,6 +54,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
             name="claude-3-haiku-20240307",
+            display_name="Claude 3 Haiku",
             required_env="ANTHROPIC_API_KEY",
             provider="Anthropic",
             product="Claude 3",
@@ -61,6 +64,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
         ),
         EliaChatModel(
             name="claude-3-sonnet-20240229",
+            display_name="Claude 3 Sonnet",
             required_env="ANTHROPIC_API_KEY",
             provider="Anthropic",
             product="Claude 3",
@@ -70,6 +74,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
         ),
         EliaChatModel(
             name="claude-3-opus-20240229",
+            display_name="Claude 3 Opus",
             required_env="ANTHROPIC_API_KEY",
             provider="Anthropic",
             product="Claude 3",

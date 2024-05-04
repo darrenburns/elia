@@ -48,6 +48,7 @@ async def import_chatgpt_data(file: Path) -> None:
                     message_info = message_data.get("message")
                     if message_info:
                         metadata = message_info.get("metadata", {})
+                        model = "gpt-3.5-turbo"
                         if metadata:
                             model = metadata.get("model_slug")
                             chat.model = (
@@ -57,23 +58,16 @@ async def import_chatgpt_data(file: Path) -> None:
                             await session.commit()
 
                         role = message_info["author"]["role"]
-                        role_mapping = {
-                            "user": "human",
-                            "assistant": "ai",
-                            "system": "system",
-                        }
+                        chat_id = chat.id
                         message = MessageDao(
-                            chat_id=chat.id,
-                            role=role_mapping.get(role, role),
+                            chat_id=chat_id,
+                            role=role,
                             content=str(message_info["content"].get("parts", [""])[0]),
                             timestamp=datetime.fromtimestamp(
                                 message_info.get("create_time", 0) or 0
                             ),
-                            status=message_info.get("status"),
-                            end_turn=message_info.get("end_turn"),
-                            weight=message_info.get("weight"),
+                            model=model,
                             meta=metadata,
-                            recipient=message_info.get("recipient"),
                         )
                         session.add(message)
                         message_count += 1

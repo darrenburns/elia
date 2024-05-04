@@ -32,7 +32,7 @@ class ChatListItemRenderable:
         time_ago = humanize.naturaltime(delta)
         time_ago_text = Text(time_ago, style="dim")
         model = get_model_by_name(self.chat.model_name, self.config)
-        subtitle = f"[dim]{escape(model.name)}"
+        subtitle = f"[dim]{escape(model.display_name or model.name)}"
         if model.provider:
             subtitle += f" [i]by[/] {escape(model.provider)}"
         model_text = Text.from_markup(subtitle)

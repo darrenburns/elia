@@ -91,7 +91,9 @@ class Chat(Widget):
             self.chat_container = vertical_scroll
             vertical_scroll.can_focus = False
 
-        yield PromptInput(id="prompt")
+        prompt = PromptInput(id="prompt")
+        prompt.focus()
+        yield prompt
         yield AgentIsTyping()
 
     async def on_mount(self, _: events.Mount) -> None:
@@ -99,7 +101,6 @@ class Chat(Widget):
         When the component is mounted, we need to check if there is a new chat to start
         """
         await self.load_chat(self.chat_data)
-        self.query_one(PromptInput).focus()
 
     @property
     def is_empty(self) -> bool:
@@ -108,7 +109,7 @@ class Chat(Widget):
 
     def scroll_to_latest_message(self):
         if self.chat_container is not None:
-            self.chat_container.refresh()
+            # self.chat_container.refresh()
             self.chat_container.scroll_end(animate=False, force=True)
 
     async def new_user_message(self, content: str) -> None:
@@ -143,7 +144,6 @@ class Chat(Widget):
 
     @work
     async def stream_agent_response(self) -> None:
-        self.scroll_to_latest_message()
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
@@ -267,18 +267,19 @@ class Chat(Widget):
             Chatbox(chat_message, self.chat_data.model_name)
             for chat_message in self.chat_data.non_system_messages
         ]
-        await self.chat_container.mount_all(chatboxes)
-        self.chat_container.scroll_end(animate=False, force=True)
+        async with self.batch():
+            await self.chat_container.mount_all(chatboxes)
+            self.chat_container.scroll_end(animate=False, force=True)
+            chat_header = self.query_one(ChatHeader)
+            chat_header.title = chat_data.title or chat_data.short_preview.replace(
+                "\n", " "
+            )
+            chat_header.model_name = chat_data.model_name or "unknown model"
 
+        # If the last message didn't receive a response, try again.
         messages = chat_data.messages
         if messages and messages[-1].message["role"] == "user":
             self.stream_agent_response()
-
-        chat_header = self.query_one(ChatHeader)
-        chat_header.title = chat_data.title or chat_data.short_preview.replace(
-            "\n", " "
-        )
-        chat_header.model_name = chat_data.model_name or "unknown model"
 
     def action_close(self) -> None:
         self.app.clear_notifications()
