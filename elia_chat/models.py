@@ -2,15 +2,25 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
-from litellm.types.completion import ChatCompletionMessageParam
 
 from elia_chat.config import LaunchConfig, EliaChatModel
+
+if TYPE_CHECKING:
+    from litellm.types.completion import ChatCompletionMessageParam
+
+
+class UnknownModel(EliaChatModel):
+    pass
 
 
 def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
     """Given the name of a model as a string, return the EliaChatModel."""
-    return {model.name: model for model in config.all_models}[model_name]
+    try:
+        return {model.name: model for model in config.all_models}[model_name]
+    except KeyError:
+        return UnknownModel(name=model_name)
 
 
 @dataclass

@@ -8,6 +8,8 @@ from textual.widget import Widget
 from textual.widgets import Label
 
 from rich.text import Text
+from elia_chat.config import EliaChatModel
+from elia_chat.models import get_model_by_name
 from elia_chat.runtime_config import RuntimeConfig
 
 
@@ -32,7 +34,8 @@ class AppHeader(Widget):
 
     def on_mount(self) -> None:
         def on_config_change(config: RuntimeConfig) -> None:
-            self._update_selected_model(config.selected_model)
+            model = get_model_by_name(config.selected_model, self.elia.launch_config)
+            self._update_selected_model(model)
 
         self.config_signal.subscribe(self, on_config_change)
 
@@ -46,17 +49,16 @@ class AppHeader(Widget):
                     Text.assemble(
                         ("elia ", title_style + Style(bold=True)),
                         ("///", subtitle_style),
-                        (" version 1.0.0", title_style),
+                        (" 1.0.0", title_style),
                     )
                 )
             model_name = self.elia.runtime_config.selected_model
-            yield Label(
-                self._get_selected_model_link_text(model_name), id="model-label"
-            )
+            model = get_model_by_name(model_name, self.elia.launch_config)
+            yield Label(self._get_selected_model_link_text(model), id="model-label")
 
-    def _get_selected_model_link_text(self, model_name: str) -> str:
-        return f"[@click=screen.options]{escape(model_name)}[/]"
+    def _get_selected_model_link_text(self, model: EliaChatModel) -> str:
+        return f"[@click=screen.options]{escape(model.display_name or model.name)}[/]"
 
-    def _update_selected_model(self, model_name: str) -> None:
+    def _update_selected_model(self, model: EliaChatModel) -> None:
         model_label = self.query_one("#model-label", Label)
-        model_label.update(self._get_selected_model_link_text(model_name))
+        model_label.update(self._get_selected_model_link_text(model))

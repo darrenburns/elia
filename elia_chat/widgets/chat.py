@@ -4,13 +4,6 @@ import datetime
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from litellm import ModelResponse, acompletion
-from litellm.types.completion import (
-    ChatCompletionUserMessageParam,
-    ChatCompletionAssistantMessageParam,
-)
-
-from litellm.utils import trim_messages
 from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -34,6 +27,10 @@ from elia_chat.widgets.chatbox import Chatbox
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
+    from litellm.types.completion import (
+        ChatCompletionUserMessageParam,
+        ChatCompletionAssistantMessageParam,
+    )
 
 
 class Chat(Widget):
@@ -109,7 +106,6 @@ class Chat(Widget):
 
     def scroll_to_latest_message(self):
         if self.chat_container is not None:
-            # self.chat_container.refresh()
             self.chat_container.scroll_end(animate=False, force=True)
 
     async def new_user_message(self, content: str) -> None:
@@ -150,6 +146,9 @@ class Chat(Widget):
         model: EliaChatModel = get_model_by_name(
             self.chat_data.model_name, self.elia.launch_config
         )
+
+        from litellm import ModelResponse, acompletion
+        from litellm.utils import trim_messages
 
         raw_messages = [message.message for message in self.chat_data.messages]
         messages: list[ChatCompletionUserMessageParam] = trim_messages(
@@ -269,17 +268,18 @@ class Chat(Widget):
         ]
         async with self.batch():
             await self.chat_container.mount_all(chatboxes)
-            self.chat_container.scroll_end(animate=False, force=True)
             chat_header = self.query_one(ChatHeader)
-            chat_header.title = chat_data.title or chat_data.short_preview.replace(
-                "\n", " "
+            chat_header.chat = chat_data
+            chat_header.model = get_model_by_name(
+                chat_data.model_name, self.elia.launch_config
             )
-            chat_header.model_name = chat_data.model_name or "unknown model"
 
         # If the last message didn't receive a response, try again.
         messages = chat_data.messages
         if messages and messages[-1].message["role"] == "user":
             self.stream_agent_response()
+
+        self.scroll_to_latest_message()
 
     def action_close(self) -> None:
         self.app.clear_notifications()

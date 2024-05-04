@@ -1,9 +1,11 @@
-from typing import Any
-from litellm.types.completion import ChatCompletionUserMessageParam
+from typing import TYPE_CHECKING, Any
 
 
 from elia_chat.database.models import ChatDao, MessageDao
 from elia_chat.models import ChatData, ChatMessage
+
+if TYPE_CHECKING:
+    from litellm.types.completion import ChatCompletionUserMessageParam
 
 
 def chat_message_to_message_dao(

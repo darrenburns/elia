@@ -2,26 +2,36 @@ from __future__ import annotations
 
 from rich.markup import escape
 
-from textual.reactive import reactive
+from textual.reactive import Reactive, reactive
 from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.widgets import Static
 
+from elia_chat.config import EliaChatModel
+from elia_chat.models import ChatData
+
 
 class ChatHeader(Widget):
-    title = reactive("Untitled Chat", init=False)
-    model_name = reactive("", init=False)
+    chat: Reactive[ChatData | None] = reactive(None, init=False, recompose=True)
+    model: Reactive[EliaChatModel | None] = reactive(None, init=False, recompose=True)
 
-    def watch_model_name(self, new_model_name: str | None) -> None:
-        if new_model_name is not None:
+    def update_header(self):
+        model = self.model
+        if model is not None:
             model_static = self.query_one("#model-static", Static)
-            model_static.update(new_model_name)
+            model_static.update()
 
-    def watch_title(self, new_title: str | None) -> None:
-        if new_title is not None:
+        chat = self.chat
+        if chat is not None:
             title_static = self.query_one("#title-static", Static)
-            title_static.update(escape(new_title))
+            title_static.update()
 
     def compose(self) -> ComposeResult:
-        yield Static(self.title, id="title-static")
-        yield Static(self.model_name, id="model-static")
+        model = self.model
+        model_name = (
+            escape(model.display_name or model.name) if model else "Unknown model"
+        )
+        chat = self.chat
+        header = escape(chat.short_preview) if chat else "Empty chat"
+        yield Static(header, id="title-static")
+        yield Static(model_name, id="model-static")

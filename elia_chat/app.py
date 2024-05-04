@@ -2,11 +2,7 @@ from __future__ import annotations
 
 import datetime
 from pathlib import Path
-
-from litellm.types.completion import (
-    ChatCompletionUserMessageParam,
-    ChatCompletionSystemMessageParam,
-)
+from typing import TYPE_CHECKING
 
 from textual.app import App
 from textual.binding import Binding
@@ -19,6 +15,12 @@ from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.screens.help_screen import HelpScreen
 from elia_chat.screens.home_screen import HomeScreen
+
+if TYPE_CHECKING:
+    from litellm.types.completion import (
+        ChatCompletionUserMessageParam,
+        ChatCompletionSystemMessageParam,
+    )
 
 
 class Elia(App[None]):
@@ -64,6 +66,7 @@ class Elia(App[None]):
                 prompt=self.startup_prompt,
                 model_name=self.runtime_config.selected_model,
             )
+        self.exit()
 
     async def launch_chat(self, prompt: str, model_name: str) -> None:
         current_time = datetime.datetime.now(datetime.UTC)
