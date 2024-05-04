@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from typing import Generic, TypeVar
 
-from langchain_core.messages import BaseMessage
+from litellm.types.completion import ChatCompletionMessageParam
 
 from elia_chat.config import LaunchConfig, EliaChatModel
 
@@ -26,41 +27,51 @@ def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
     return name_mapping[model_name]
 
 
+LiteLLMMessageType = TypeVar("LiteLLMMessageType", bound=ChatCompletionMessageParam)
+
+
+@dataclass
+class ChatMessage(Generic[LiteLLMMessageType]):
+    message: LiteLLMMessageType
+    timestamp: datetime
+
+
 @dataclass
 class ChatData:
     id: str | None
     model_name: str
     title: str | None
     create_timestamp: datetime | None
-    messages: list[BaseMessage]
+    messages: list[ChatMessage[ChatCompletionMessageParam]]
 
     @property
     def short_preview(self) -> str:
-        first_user_message = self.first_user_message
-        if first_user_message is None:
-            return "Empty chat..."
-        first_content = first_user_message.content or ""
-        return first_content[:80] + "..."
+        first_message = self.first_user_message.message
+
+        if "content" in first_message:
+            first_message = first_message["content"]
+            # We have content, but it's not guaranteed to be a string quite yet.
+            # In the case of tool calls or image generation requests, we can
+            # have non-string types here. We're not handling/considering this atm.
+            if first_message and isinstance(first_message, str):
+                if len(first_message) > 77:
+                    return first_message[:77] + "..."
+                else:
+                    return first_message
+
+        return ""
 
     @property
-    def first_user_message(self) -> BaseMessage | None:
-        return self.messages[1] if len(self.messages) > 1 else None
+    def first_user_message(self) -> ChatMessage[ChatCompletionMessageParam]:
+        return self.messages[1]
 
     @property
-    def non_system_messages(self) -> list[BaseMessage]:
+    def non_system_messages(
+        self,
+    ) -> list[ChatMessage[ChatCompletionMessageParam]]:
         return self.messages[1:]
 
     @property
-    def create_time(self) -> datetime:
-        return (
-            datetime.fromtimestamp(self.create_timestamp or 0)
-            .astimezone()
-            .replace(tzinfo=UTC)
-        )
-
-    @property
     def update_time(self) -> datetime:
-        if self.messages:
-            message_timestamp = self.messages[-1].additional_kwargs.get("timestamp")
-
+        message_timestamp = self.messages[-1].timestamp
         return message_timestamp.astimezone().replace(tzinfo=UTC)

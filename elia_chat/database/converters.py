@@ -4,13 +4,18 @@ from langchain_core.messages import (
     AIMessage,
     HumanMessage,
 )
+from litellm.types.completion import (
+    ChatCompletionUserMessageParam,
+)
 
 
 from elia_chat.database.models import ChatDao, MessageDao
 from elia_chat.models import ChatData
 
 
-def chat_message_to_message_dao(chat_message: BaseMessage) -> MessageDao:
+def chat_message_to_message_dao(
+    chat_message: ChatCompletionUserMessageParam,
+) -> MessageDao:
     return MessageDao(
         role=chat_message.type,
         content=chat_message.content,

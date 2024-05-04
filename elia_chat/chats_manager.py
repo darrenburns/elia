@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import datetime
 
 from langchain_core.messages import BaseMessage
+from litellm.types.completion import ChatCompletionUserMessageParam
 from textual import log
 
 from elia_chat.database.converters import (
@@ -79,7 +80,9 @@ class ChatsManager:
         return chat.id
 
     @staticmethod
-    async def add_message_to_chat(chat_id: str, message: BaseMessage) -> None:
+    async def add_message_to_chat(
+        chat_id: str, message: ChatCompletionUserMessageParam
+    ) -> None:
         async with get_session() as session:
             chat: ChatDao | None = await session.get(ChatDao, chat_id)
             if not chat:

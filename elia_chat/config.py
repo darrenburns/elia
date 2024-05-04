@@ -1,9 +1,6 @@
 import os
 from typing import Literal
-from langchain_anthropic import ChatAnthropic
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
-from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.callbacks import AsyncCallbackHandler
 
 callback = AsyncCallbackHandler()
@@ -16,28 +13,6 @@ class EliaChatModel(BaseModel):
     product: str = Field("")
     context_window: int = Field(default=16_000)
     temperature: int = Field(default=1.0)
-
-    def get_langchain_chat_model(
-        self,
-        launch_config: "LaunchConfig",
-    ) -> BaseChatModel:
-        match self.provider:
-            case "openai":
-                return ChatOpenAI(
-                    model=self.name,
-                    organization=launch_config.openai.organization,
-                    streaming=True,
-                    callbacks=[callback],
-                    temperature=self.temperature,
-                )
-            case "anthropic":
-                return ChatAnthropic(
-                    model_name=self.name,
-                    callbacks=[callback],
-                    timeout=None,
-                    api_key=launch_config.anthropic.api_key,  # type: ignore
-                    temperature=self.temperature,
-                )
 
 
 def get_default_openai_models() -> list[EliaChatModel]:
