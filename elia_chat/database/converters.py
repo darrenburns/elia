@@ -27,7 +27,7 @@ def chat_dao_to_chat_data(chat_dao: ChatDao) -> ChatData:
     """Convert the SQLModel chat to a ChatData."""
     model = chat_dao.model
     return ChatData(
-        id=str(chat_dao.id),
+        id=chat_dao.id,
         title=chat_dao.title,
         model_name=model,
         create_timestamp=chat_dao.started_at if chat_dao.started_at else None,

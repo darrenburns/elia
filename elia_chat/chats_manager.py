@@ -23,17 +23,17 @@ class ChatsManager:
         return [chat_dao_to_chat_data(chat) for chat in chat_daos]
 
     @staticmethod
-    async def get_chat(chat_id: str) -> ChatData:
+    async def get_chat(chat_id: int) -> ChatData:
         chat_dao = await ChatDao.from_id(chat_id)
         return chat_dao_to_chat_data(chat_dao)
 
     @staticmethod
     async def get_messages(
-        chat_id: str | int,
+        chat_id: int,
     ) -> list[ChatMessage]:
         async with get_session() as session:
             try:
-                chat: ChatDao | None = await session.get(ChatDao, int(chat_id))
+                chat: ChatDao | None = await session.get(ChatDao, chat_id)
             except ValueError:
                 raise RuntimeError(
                     f"Malformed chat ID {chat_id!r}. "

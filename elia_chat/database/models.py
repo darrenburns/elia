@@ -82,7 +82,7 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
             return list(results)
 
     @staticmethod
-    async def from_id(chat_id: str) -> "ChatDao":
+    async def from_id(chat_id: int) -> "ChatDao":
         async with get_session() as session:
             statement = (
                 select(ChatDao)

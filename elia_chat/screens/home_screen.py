@@ -38,7 +38,7 @@ ChatList {
 
     def __init__(
         self,
-        config_signal: Signal,
+        config_signal: Signal[RuntimeConfig],
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
