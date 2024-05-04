@@ -102,9 +102,10 @@ class Chatbox(Widget, can_focus=True):
                 language="markdown",
                 classes="selection-mode",
             )
-            await self.mount(text_area)
-            text_area._rewrap_and_refresh_virtual_size()
-            text_area.focus()
+            async with self.batch():
+                await self.mount(text_area)
+                text_area._rewrap_and_refresh_virtual_size()
+                text_area.focus(scroll_visible=False)
         else:
             self.border_subtitle = ""
             try:
@@ -114,8 +115,6 @@ class Chatbox(Widget, can_focus=True):
                 pass
             else:
                 await self.remove_children()
-
-        self.scroll_visible(animate=False, top=True)
 
     def watch_has_focus(self, value: bool) -> None:
         if value:
