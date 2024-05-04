@@ -5,6 +5,7 @@ from dataclasses import dataclass
 
 import humanize
 from rich.console import RenderResult, Console, ConsoleOptions
+from rich.markup import escape
 from rich.padding import Padding
 from rich.text import Text
 from textual import events, log, on
@@ -31,7 +32,10 @@ class ChatListItemRenderable:
         time_ago = humanize.naturaltime(delta)
         time_ago_text = Text(time_ago, style="dim")
         model = get_model_by_name(self.chat.model_name, self.config)
-        model_text = Text.from_markup(f"[dim]{model.name} [i]by[/] {model.provider}")
+        subtitle = f"[dim]{escape(model.name)}"
+        if model.provider:
+            subtitle += f" [i]by[/] {escape(model.provider)}"
+        model_text = Text.from_markup(subtitle)
         title = self.chat.title or self.chat.short_preview.replace("\n", " ")
         yield Padding(
             Text.assemble(title, "\n", model_text, "\n", time_ago_text),

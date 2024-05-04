@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 
 class Chat(Widget):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Close", key_display="esc"),
+        Binding("escape", "close", "Close", key_display="esc"),
         Binding("shift+down", "scroll_container_down", show=False),
         Binding("shift+up", "scroll_container_up", show=False),
         Binding(
@@ -183,16 +183,18 @@ class Chat(Widget):
         try:
             chunk_count = 0
             async for chunk in response:
+                chunk = cast(ModelResponse, chunk)
+
                 if chunk_count == 0:
                     response_chatbox.border_title = "Agent is responding..."
                     await self.chat_container.mount(response_chatbox)
 
-                chunk = cast(ModelResponse, chunk)
                 chunk_content = chunk.choices[0].delta.content
                 if isinstance(chunk_content, str):
                     response_chatbox.append_chunk(chunk_content)
                 else:
                     break
+
                 scroll_y = self.chat_container.scroll_y
                 max_scroll_y = self.chat_container.max_scroll_y
                 if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
@@ -277,3 +279,7 @@ class Chat(Widget):
             "\n", " "
         )
         chat_header.model_name = chat_data.model_name or "unknown model"
+
+    def action_close(self) -> None:
+        self.app.clear_notifications()
+        self.app.pop_screen()
