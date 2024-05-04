@@ -23,19 +23,15 @@ class SystemPromptsDao(AsyncAttrs, SQLModel, table=True):
 class MessageDao(AsyncAttrs, SQLModel, table=True):
     __tablename__ = "message"
 
-    id: int = Field(default=None, primary_key=True)
+    id: int | None = Field(default=None, primary_key=True)
     chat_id: Optional[int] = Field(foreign_key="chat.id")
-    chat: "ChatDao" = Relationship(back_populates="messages")
+    chat: Optional["ChatDao"] = Relationship(back_populates="messages")
     role: str
     content: str
     timestamp: datetime | None = Field(
         sa_column=Column(DateTime(), server_default=func.now())
     )
-    status: str | None
-    end_turn: bool | None
-    weight: float | None
     meta: dict[Any, Any] = Field(sa_column=Column(JSON), default={})
-    recipient: str | None
     parent_id: Optional[int] = Field(
         foreign_key="message.id", default=None, nullable=True
     )

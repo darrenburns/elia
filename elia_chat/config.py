@@ -1,9 +1,6 @@
 import os
 from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, SecretStr
-from langchain_core.callbacks import AsyncCallbackHandler
-
-callback = AsyncCallbackHandler()
 
 
 class EliaChatModel(BaseModel):
@@ -13,6 +10,7 @@ class EliaChatModel(BaseModel):
     product: str = Field("")
     context_window: int = Field(default=16_000)
     temperature: int = Field(default=1.0)
+    max_retries: int = Field(default=0)
 
 
 def get_default_openai_models() -> list[EliaChatModel]:

@@ -3,13 +3,17 @@ from __future__ import annotations
 import datetime
 from pathlib import Path
 
-from langchain_core.messages import HumanMessage, SystemMessage
+from litellm.types.completion import (
+    ChatCompletionUserMessageParam,
+    ChatCompletionSystemMessageParam,
+)
+
 from textual.app import App
 from textual.binding import Binding
 from textual.signal import Signal
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData
+from elia_chat.models import ChatData, ChatMessage
 from elia_chat.config import LaunchConfig
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
@@ -63,22 +67,29 @@ class Elia(App[None]):
 
     async def launch_chat(self, prompt: str, model_name: str) -> None:
         current_time = datetime.datetime.now(datetime.UTC)
+        system_message: ChatCompletionSystemMessageParam = {
+            "content": self.runtime_config.system_prompt,
+            "role": "system",
+        }
+        user_message: ChatCompletionUserMessageParam = {
+            "content": prompt,
+            "role": "user",
+        }
         chat = ChatData(
             id=None,
             title=None,
             create_timestamp=None,
             model_name=model_name,
             messages=[
-                SystemMessage(
-                    content=self.runtime_config.system_prompt,
-                    additional_kwargs={
-                        "timestamp": current_time,
-                        "recipient": "all",
-                    },
+                ChatMessage(
+                    message=system_message,
+                    timestamp=current_time,
+                    model=model_name,
                 ),
-                HumanMessage(
-                    content=prompt,
-                    additional_kwargs={"timestamp": current_time},
+                ChatMessage(
+                    message=user_message,
+                    timestamp=current_time,
+                    model=model_name,
                 ),
             ],
         )

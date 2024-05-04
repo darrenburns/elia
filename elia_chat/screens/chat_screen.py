@@ -50,6 +50,9 @@ class ChatScreen(Screen[None]):
             f"Agent response complete. Adding message "
             f"to chat_id {event.chat_id!r}: {event.message}"
         )
+        if self.chat_data.id is None:
+            raise RuntimeError("Chat has no ID. This is likely a bug in Elia.")
+
         await self.chats_manager.add_message_to_chat(
             chat_id=self.chat_data.id, message=event.message
         )

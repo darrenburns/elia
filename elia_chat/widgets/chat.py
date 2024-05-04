@@ -4,14 +4,13 @@ import datetime
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from langchain_core.language_models.chat_models import BaseChatModel
-from langchain_core.language_models import LLM
-from langchain_core.messages import (
-    AIMessage,
-    BaseMessage,
-    HumanMessage,
-    SystemMessage,
+from litellm import ModelResponse, acompletion
+from litellm.types.completion import (
+    ChatCompletionUserMessageParam,
+    ChatCompletionAssistantMessageParam,
 )
+
+from litellm.utils import trim_messages
 from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -22,7 +21,7 @@ from textual.reactive import reactive
 from textual.widget import Widget
 
 from elia_chat.chats_manager import ChatsManager
-from elia_chat.models import ChatData
+from elia_chat.models import ChatData, ChatMessage
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.prompt_input import PromptInput
@@ -71,8 +70,8 @@ class Chat(Widget):
 
     @dataclass
     class AgentResponseComplete(Message):
-        chat_id: str | None
-        message: BaseMessage
+        chat_id: int | None
+        message: ChatMessage
         chatbox: Chatbox
 
     @dataclass
@@ -81,8 +80,8 @@ class Chat(Widget):
 
     @dataclass
     class UserMessageSubmitted(Message):
-        chat_id: str
-        message: BaseMessage
+        chat_id: int
+        message: ChatMessage
 
     def compose(self) -> ComposeResult:
         yield ChatHeader()
@@ -114,21 +113,24 @@ class Chat(Widget):
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
         now_utc = datetime.datetime.now(datetime.UTC)
-        user_message = HumanMessage(
-            content=content,
-            additional_kwargs={"timestamp": now_utc},
+        user_message: ChatCompletionUserMessageParam = {
+            "content": content,
+            "role": "user",
+        }
+        user_chat_message = ChatMessage(
+            user_message, now_utc, self.chat_data.model_name
         )
-        self.chat_data.messages.append(user_message)
+        self.chat_data.messages.append(user_chat_message)
         await ChatsManager.add_message_to_chat(
-            chat_id=str(self.chat_data.id), message=user_message
+            chat_id=self.chat_data.id, message=user_chat_message
         )
 
         self.post_message(
             Chat.UserMessageSubmitted(
-                chat_id=str(self.chat_data.id), message=user_message
+                chat_id=self.chat_data.id, message=user_chat_message
             )
         )
-        user_message_chatbox = Chatbox(user_message, self.chat_data.model_name)
+        user_message_chatbox = Chatbox(user_chat_message, self.chat_data.model_name)
 
         assert (
             self.chat_container is not None
@@ -145,28 +147,28 @@ class Chat(Widget):
         log.debug(
             f"Creating streaming response with model {self.chat_data.model_name!r}"
         )
-        selected_model: EliaChatModel = get_model_by_name(
+        model: EliaChatModel = get_model_by_name(
             self.chat_data.model_name, self.elia.launch_config
         )
-        llm: BaseChatModel = selected_model.get_langchain_chat_model(
-            self.elia.launch_config
+
+        raw_messages = [message.message for message in self.chat_data.messages]
+        messages: list[ChatCompletionUserMessageParam] = trim_messages(
+            raw_messages, model.name
+        )  # type: ignore
+        response = await acompletion(
+            messages=messages,
+            stream=True,
+            model=model.name,
+            temperature=model.temperature,
+            max_retries=model.max_retries,
         )
-        messages = self.chat_data.messages
-        if selected_model.provider != "anthropic":
-            self.trim_messages(
-                model=llm,
-                messages=messages,
-                max_tokens=selected_model.context_window,
-                preserve_system_message=True,
-            )
-        streaming_response = llm.astream(input=messages)
-        # TODO - ensure any metadata available in streaming response is passed through
-        message = AIMessage(
-            content="",
-            additional_kwargs={
-                "timestamp": datetime.datetime.now(datetime.UTC),
-            },
-        )
+        ai_message: ChatCompletionAssistantMessageParam = {
+            "content": "",
+            "role": "assistant",
+        }
+        now = datetime.datetime.now(datetime.UTC)
+        message = ChatMessage(message=ai_message, model=model.name, timestamp=now)
+
         assert self.chat_data.model_name is not None
         response_chatbox = Chatbox(
             message=message,
@@ -179,9 +181,13 @@ class Chat(Widget):
 
         await self.chat_container.mount(response_chatbox)
         response_chatbox.border_title = "Agent is responding..."
-        async for token in streaming_response:
-            token_str = str(token.content)
-            response_chatbox.append_chunk(token_str)
+        async for chunk in response:
+            chunk = cast(ModelResponse, chunk)
+            chunk_content = chunk.choices[0].delta.content
+            if isinstance(chunk_content, str):
+                response_chatbox.append_chunk(chunk_content)
+            else:
+                break
             scroll_y = self.chat_container.scroll_y
             max_scroll_y = self.chat_container.max_scroll_y
             if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
@@ -246,7 +252,8 @@ class Chat(Widget):
         await self.chat_container.mount_all(chatboxes)
         self.chat_container.scroll_end(animate=False, force=True)
 
-        if chat_data.messages and chat_data.messages[-1].type == "human":
+        messages = chat_data.messages
+        if messages and messages[-1].message["role"] == "user":
             self.post_message(self.AgentResponseStarted())
             self.stream_agent_response()
 
@@ -255,87 +262,3 @@ class Chat(Widget):
             "\n", " "
         )
         chat_header.model_name = chat_data.model_name or "unknown model"
-
-    @classmethod
-    def get_message_length(
-        cls,
-        messages: list[BaseMessage],
-        model: BaseChatModel | LLM,
-    ) -> tuple[list[tuple[BaseMessage, int]], int]:
-        """
-        Get the length of messages
-        """
-        if len(messages) == 0:
-            raise ValueError("No messages provided")
-        total_length = 0
-        message_lengths: list[tuple[BaseMessage, int]] = []
-        for message in messages:
-            message_length = model.get_num_tokens_from_messages(messages=[message])
-            message_lengths.append((message, message_length))
-            total_length += message_length
-        return message_lengths, total_length
-
-    @classmethod
-    def trim_messages(
-        cls,
-        model: BaseChatModel | LLM,
-        messages: list[BaseMessage],
-        max_tokens: int,
-        preserve_system_message: bool = True,
-    ) -> list[BaseMessage]:
-        """
-        Trim messages to fit within max_tokens
-
-        This method pre-calculates the length of each message, then iterates
-        through the messages in reverse order, adding them to a list until
-        the total number of tokens exceeds max_tokens. Optionally, the system
-        message can be preserved at the beginning of the chat.
-
-        Parameters
-        ----------
-        model: BaseChatModel | LLM
-            Language model
-        messages: list[BaseMessage]
-            Messages
-        max_tokens: int
-            Maximum number of tokens
-        preserve_system_message: bool
-            Whether to preserve the system message at the beginning of the chat
-
-        Returns
-        -------
-        list[BaseMessage]
-            Trimmed messages
-        """
-        message_lengths, total_length = cls.get_message_length(
-            messages=messages, model=model
-        )
-        if total_length <= max_tokens:
-            return messages
-        total_tokens = 0
-        trimmed_messages: list[BaseMessage] = []
-        preserved_messages: list[BaseMessage] = []
-        if preserve_system_message is True and isinstance(messages[0], SystemMessage):
-            system_message_tokens = model.get_num_tokens_from_messages(
-                messages=[messages[0]]
-            )
-            if system_message_tokens > max_tokens:
-                raise ValueError(
-                    f"System message is too long ({system_message_tokens} tokens)"
-                )
-            total_tokens += system_message_tokens
-            preserved_messages.append(messages[0])
-            message_lengths = message_lengths[1:]
-        for message, length in reversed(message_lengths):
-            total_tokens += length
-            if total_tokens > max_tokens:
-                break
-            else:
-                trimmed_messages.append(message)
-        if len(trimmed_messages) == 0:
-            msg = (
-                f"Unable to trim ({len(messages)}) messages to fit "
-                f"within max_tokens ({max_tokens})"
-            )
-            raise ValueError(msg)
-        return preserved_messages + list(reversed(trimmed_messages))

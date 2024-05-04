@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 import datetime
 
-from langchain_core.messages import BaseMessage
-from litellm.types.completion import ChatCompletionUserMessageParam
 from textual import log
 
 from elia_chat.database.converters import (
@@ -14,7 +12,7 @@ from elia_chat.database.converters import (
 )
 from elia_chat.database.database import get_session
 from elia_chat.database.models import ChatDao, MessageDao
-from elia_chat.models import ChatData
+from elia_chat.models import ChatData, ChatMessage
 
 
 @dataclass
@@ -30,7 +28,9 @@ class ChatsManager:
         return chat_dao_to_chat_data(chat_dao)
 
     @staticmethod
-    async def get_messages(chat_id: str | int) -> list[BaseMessage]:
+    async def get_messages(
+        chat_id: str | int,
+    ) -> list[ChatMessage]:
         async with get_session() as session:
             try:
                 chat: ChatDao | None = await session.get(ChatDao, int(chat_id))
@@ -45,10 +45,11 @@ class ChatsManager:
             message_daos = chat.messages
             await session.commit()
 
-        # Convert MessageDao objects to BaseMessages
-        chat_messages: list[BaseMessage] = []
+        # Convert MessageDao objects to ChatMessages
+        model = chat.model
+        chat_messages: list[ChatMessage] = []
         for message_dao in message_daos:
-            chat_message = message_dao_to_chat_message(message_dao)
+            chat_message = message_dao_to_chat_message(message_dao, model)
             chat_messages.append(chat_message)
 
         log.debug(f"Retrieved {len(chat_messages)} chats for chat {chat_id!r}")
@@ -58,36 +59,40 @@ class ChatsManager:
     async def create_chat(chat_data: ChatData) -> int:
         log.debug(f"Creating chat in database: {chat_data!r}")
 
-        chat = ChatDao(
-            model=chat_data.model_name,
-            title="",
-            started_at=datetime.datetime.now(datetime.UTC),
-        )
-
-        for message in chat_data.messages:
-            new_message = MessageDao(
-                role=message.type,
-                content=message.content,
-                timestamp=message.additional_kwargs.get("timestamp"),
-            )
-            chat.messages.append(new_message)
-
+        model = chat_data.model_name
         async with get_session() as session:
+            chat = ChatDao(
+                model=model,
+                title="",
+                started_at=datetime.datetime.now(datetime.UTC),
+            )
             session.add(chat)
             await session.commit()
-            await session.refresh(chat)
+
+            chat_id = chat.id
+            for message in chat_data.messages:
+                litellm_message = message.message
+                content = litellm_message["content"]
+                new_message = MessageDao(
+                    chat_id=chat_id,
+                    role=litellm_message["role"],
+                    content=content if isinstance(content, str) else "",
+                    model=model,
+                    timestamp=message.timestamp,
+                )
+                (await chat.awaitable_attrs.messages).append(new_message)
+
+            await session.commit()
 
         return chat.id
 
     @staticmethod
-    async def add_message_to_chat(
-        chat_id: str, message: ChatCompletionUserMessageParam
-    ) -> None:
+    async def add_message_to_chat(chat_id: int, message: ChatMessage) -> None:
         async with get_session() as session:
             chat: ChatDao | None = await session.get(ChatDao, chat_id)
             if not chat:
                 raise Exception(f"Chat with ID {chat_id} not found.")
-            message_dao = chat_message_to_message_dao(message)
+            message_dao = chat_message_to_message_dao(message, chat_id)
             (await chat.awaitable_attrs.messages).append(message_dao)
             session.add(chat)
             await session.commit()

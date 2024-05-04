@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Generic, TypeVar
 
 from litellm.types.completion import ChatCompletionMessageParam
 
@@ -27,22 +26,20 @@ def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
     return name_mapping[model_name]
 
 
-LiteLLMMessageType = TypeVar("LiteLLMMessageType", bound=ChatCompletionMessageParam)
-
-
 @dataclass
-class ChatMessage(Generic[LiteLLMMessageType]):
-    message: LiteLLMMessageType
-    timestamp: datetime
+class ChatMessage:
+    message: ChatCompletionMessageParam
+    timestamp: datetime | None
+    model: str
 
 
 @dataclass
 class ChatData:
-    id: str | None
+    id: int
     model_name: str
     title: str | None
     create_timestamp: datetime | None
-    messages: list[ChatMessage[ChatCompletionMessageParam]]
+    messages: list[ChatMessage]
 
     @property
     def short_preview(self) -> str:
@@ -62,13 +59,13 @@ class ChatData:
         return ""
 
     @property
-    def first_user_message(self) -> ChatMessage[ChatCompletionMessageParam]:
+    def first_user_message(self) -> ChatMessage:
         return self.messages[1]
 
     @property
     def non_system_messages(
         self,
-    ) -> list[ChatMessage[ChatCompletionMessageParam]]:
+    ) -> list[ChatMessage]:
         return self.messages[1:]
 
     @property
