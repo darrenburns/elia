@@ -356,7 +356,9 @@ OptionsModal {
 
 OptionsModal #form-scrollable {
   background: $background;
-  padding: 1 0;
+  padding: 1 0 0 1;
+  scrollbar-gutter: stable;
+  scrollbar-size: 2 1;
   width: 75%;
   height: auto;
   max-height: 90%;
