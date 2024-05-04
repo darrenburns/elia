@@ -93,7 +93,7 @@ class Elia(App[None]):
                 ),
             ],
         )
-        chat.id = str((await ChatsManager.create_chat(chat_data=chat)))
+        chat.id = await ChatsManager.create_chat(chat_data=chat)
         await self.push_screen(ChatScreen(chat))
 
     async def action_help(self) -> None:

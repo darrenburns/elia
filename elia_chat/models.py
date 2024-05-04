@@ -35,7 +35,7 @@ class ChatMessage:
 
 @dataclass
 class ChatData:
-    id: int
+    id: int | None  # Can be None before the chat gets assigned ID from database.
     model_name: str
     title: str | None
     create_timestamp: datetime | None
