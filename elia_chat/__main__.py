@@ -130,7 +130,6 @@ def chat(message: Tuple[str, ...], model: str) -> None:
     launch_config = LaunchConfig(
         default_model=quick_launch_args.launch_prompt_model_name,
     )
-    # TODO - ensure this launches and remains on the chat screen
     app = Elia(launch_config, quick_launch_args.launch_prompt)
     app.run()
 

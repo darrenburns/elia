@@ -11,7 +11,6 @@ from textual.screen import ModalScreen
 from textual.widgets import Footer, RadioSet, RadioButton, Static, TextArea
 
 from elia_chat.locations import config_file
-from elia_chat.models import get_available_models
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.database.database import sqlite_file_name
 
@@ -38,7 +37,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
             vs.can_focus = False
             with RadioSet(id="available-models") as models_rs:
                 models_rs.border_title = "Available Models"
-                for model in get_available_models(self.elia.launch_config):
+                for model in self.elia.launch_config.all_models:
                     active = self.runtime_config.selected_model == model.name
                     yield RadioButton(
                         f"[dim]{escape(model.name)}",

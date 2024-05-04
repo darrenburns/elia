@@ -1,86 +1,83 @@
 import os
-from typing import Literal
-from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class EliaChatModel(BaseModel):
     name: str
-    provider: Literal["openai", "anthropic"]
-    description: str = Field("A chat model")
+    """The name of the model e.g. `gpt-3.5-turbo`.
+    This must match the name of the model specified by the provider.
+    """
+    provider: str | None
+    """The provider of the model, e.g. openai, anthropic, etc"""
+    required_env: str | None = None
+    """If this model requires an environment variable to be set in order to function,
+    this should be set to the name of the required variable.
+    """
+    description: str = Field(default="A chat model")
+    """A description of the model which may appear inside the Elia UI."""
     product: str = Field("")
-    context_window: int = Field(default=16_000)
+    """For example `ChatGPT`, `Claude`, `Gemini`, etc."""
     temperature: int = Field(default=1.0)
+    """The temperature to use. Low temperature means the same prompt is likely
+    to produce similar results. High temperature means a flatter distribution
+    when predicting the next token, and so the next token will be more random.
+    Setting a very high temperature will likely produce junk output."""
     max_retries: int = Field(default=0)
+    """The number of times to retry a request after it fails before giving up."""
 
 
-def get_default_openai_models() -> list[EliaChatModel]:
+def get_builtin_openai_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
             name="gpt-3.5-turbo",
-            provider="openai",
+            required_env="OPENAI_API_KEY",
+            provider="OpenAI",
             product="ChatGPT",
             description="The fastest ChatGPT model, great for most everyday tasks",
-            context_window=16_385,
         ),
         EliaChatModel(
             name="gpt-4-turbo",
-            provider="openai",
+            required_env="OPENAI_API_KEY",
+            provider="OpenAI",
             product="ChatGPT",
             description="The most powerful ChatGPT model, capable of "
             "complex tasks which require advanced reasoning",
-            context_window=128_000,
         ),
     ]
 
 
-def get_default_anthropic_models() -> list[EliaChatModel]:
+def get_builtin_anthropic_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
             name="claude-3-haiku-20240307",
-            provider="anthropic",
+            required_env="ANTHROPIC_API_KEY",
+            provider="Anthropic",
             product="Claude 3",
             description=(
                 "Fastest and most compact model for near-instant responsiveness"
             ),
-            context_window=200_000,
         ),
         EliaChatModel(
             name="claude-3-sonnet-20240229",
-            provider="anthropic",
+            required_env="ANTHROPIC_API_KEY",
+            provider="Anthropic",
             product="Claude 3",
             description=(
                 "Ideal balance of intelligence and speed for enterprise workloads"
             ),
-            context_window=200_000,
         ),
         EliaChatModel(
             name="claude-3-opus-20240229",
-            provider="anthropic",
+            required_env="ANTHROPIC_API_KEY",
+            provider="Anthropic",
             product="Claude 3",
             description="Most powerful model for highly complex tasks",
-            context_window=200_000,
         ),
     ]
 
 
-class OpenAI(BaseModel):
-    """Configuration relating to the OpenAI platform."""
-
-    model_config = ConfigDict(frozen=True)
-
-    api_key: SecretStr | None = Field(default=os.getenv("OPENAI_API_KEY"))
-    organization: str | None = Field(default=os.getenv("OPENAI_ORGANIZATION"))
-    models: list[EliaChatModel] = Field(default_factory=get_default_openai_models)
-    extra_models: list[EliaChatModel] = Field(default_factory=list)
-    # project: str | None = Field(default=os.getenv("OPENAI_PROJECT"))
-
-
-class Anthropic(BaseModel):
-    model_config = ConfigDict(frozen=True)
-
-    api_key: SecretStr | None = Field(default=os.getenv("ANTHROPIC_API_KEY"))
-    models: list[EliaChatModel] = Field(default_factory=get_default_anthropic_models)
-    extra_models: list[EliaChatModel] = Field(default_factory=list)
+def get_builtin_models() -> list[EliaChatModel]:
+    return get_builtin_openai_models() + get_builtin_anthropic_models()
 
 
 class LaunchConfig(BaseModel):
@@ -91,12 +88,17 @@ class LaunchConfig(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    # TODO - load from config+cli args+envvars too
     default_model: str = Field(default="gpt-3.5-turbo")
     system_prompt: str = Field(
         default=os.getenv(
             "ELIA_SYSTEM_PROMPT", "You are a helpful assistant named Elia."
         )
     )
-    openai: OpenAI = Field(default_factory=OpenAI)
-    anthropic: Anthropic = Field(default_factory=Anthropic)
+    models: list[EliaChatModel] = Field(default_factory=list)
+    builtin_models: list[EliaChatModel] = Field(
+        default_factory=get_builtin_models, init=False
+    )
+
+    @property
+    def all_models(self) -> list[EliaChatModel]:
+        return self.models + self.builtin_models

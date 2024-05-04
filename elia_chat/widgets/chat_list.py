@@ -113,7 +113,7 @@ class ChatList(OptionList):
         return all_chats
 
     def create_chat(self, chat_data: ChatData) -> None:
-        new_chat_list_item = ChatListItem(chat_data)
+        new_chat_list_item = ChatListItem(chat_data, self.app.launch_config)
         log.debug(f"Creating new chat {new_chat_list_item!r}")
 
         option_list = self.query_one(OptionList)

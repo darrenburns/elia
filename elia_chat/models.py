@@ -8,22 +8,9 @@ from litellm.types.completion import ChatCompletionMessageParam
 from elia_chat.config import LaunchConfig, EliaChatModel
 
 
-def get_available_models(config: LaunchConfig) -> list[EliaChatModel]:
-    openai = config.openai
-    anthropic = config.anthropic
-    return [
-        *openai.models,
-        *openai.extra_models,
-        *anthropic.models,
-        *anthropic.extra_models,
-    ]
-
-
 def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
     """Given the name of a model as a string, return the EliaChatModel."""
-    available_models = get_available_models(config)
-    name_mapping = {model.name: model for model in available_models}
-    return name_mapping[model_name]
+    return {model.name: model for model in config.all_models}[model_name]
 
 
 @dataclass
