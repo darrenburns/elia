@@ -9,6 +9,7 @@ class PromptInput(TextArea):
     @dataclass
     class PromptSubmitted(Message):
         text: str
+        prompt_input: "PromptInput"
 
     @dataclass
     class CursorEscapingTop(Message):
@@ -63,6 +64,5 @@ class PromptInput(TextArea):
 
     def action_submit_prompt(self) -> None:
         if self.submit_ready:
-            message = self.PromptSubmitted(self.text)
+            message = self.PromptSubmitted(self.text, prompt_input=self)
             self.post_message(message)
-            self.text = ""

@@ -139,7 +139,6 @@ class Chat(Widget):
 
         await self.chat_container.mount(user_message_chatbox)
         self.scroll_to_latest_message()
-        self.post_message(self.AgentResponseStarted())
         self.stream_agent_response()
 
     @work
@@ -186,6 +185,7 @@ class Chat(Widget):
                 chunk = cast(ModelResponse, chunk)
 
                 if chunk_count == 0:
+                    self.post_message(self.AgentResponseStarted())
                     response_chatbox.border_title = "Agent is responding..."
                     await self.chat_container.mount(response_chatbox)
 
@@ -232,6 +232,7 @@ class Chat(Widget):
         if self.allow_input_submit is True:
             user_message = event.text
             await self.new_user_message(user_message)
+            event.prompt_input.clear()
 
     @on(PromptInput.CursorEscapingTop)
     async def on_cursor_up_from_prompt(self) -> None:
@@ -271,7 +272,6 @@ class Chat(Widget):
 
         messages = chat_data.messages
         if messages and messages[-1].message["role"] == "user":
-            self.post_message(self.AgentResponseStarted())
             self.stream_agent_response()
 
         chat_header = self.query_one(ChatHeader)

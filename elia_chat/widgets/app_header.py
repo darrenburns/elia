@@ -46,7 +46,7 @@ class AppHeader(Widget):
                     Text.assemble(
                         ("elia ", title_style + Style(bold=True)),
                         ("///", subtitle_style),
-                        (" llm tools", title_style),
+                        (" version 1.0.0", title_style),
                     )
                 )
             model_name = self.elia.runtime_config.selected_model

@@ -6,7 +6,7 @@ from textual.widgets import Footer, Markdown
 
 
 class HelpScreen(ModalScreen[None]):
-    BINDINGS = [Binding("escape,f1", "app.pop_screen()", "Close help")]
+    BINDINGS = [Binding("escape,?", "app.pop_screen()", "Close help")]
 
     HELP_MARKDOWN = """\
 ### How do I quit Elia?
@@ -83,7 +83,6 @@ It's present on both the home screen and the chat page.
 - `shift+up`: Select while moving the cursor up
 - `shift+down`: Select while moving the cursor down
 - `shift+left`: Select while moving the cursor left
-- `shift+right`: Select while moving the cursor right
 - `backspace`: Delete character to the left of cursor
 - `ctrl+w`: Delete from cursor to start of the word
 - `delete,ctrl+d`: Delete character to the right of cursor

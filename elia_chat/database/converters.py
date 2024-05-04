@@ -42,7 +42,6 @@ def message_dao_to_chat_message(message_dao: MessageDao, model: str) -> ChatMess
     message: ChatCompletionUserMessageParam = {
         "content": message_dao.content,
         "role": message_dao.role,  # type: ignore
-        "name": "",
     }
 
     return ChatMessage(

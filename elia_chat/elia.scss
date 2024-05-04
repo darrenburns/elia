@@ -439,6 +439,10 @@ HelpScreen {
     background: $background;
   }
 
+  & VerticalScroll {
+    scrollbar-gutter: stable;
+  }
+
   & Markdown {
     margin: 0;
     padding: 0 2;
