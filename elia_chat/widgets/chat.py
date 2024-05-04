@@ -31,6 +31,7 @@ from elia_chat.models import (
 )
 from elia_chat.widgets.chatbox import Chatbox
 
+
 if TYPE_CHECKING:
     from elia_chat.app import Elia
 
@@ -179,27 +180,41 @@ class Chat(Widget):
             self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
 
-        await self.chat_container.mount(response_chatbox)
-        response_chatbox.border_title = "Agent is responding..."
-        async for chunk in response:
-            chunk = cast(ModelResponse, chunk)
-            chunk_content = chunk.choices[0].delta.content
-            if isinstance(chunk_content, str):
-                response_chatbox.append_chunk(chunk_content)
-            else:
-                break
-            scroll_y = self.chat_container.scroll_y
-            max_scroll_y = self.chat_container.max_scroll_y
-            if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
-                self.chat_container.scroll_end(animate=False)
+        try:
+            chunk_count = 0
+            async for chunk in response:
+                if chunk_count == 0:
+                    response_chatbox.border_title = "Agent is responding..."
+                    await self.chat_container.mount(response_chatbox)
 
-        self.post_message(
-            self.AgentResponseComplete(
-                chat_id=self.chat_data.id,
-                message=response_chatbox.message,
-                chatbox=response_chatbox,
+                chunk = cast(ModelResponse, chunk)
+                chunk_content = chunk.choices[0].delta.content
+                if isinstance(chunk_content, str):
+                    response_chatbox.append_chunk(chunk_content)
+                else:
+                    break
+                scroll_y = self.chat_container.scroll_y
+                max_scroll_y = self.chat_container.max_scroll_y
+                if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
+                    self.chat_container.scroll_end(animate=False)
+
+                chunk_count += 1
+        except Exception:
+            self.notify(
+                "There was a problem using this model. "
+                "Please check your configuration file.",
+                title="Error",
+                severity="error",
+                timeout=15,
             )
-        )
+        else:
+            self.post_message(
+                self.AgentResponseComplete(
+                    chat_id=self.chat_data.id,
+                    message=response_chatbox.message,
+                    chatbox=response_chatbox,
+                )
+            )
 
     @on(AgentResponseComplete)
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:

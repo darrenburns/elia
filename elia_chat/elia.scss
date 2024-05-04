@@ -37,9 +37,13 @@ ModalScreen {
 
 Toast {
   background: $background-darken-1;
-  border: none;
-  border-left: outer greenyellow;
+  border-right: none;
 }
+
+Toast.information {
+  border-left: outer $main-lighten-1;
+}
+
 
 Chat {
   ChatHeader {

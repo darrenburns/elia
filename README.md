@@ -1,6 +1,8 @@
 # Elia
 
-A powerful terminal app for interacting with LLMs such as ChatGPT and Claude 3.
+A powerful terminal user interface for interacting with large language models.
+
+Supports hundreds of LLMs, including ChatGPT, Claude, and even models running locally through [`ollama`](https://github.com/ollama/ollama).
 
 ## Quickstart
 
