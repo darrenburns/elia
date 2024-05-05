@@ -159,7 +159,7 @@ AppHeader {
 }
 
 HomeScreen ChatList {
-padding: 1 0 0 1;
+  padding: 0;
   height: 1fr;
   width: 1fr;
   border: round $main-border-color;
@@ -238,11 +238,12 @@ OptionList {
 OptionList > .option-list--option-highlighted {
   background: $main 15%;
   color: $text;
-  text-style: bold;
+  text-style: none;
 }
 
 OptionList:focus > .option-list--option-highlighted {
   background: $main-darken-2 80%;
+  text-style: none;
 }
 
 OptionList > .option-list--option-disabled {

@@ -30,7 +30,7 @@ class ChatListItemRenderable:
         now = datetime.datetime.now(datetime.UTC)
         delta = now - self.chat.update_time
         time_ago = humanize.naturaltime(delta)
-        time_ago_text = Text(time_ago, style="dim")
+        time_ago_text = Text(time_ago, style="dim i")
         model = get_model_by_name(self.chat.model_name, self.config)
         subtitle = f"[dim]{escape(model.display_name or model.name)}"
         if model.provider:
