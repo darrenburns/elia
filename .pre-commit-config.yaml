@@ -11,7 +11,6 @@ repos:
       - id: check-docstring-first
       - id: check-merge-conflict
       - id: check-toml
-      - id: check-json
       - id: debug-statements
       - id: end-of-file-fixer
       - id: forbid-new-submodules
@@ -25,21 +24,8 @@ repos:
       - id: python-no-eval
       - id: python-no-log-warn
       - id: python-use-type-annotations
-      - id: python-check-blanket-type-ignore
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: 'v0.0.269'
     hooks:
       - id: ruff
         args: [ --fix, --exit-non-zero-on-fix ]
-  - repo: https://github.com/psf/black
-    rev: 23.3.0
-    hooks:
-      - id: black
-  - repo: local
-    hooks:
-      - id: mypy
-        name: mypy
-        entry: 'mypy'
-        language: system
-        files: elia_chat
-        types: [python, file]

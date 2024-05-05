@@ -1,17 +1,16 @@
 from datetime import datetime, timezone
 
 
-def format_timestamp(timestamp: float) -> str:
-    """Convert a Unix timestamp into a string in human-readable format.
+def format_timestamp(dt: datetime) -> str:
+    """Convert a datetime into the local timezone and format it.
 
     Args:
-        timestamp: The Unix timestamp.
+        dt: The datetime object to format.
 
     Returns:
         The string timestamp in the format "%Y-%m-%d %H:%M:%S".
     """
-    utc_dt = datetime.fromtimestamp(timestamp, timezone.utc)
-    local_dt = utc_dt.astimezone()
+    local_dt = convert_to_local(dt)
     return local_dt.strftime("%Y-%m-%d %H:%M:%S")
 
 

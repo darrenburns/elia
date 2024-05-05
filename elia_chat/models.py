@@ -1,61 +1,75 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
-from typing import Optional
+from datetime import UTC, datetime
+from typing import TYPE_CHECKING
 
-from langchain.schema import BaseMessage
 
-from elia_chat.widgets.chat_options import GPTModel, MODEL_MAPPING, DEFAULT_MODEL
+from elia_chat.config import LaunchConfig, EliaChatModel
+
+if TYPE_CHECKING:
+    from litellm.types.completion import ChatCompletionMessageParam
+
+
+class UnknownModel(EliaChatModel):
+    pass
+
+
+def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
+    """Given the name of a model as a string, return the EliaChatModel."""
+    try:
+        return {model.name: model for model in config.all_models}[model_name]
+    except KeyError:
+        return UnknownModel(name=model_name)
+
+
+@dataclass
+class ChatMessage:
+    message: ChatCompletionMessageParam
+    timestamp: datetime | None
+    model: str
 
 
 @dataclass
 class ChatData:
-    id: str | None
+    id: int | None  # Can be None before the chat gets assigned ID from database.
     model_name: str
     title: str | None
-    create_timestamp: float | None
-    messages: list[BaseMessage]
+    create_timestamp: datetime | None
+    messages: list[ChatMessage]
 
     @property
     def short_preview(self) -> str:
-        first_user_message = self.first_user_message
-        if first_user_message is None:
-            return "Empty chat..."
-        first_content = first_user_message.content or ""
-        return first_content[:24] + "..."
+        first_message = self.first_user_message.message
+
+        if "content" in first_message:
+            first_message = first_message["content"]
+            # We have content, but it's not guaranteed to be a string quite yet.
+            # In the case of tool calls or image generation requests, we can
+            # have non-string types here. We're not handling/considering this atm.
+            if first_message and isinstance(first_message, str):
+                if len(first_message) > 77:
+                    return first_message[:77] + "..."
+                else:
+                    return first_message
+
+        return ""
 
     @property
-    def first_user_message(self) -> BaseMessage | None:
-        return self.messages[1] if len(self.messages) > 1 else None
+    def system_prompt(self) -> ChatMessage:
+        return self.messages[0]
 
     @property
-    def non_system_messages(self) -> list[BaseMessage]:
+    def first_user_message(self) -> ChatMessage:
+        return self.messages[1]
+
+    @property
+    def non_system_messages(
+        self,
+    ) -> list[ChatMessage]:
         return self.messages[1:]
 
     @property
-    def create_time(self) -> datetime:
-        return datetime.fromtimestamp(self.create_timestamp or 0).astimezone()
-
-    @property
     def update_time(self) -> datetime:
-        return datetime.fromtimestamp(
-            self.messages[-1].get("timestamp", 0) if self.messages else 0
-        )
-
-
-@dataclass
-class EliaContext:
-    """
-    Elia Context
-    """
-
-    chat_message: Optional[str] = None
-    model_name: str = DEFAULT_MODEL.name
-
-    @property
-    def gpt_model(self) -> GPTModel:
-        gpt_model = MODEL_MAPPING.get(self.model_name)
-        if gpt_model is None:
-            raise ValueError(f"Unknown model name: {self.model_name}")
-        return gpt_model
+        message_timestamp = self.messages[-1].timestamp
+        return message_timestamp.astimezone().replace(tzinfo=UTC)

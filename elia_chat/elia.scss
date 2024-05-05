@@ -3,6 +3,9 @@ $main-lighten-1: #7E3AF2;
 $main: #6C2BD9;
 $main-darken-1: #5521B5;
 $main-darken-2: #4A1D96;
+$main-border-text-color: greenyellow 70%;
+$main-border-color: $main-lighten-1 50%;
+$main-border-color-focus: $main-lighten-1 100%;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
@@ -10,238 +13,230 @@ $left-border-trim: vkey $main-lighten-2 15%;
   scrollbar-color: $panel;
   scrollbar-color-hover: $main-lighten-1 40%;
   scrollbar-color-active: $main-darken-1;
-  scrollbar-background-active: $background;
-  scrollbar-background-hover: $background;
+  scrollbar-background: #0E0E0E;
+  scrollbar-background-active: $background-darken-1;
+  scrollbar-background-hover: #0C0C0C;
+  link-style: none;
+  link-color-hover: greenyellow;
+  link-background-hover: $main 0%;
+  link-style-hover: u not dim bold;
 }
+
+Tabs .underline--bar {
+  color: $main-lighten-2 50%;
+  background: $main 75%;
+}
+
+Screen {
+  background: $background;
+}
+
+ModalScreen {
+  background: black 50%;
+}
+
+Rule {
+  color: white 20%;
+
+  &.-horizontal {
+    margin: 0 0;
+  }
+}
+
+Toast {
+  background: $background-darken-1;
+  border-right: none;
+}
+
+Toast.information {
+  border-left: outer $main-lighten-1;
+}
+
 
 Chat {
-  height: 1fr;
-  width: 1fr;
-}
+  ChatHeader {
+    width: 100%;
+    height: auto;
+    padding: 1 2;
+    background: $background;
 
-Chat > VerticalScroll {
-  border-left: $left-border-trim;
-
-}
-
-#chat-input-container {
-  dock: bottom;
-  border-left: $left-border-trim;
-  height: auto;
-  padding: 1 2;
-}
-
-#chat-input {
-  box-sizing: border-box;
-}
-
-ChatOptions {
-  border-left: $left-border-trim;
-}
-
-ChatHeader {
-  width: 1fr;
-  height: auto;
-  padding: 1 2;
-  background: $background 50%;
-  border-left: $left-border-trim;
-}
-
-ChatHeader > Static {
-  width: auto;
-}
-
-ChatHeader #title-static {
-  text-style: bold;
-}
-
-ChatHeader #model-static {
-  color: $text-muted;
-}
-
-ChatHeader > Horizontal {
-  width: 1fr;
-}
-
-ChatHeader Vertical {
-  width: 1fr;
+    & #model-static {
+      color: $text-muted;
+    }
+  }
+  PromptInput {
+    height: auto;
+    max-height: 50%;
+    padding: 0 1;
+  }
 }
 
 AgentIsTyping {
   dock: top;
-  display: none;
-  color: $text;
-  height: 1;
   align-horizontal: right;
+  display: none;
+  height: 1;
+  width: auto;
+  layer: overlay;
+  margin-top: 1;
+  margin-right: 2;
 }
 
-AgentIsTyping Label {
-  width: auto;
-}
 
 AgentIsTyping LoadingIndicator {
   width: 11;
   color: $main;
 }
 
-#chat-options-container {
-  padding: 2 4;
-}
-
-.chat-options-label {
-  width: 1fr;
-  content-align: center middle;
-  margin-left: 2;
-}
-
-ChatList {
-  dock: left;
-  height: 1fr;
-  width: 32;
-  background: $background 15%;
-}
-
-ChatList #cl-header-container {
-  height: 4;
+TextArea {
   padding: 1 2;
-  background: $main-darken-2 10%;
+  border: round $main-border-color;
+  border-title-color: $main-border-text-color;
+  border-subtitle-color: $main-border-text-color;
+  &:focus {
+    border: round $main-border-color-focus;
+    border-title-style: bold;
+    & .text-area--selection {
+      background: $main 60%;
+    }
+  }
+  & .text-area--cursor-line {
+    background: $background 0%;
+  }
+  & .text-area--cursor-gutter {
+    background: $background 0%;
+  }
+  &:focus .text-area--cursor-gutter {
+    color: yellowgreen;
+    background: $background 0%;
+  }
+  & .text-area--selection {
+    background: $main-lighten-2 25%;
+  }
+
+  &.selection-mode {
+    border: none;
+    height: auto;
+    max-height: 75vh;
+    width: 100%;
+    padding: 0;
+  }
 }
 
-ChatList .app-title {
-  color: $main-lighten-2;
-  text-style: bold;
-  background: $main-darken-2 10%;
+PromptInput.multiline .text-area--cursor-line {
+  background: white 3%;
 }
 
-ChatList .app-subtitle {
-  color: $text-muted;
-  background: $main-darken-2 10%;
+HomeScreen PromptInput {
+  height: auto;
+  max-height: 65%;
+
+  & TextArea {
+    height: auto;
+    max-height: 100%;
+  }
 }
 
-ChatList #cl-button-container {
-  dock: bottom;
-  padding: 1 2;
-  height: 5;
+AppHeader #cl-header-container {
+  height: auto;
+}
+
+AppHeader {
+  dock: top;
   width: 1fr;
-  margin-bottom: 1;
+  padding: 1 2;
+  height: auto;
+  & .app-title {
+    color: $text-muted;
+  }
+
+  & .app-subtitle {
+    color: greenyellow 50%;
+    text-style: bold;
+  }
+
+  & Horizontal {
+    height: auto;
+  }
+
+  & #model-label {
+    border: none;
+    background: $main-darken-2 0%;
+    text-style: dim;
+  }
 }
 
-ChatList #cl-option-list {
+HomeScreen ChatList {
+  padding: 0;
   height: 1fr;
   width: 1fr;
-  margin-top: 1;
-  scrollbar-size-vertical: 1;
-}
+  border: round $main-border-color;
+  border-title-color: $main-border-text-color;
+  border-subtitle-color: $main-border-text-color;
 
-ChatList #cl-new-chat-button {
-  background: $main-darken-2;
-  border: none;
-  width: 100%;
-  height: 3;
-}
-
-OptionList:focus {
-  border: wide $main;
-}
-
-ChatList #cl-new-chat-button:hover {
-  background: $main-darken-1;
+  &:focus {
+    border: round $main-border-color-focus;
+    border-title-style: bold;
+    border-subtitle-color: $main-border-text-color;
+  }
 }
 
 Chatbox {
-  color: $text;
-  background: $main 50%;
   height: auto;
   width: auto;
+  min-width: 12;
   max-width: 1fr;
-  margin: 1 2;
-  padding: 1 2;
-}
+  margin: 0 1;
+  padding: 0 2;
 
-Chatbox:focus {
-  border-left: thick $main-lighten-2;
-  padding: 1 2 1 1;
-}
+  &.assistant-message.response-in-progress {
+    background: greenyellow 3%;
+    min-width: 30%;
+  }
 
-Chatbox.assistant-message {
-  background: $panel 80%;
-}
+  &.assistant-message {
+    border: round greenyellow 60%;
+    &:focus-within {
+      border: round greenyellow;
+      border-left: thick greenyellow 50%;
+    }
 
-ModelSet {
-  height: auto;
-  border: solid $panel 0%;
-  border-title-color: $text;
-  border-title-align: center;
-  padding: 1 2;
-}
+    & TextArea {
+      & .text-area--selection {
+        background: greenyellow 23%;
+        color: white 93%;
+      }
+    }
 
-ModelSet:focus-within {
-  border: round $main-lighten-1 100%;
-}
+  }
 
-ModelPanel {
-  width: 1fr;
-}
+  &.human-message {
+    border: round $main-border-color;
+    &:focus-within {
+      border: round $main-border-color-focus;
+      border-left: thick $main-border-color-focus;
+    }
+  }
 
-ModelPanel {
-  padding: 1 2;
-  height: 12;
-}
-
-ModelPanel.gpt35 {
-  color: $text;
-  background: $panel;
-  border: thick $accent;
-}
-
-ModelPanel.gpt35 :hover {
-  background: $panel-lighten-1;
-  border: thick $accent-lighten-1;
-}
-
-ModelPanel.gpt35.selected {
-  background: $accent-darken-2;
-  border: thick $accent-lighten-1;
-}
-
-ModelPanel.gpt4 {
-  color: $text;
-  background: $panel;
-  border: thick $success;
-}
-
-ModelPanel.gpt4 :hover {
-  background: $panel-lighten-1;
-  border: thick $success-lighten-1;
-}
-
-ModelPanel.gpt4.selected {
-  background: $success-darken-2;
-  border: thick $success-lighten-1;
 }
 
 Footer {
-  background: $main;
+  background: $main-darken-1 0%;
 }
 
 Footer > .footer--highlight {
-  background: $main-darken-1;
+  background: $main-lighten-2 20%;
 }
 
 Footer > .footer--key {
-  text-style: bold;
-  background: $main-darken-2;
-  color: $text;
+  text-style: none;
+  background: $main-darken-2 0%;
+  color: $main-border-text-color;
 }
 
 Footer > .footer--highlight-key {
-  background: $success;
-  text-style: bold;
-  color: $text;
-}
-
-Input .input--cursor {
-  color: $main-lighten-2;
+  background: $main-lighten-2 30%;
+  color: greenyellow;
 }
 
 OptionList {
@@ -249,26 +244,18 @@ OptionList {
 }
 
 OptionList > .option-list--option-highlighted {
-  background: $main 50%;
+  background: $main 15%;
   color: $text;
-  text-style: bold;
+  text-style: none;
 }
 
 OptionList:focus > .option-list--option-highlighted {
-  background: $main;
+  background: $main-darken-2 80%;
+  text-style: none;
 }
 
 OptionList > .option-list--option-disabled {
   color: $text-disabled;
-}
-
-OptionList > .option-list--option-highlighted-disabled {
-  color: $text-disabled;
-  background: $main 30%;
-}
-
-OptionList:focus > .option-list--option-highlighted-disabled {
-  background: $main 40%;
 }
 
 OptionList > .option-list--option-hover {
@@ -281,13 +268,13 @@ OptionList > .option-list--option-hover-disabled {
 }
 
 OptionList > .option-list--option-hover-highlighted {
-  background: $main 60%;
+  background: $main-lighten-1 40%;
   color: $text;
   text-style: bold;
 }
 
 OptionList:focus > .option-list--option-hover-highlighted {
-  background: $main;
+  background: $main-lighten-1 50%;
   color: $text;
   text-style: bold;
 }
@@ -297,26 +284,35 @@ OptionList > .option-list--option-hover-highlighted-disabled {
   background: $main 60%;
 }
 
-Input {
-  border: tall $main-lighten-1 25%;
-}
-
-Input:focus {
-  border: tall $main;
-}
-
-MessageInfo {
+ChatDetails {
   align: center middle;
 }
 
-MessageInfo > #outermost-container {
-  width: 80%;
-  height: 60%;
+ChatDetails > #container {
+  width: 90%;
+  height: 85%;
   background: $background;
-}
+  padding: 1 2;
+  border: wide $main-border-color-focus;
+  border-title-color: $main-border-text-color;
+  border-title-background: $background;
+  border-title-style: b;
+  border-subtitle-color: $text-muted;
+  border-subtitle-background: $background;
 
-MessageInfo #inner-container {
-  height: 1fr;
+  & Markdown {
+    padding: 0;
+    margin: 0;
+  }
+
+  & .heading {
+    color: $text-muted;
+  }
+
+  & .datum {
+    text-style: i;
+  }
+
 }
 
 MessageInfo #message-info-header {
@@ -360,15 +356,131 @@ TokenAnalysis {
   height: auto;
 }
 
-#inner-container ContentSwitcher {
+MessageInfo #inner-container ContentSwitcher {
   height: auto;
-  padding: 2 4;
+  padding: 1 2;
 }
 
-#inner-container #markdown-content {
+MessageInfo #inner-container #markdown-content {
+  height: 1fr;
+}
+
+MessageInfo #inner-container #metadata {
   height: auto;
 }
 
-#inner-container #metadata {
+OptionsModal {
+  align: center middle;
+}
+
+OptionsModal #form-scrollable {
+  background: $background;
+  padding: 1 0 0 1;
+  scrollbar-gutter: stable;
+  scrollbar-size: 2 1;
+  width: 75%;
   height: auto;
+  max-height: 90%;
+  border: wide $main-darken-2 80%;
+  border-title-color: $main-border-text-color;
+  border-title-background: $background;
+  & #available-models {
+    width: 100%;
+    border: round $main-border-color;
+    border-title-color: $main-border-text-color;
+    background: red 0%;
+    padding: 1 0;
+
+    &:focus {
+      border: round $main-border-color-focus;
+      border-title-style: bold;
+    }
+  }
+
+  & TextArea {
+    height: auto;
+    max-height: 12;
+    border-subtitle-color: $main-border-color;
+    &:focus {
+      border-subtitle-color: $main-border-color-focus;
+    }
+  }
+
+
+  #xdg-info {
+    padding: 1 2;
+    border: round $main-border-color;
+    height: auto;
+    border-title-color: $main-border-text-color;
+  }
+
+}
+
+.code_inline {
+  text-style: none;
+  color: greenyellow;
+}
+
+RadioSet:focus > RadioButton.-on {
+  & > .toggle--label {
+    text-style: bold not dim;
+    color: greenyellow;
+  }
+}
+
+RadioSet > RadioButton.-on {
+  text-style: bold not dim;
+  color: greenyellow;
+}
+
+RadioButton .toggle--button {
+  color: greenyellow 80%;
+  background: $background-lighten-1;
+}
+
+HelpScreen {
+  width:1fr;
+  height: auto;
+  align: center middle;
+
+  & #help-scroll-keys-info {
+    dock: bottom;
+    border-top: solid $main 50%;
+    text-style: dim;
+    padding: 0 2;
+    background: $background 0%;
+  }
+  & > Vertical {
+    border: wide $main-border-color 80%;
+    border-title-color: $main-border-text-color;
+    border-title-background: $background;
+    border-title-style: bold;
+    width: 80%;
+    height: 90%;
+    background: $background;
+  }
+
+  & VerticalScroll {
+    scrollbar-gutter: stable;
+  }
+
+  & Markdown {
+    margin: 0;
+    padding: 0 2;
+
+    & MarkdownH3 {
+      background: $background 0%;
+      margin: 0;
+      margin-top: 1;
+      padding: 0;
+    }
+    & MarkdownBlockQuote {
+      background: $boost;
+      border-left: outer $main;
+      padding: 1;
+    }
+    & MarkdownBulletList {
+      margin-left: 1;
+    }
+  }
 }

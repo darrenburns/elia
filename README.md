@@ -1,78 +1,87 @@
-# Elia
+## Elia
 
-A terminal ChatGPT client built with Textual
+A powerful terminal user interface for interacting with large language models.
 
-![img.png](https://github.com/darrenburns/elia/assets/49741340/80453ed8-ec94-4095-b721-89d32d9fc327)
+Supports hundreds of LLMs, including ChatGPT, Claude, and even models running locally through [`ollama`](https://github.com/ollama/ollama).
 
-> **Note**
-> Elia is still a work in progress. How far will I go with this? I have no idea...
+<img width="1439" alt="elia-stacked-screenshot" src="https://github.com/darrenburns/elia/assets/5740731/8fb15936-abeb-4464-b34d-f6cb001913e4">
 
-## Quickstart
+Your conversations are stored locally in a SQLite database.
 
-Install Elia with [pipx](https://github.com/pypa/pipx), set your OpenAI API key environment variable,
-and start the app:
+### Installation
+
+Install Elia with [pipx](https://github.com/pypa/pipx):
 
 ```bash
-pipx install git+https://github.com/darrenburns/elia
-export OPENAI_API_KEY="xxxxxxxxxxxxxx"
+pipx install elia
+```
+
+Depending on the model you wish to use, you may need to set one or more environment variables (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc).
+
+### Quickstart
+
+Launch Elia from the command line:
+
+```bash
 elia
 ```
 
-### Wiping the Chat History
+Launch directly a new chat from the command line:
 
-Chat history is stored in a SQLite database alongside the Elia application.
-To wipe the chat history, simply run the db reset command:
+```bash
+elia "What is the Zen of Python?"
+```
+
+### Running local models
+
+1. Install [`ollama`](https://github.com/ollama/ollama).
+2. Pull the model you require, e.g. `ollama pull llama3`.
+3. Run the local ollama server: `ollama serve`.
+4. Add the model to the config file (see below).
+
+### Configuration
+
+The location of the configuration file is noted at the bottom of
+the options window (`ctrl+o`).
+
+The example file below shows the available options, as well as examples of how to add new models.
+
+```toml
+# the model that is selected by default on launch
+default_model = "gpt-3.5-turbo"
+# the system prompt on launch
+system_prompt = "You are a helpful assistant who talks like a pirate."
+
+# example of adding local llama3 support
+# only the `name` field is required here.
+[[models]]
+name = "ollama/llama3"
+
+# example of add a groq model, showing some other fields
+[[models]]
+name = "groq/llama2-70b-4096"
+display_name = "Llama 2 70B"  # appears in UI
+provider = "Groq"  # appears in UI
+temperature = 1.0  # high temp = high variation in output
+max_retries = 0  # number of retries on failed request
+```
+
+### Import from ChatGPT
+
+Export your conversations to a JSON file using the ChatGPT UI, then import them using the `import` command.
+
+```bash
+elia import 'path/to/conversations.json'
+```
+
+### Wiping the database
 
 ```bash
 elia reset
 ```
 
-### Changing the Chat Directive
-
-By default, Elia's conversations with ChatGPT are primed with a
-directive for the GPT model:
-
-`You are a helpful assistant.`
-
-This can be changed by setting the `ELIA_DIRECTIVE` environment variable before
-starting a new conversation. A directive is set for the lifetime of a conversation.
+### Uninstalling
 
 ```bash
-export ELIA_DIRECTIVE="You are a helpful assistant who talks like a pirate."
-elia
+pipx uninstall elia
 ```
-
-### Launching Directly into a Conversation
-
-```bash
-elia chat write python code to detect a palindrome
-```
-
-## Progress updates
-
-### June 2023
-
-Messages are now tokenized and you can see how messages are split into tokens using the "Message Details" modal.
-
-<img width="700" alt="image" src="https://github.com/darrenburns/elia/assets/5740731/395fd2b5-ca83-49cc-b86b-163a44fe7750">
-
-### May 29th 2023
-
-SQLite/SQLModel chosen for persistence.
-Conversations can be imported from ChatGPT and they'll be displayed in the sidebar.
-Selecting a conversation in the sidebar will load it into the main window.
-Raw markdown can be displayed.
-
-https://github.com/darrenburns/elia/assets/5740731/0a348cc9-4fab-4266-95f6-d04143b70e7b
-
-### May 24th 2023
-
-Much of the core UI is in place, with some placeholders. No persistence yet, but I've begun to explore it.
-
-https://github.com/darrenburns/elia/assets/5740731/bbdbb2b4-f571-40e4-b181-525e8e9de6f3
-
-### May 4th 2023
-
-Initial proof of concept.
-
-https://user-images.githubusercontent.com/5740731/236323494-3d3ab56a-673b-45a9-b501-830926ca8fea.mov

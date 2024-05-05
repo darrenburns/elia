@@ -1,0 +1,5 @@
+{
+    "python.analysis.include": [
+        "elia_chat/**/*.py",
+    ]
+}

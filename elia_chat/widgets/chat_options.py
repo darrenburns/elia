@@ -1,91 +1,42 @@
 from __future__ import annotations
+from typing import TYPE_CHECKING, cast
 
-from dataclasses import dataclass
-from typing import Dict
 
-from langchain.callbacks import AsyncIteratorCallbackHandler
-from langchain.chat_models import ChatOpenAI
-from langchain.chat_models.base import BaseChatModel
-from langchain.llms.base import LLM
-from rich.console import RenderableType
+from rich.markup import escape
 from rich.text import Text
-from textual import log, on
+from textual import on
 from textual.app import ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, VerticalScroll
-from textual.geometry import clamp
-from textual.message import Message
-from textual.reactive import reactive
-from textual.widget import Widget
-from textual.widgets import Static
+from textual.containers import Vertical, VerticalScroll
+from textual.screen import ModalScreen
+from textual.widgets import Footer, RadioSet, RadioButton, Static, TextArea
 
-callback = AsyncIteratorCallbackHandler()
+from elia_chat.config import EliaChatModel
+from elia_chat.locations import config_file
+from elia_chat.runtime_config import RuntimeConfig
+from elia_chat.database.database import sqlite_file_name
 
-
-@dataclass
-class GPTModel:
-    name: str
-    icon: str
-    provider: str
-    product: str
-    description: str
-    css_class: str
-    model: BaseChatModel | LLM
-    token_limit: int
+if TYPE_CHECKING:
+    from elia_chat.app import Elia
 
 
-DEFAULT_MODEL = GPTModel(
-    name="gpt-3.5-turbo",
-    icon="⚡️",
-    provider="OpenAI",
-    product="ChatGPT",
-    description="The fastest ChatGPT model, great for most everyday tasks.",
-    css_class="gpt35",
-    model=ChatOpenAI(
-        model_name="gpt-3.5-turbo",
-        streaming=True,
-        callbacks=[callback],
-    ),
-    token_limit=4096,
-)
-AVAILABLE_MODELS = [
-    DEFAULT_MODEL,
-    GPTModel(
-        name="gpt-4-turbo",
-        icon="🧠",
-        provider="OpenAI",
-        product="ChatGPT",
-        description="The most powerful ChatGPT model, capable of "
-        "complex tasks which require advanced reasoning.",
-        css_class="gpt4",
-        model=ChatOpenAI(
-            model_name="gpt-4-1106-preview",
-            streaming=True,
-            callbacks=[callback],
-        ),
-        token_limit=128000,
-    ),
-]
-MODEL_MAPPING: Dict[str, GPTModel] = {model.name: model for model in AVAILABLE_MODELS}
-
-
-class ModelPanel(Static):
-    class Selected(Message):
-        def __init__(self, model: GPTModel):
-            super().__init__()
-            self.model = model
-
-    selected = reactive(False)
-
+class ModelRadioButton(RadioButton):
     def __init__(
         self,
-        model: GPTModel,
+        model: EliaChatModel,
+        label: str | Text = "",
+        value: bool = False,
+        button_first: bool = True,
+        *,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
         super().__init__(
+            label,
+            value,
+            button_first,
             name=name,
             id=id,
             classes=classes,
@@ -93,88 +44,89 @@ class ModelPanel(Static):
         )
         self.model = model
 
-    def render(self) -> RenderableType:
-        return Text.assemble(
-            (f"{self.model.icon} {self.model.name}", "b"),
-            "\n",
-            (f"{self.model.product} by {self.model.provider} ", "italic"),
-            "\n\n",
-            self.model.description,
+
+class OptionsModal(ModalScreen[RuntimeConfig]):
+    BINDINGS = [Binding("escape", "app.pop_screen", "Close options", key_display="esc")]
+
+    def __init__(
+        self,
+        name: str | None = None,
+        id: str | None = None,
+        classes: str | None = None,
+    ) -> None:
+        super().__init__(name, id, classes)
+        self.elia = cast("Elia", self.app)
+        self.runtime_config = self.elia.runtime_config
+
+    def compose(self) -> ComposeResult:
+        with VerticalScroll(id="form-scrollable") as vs:
+            vs.border_title = "Session Options"
+            vs.can_focus = False
+            with RadioSet(id="available-models") as models_rs:
+                selected_model = self.runtime_config.selected_model
+                models_rs.border_title = "Available Models"
+                for model in self.elia.launch_config.all_models:
+                    label = f"[dim]{escape(model.display_name or model.name)}"
+                    provider = model.provider
+                    if provider:
+                        label += f" [i]by[/] {provider}"
+                    yield ModelRadioButton(
+                        model=model,
+                        value=selected_model == model.name,
+                        label=label,
+                    )
+            system_prompt_ta = TextArea(
+                self.runtime_config.system_prompt, id="system-prompt-ta"
+            )
+            system_prompt_ta.border_title = "System Message"
+            yield system_prompt_ta
+            with Vertical(id="xdg-info") as xdg_info:
+                xdg_info.border_title = "More Information"
+                yield Static(f"{sqlite_file_name.absolute()}\n[dim]Database[/]\n")
+                yield Static(f"{config_file()}\n[dim]Config[/]")
+            # TODO - yield and dock a label to the bottom explaining
+            #  that the changes made here only apply to the current session
+            #  We can probably do better when it comes to system prompts.
+            #  Perhaps we could store saved prompts in the database.
+        yield Footer()
+
+    def on_mount(self) -> None:
+        system_prompt_ta = self.query_one("#system-prompt-ta", TextArea)
+        selected_model_rs = self.query_one("#available-models", RadioSet)
+        self.apply_overridden_subtitles(system_prompt_ta, selected_model_rs)
+
+    @on(RadioSet.Changed)
+    @on(TextArea.Changed)
+    def update_state(self, event: TextArea.Changed | RadioSet.Changed) -> None:
+        system_prompt_ta = self.query_one("#system-prompt-ta", TextArea)
+        selected_model_rs = self.query_one("#available-models", RadioSet)
+        if selected_model_rs.pressed_button is None:
+            selected_model_rs._selected = 0
+            assert selected_model_rs.pressed_button is not None
+
+        model_button = cast(ModelRadioButton, selected_model_rs.pressed_button)
+        self.elia.runtime_config = self.elia.runtime_config.model_copy(
+            update={
+                "system_prompt": system_prompt_ta.text,
+                "selected_model": model_button.model.name,
+            }
         )
 
-    def on_click(self) -> None:
-        assert self.parent is not None
-        self.parent.post_message(ModelPanel.Selected(self.model))
+        self.apply_overridden_subtitles(system_prompt_ta, selected_model_rs)
+        self.refresh()
 
-    def watch_selected(self, value: bool) -> None:
-        self.set_class(value, "selected")
+    def apply_overridden_subtitles(
+        self, system_prompt_ta: TextArea, selected_model_rs: RadioSet
+    ) -> None:
+        if (
+            self.elia.launch_config.default_model
+            != self.elia.runtime_config.selected_model
+        ):
+            selected_model_rs.border_subtitle = "overrides config"
+        else:
+            selected_model_rs.border_subtitle = ""
 
-
-class ModelSet(Horizontal, can_focus=True):
-    BINDINGS = [
-        Binding(key="left", action="left", description="Previous model"),
-        Binding(key="right", action="right", description="Next model"),
-    ]
-
-    selected_panel_index = reactive(0)
-
-    class Selected(Message):
-        def __init__(self, model: GPTModel):
-            super().__init__()
-            self.model = model
-
-    @property
-    def panels(self) -> list[ModelPanel]:
-        return list(self.query(ModelPanel))
-
-    def watch_selected_panel_index(self, new_index: int) -> None:
-        panel = self.panels[new_index]
-        self.post_message(ModelSet.Selected(panel.model))
-
-    @on(ModelPanel.Selected)
-    def update_selection(self, event: ModelPanel.Selected) -> None:
-        event.stop()
-        self.focus()
-        panels = self.panels
-        for index, panel in enumerate(panels):
-            panel.selected = panel.model == event.model
-            if panel.selected:
-                self.selected_panel_index = index
-
-        log.info(f"Selected model {panels[self.selected_panel_index]}")
-
-    def action_left(self):
-        new_index = self.selected_panel_index - 1
-        panels = self.panels
-        self.selected_panel_index = clamp(new_index, 0, len(panels) - 1)
-        for index, panel in enumerate(panels):
-            panel.selected = index == self.selected_panel_index
-
-        log.info(f"Selected model {panels[self.selected_panel_index]}")
-
-    def action_right(self):
-        new_index = self.selected_panel_index + 1
-        panels = self.panels
-        self.selected_panel_index = clamp(new_index, 0, len(panels) - 1)
-        for index, panel in enumerate(panels):
-            panel.selected = index == self.selected_panel_index
-
-        log.info(f"Selected model {panels[self.selected_panel_index]}")
-
-
-class ChatOptions(Widget):
-    def compose(self) -> ComposeResult:
-        with VerticalScroll(id="chat-options-container") as vertical_scroll:
-            vertical_scroll.can_focus = False
-
-            with ModelSet() as model_set:
-                model_set.border_title = "Choose a language model"
-                model_set.focus()
-                for index, model in enumerate(AVAILABLE_MODELS):
-                    model_panel = ModelPanel(
-                        model, id=model.name, classes=model.css_class
-                    )
-                    if index == 0:
-                        model_panel.selected = True
-
-                    yield model_panel
+        if system_prompt_ta.text != self.elia.launch_config.system_prompt:
+            system_prompt_ta.border_subtitle = "overrides config"
+        else:
+            system_prompt_ta.border_subtitle = ""
