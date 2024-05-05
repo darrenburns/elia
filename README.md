@@ -15,7 +15,7 @@ Conversations with local models are done via `ollama` and never leave your machi
 Install Elia with [pipx](https://github.com/pypa/pipx):
 
 ```bash
-pipx install elia
+pipx install elia-chat
 ```
 
 Depending on the model you wish to use, you may need to set one or more environment variables (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc).
