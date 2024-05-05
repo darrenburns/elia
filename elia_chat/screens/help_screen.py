@@ -15,9 +15,14 @@ Press `Ctrl+C` on your keyboard.ga
 
 ### Environment
 
+You may need to set some environment variables, depending on the model
+you wish to set.
 To use OpenAI models, the `OPENAI_API_KEY` env var must be set.
-
 To use Anthropic models, the `ANTHROPIC_API_KEY` env var must be set.
+
+To use a local model, see the instructions in the README:
+
+* https://github.com/darrenburns/elia/blob/master/README.md
 
 ### Config file and database
 
@@ -34,7 +39,7 @@ If you can see a scrollbar, `pageup`, `pagedown`, `home`, and `end` can also
 be used to navigate.
 
 On the chat screen, pressing `up` and `down` will navigate through messages,
-but if you just wish to scroll a little bit, you can use `shift+up` and `shift+down`.
+but if you just wish to scroll a little, you can use `shift+up` and `shift+down`.
 
 ### The chat history
 
@@ -114,8 +119,8 @@ _With a message focused_:
 - `c`: Copy the raw Markdown of the message to the clipboard.
     - This requires terminal support. The default MacOS terminal is not supported.
 - `space`: Enter _select mode_.
-    - In this mode, you can move a cursor through the text, optionally holding shift to
-        select text as you move.
+    - In this mode, you can move a cursor through the text, `optionally` holding
+        shift to select text as you move.
     - With some text selected, press `c` to copy.
 - `enter`: View more details about a message.
     - The amount of details available may vary depending on the model
@@ -124,6 +129,7 @@ _With a message focused_:
 - `G`: Focus the latest message.
 - `m`: Move focus to the prompt box.
 - `up,down,k,j`: Navigate through messages.
+- `f2`: View more information about the chat.
 
 """
 

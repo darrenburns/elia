@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, cast
+from importlib.metadata import version
 from rich.markup import escape
 from rich.style import Style
 from textual.app import ComposeResult
@@ -49,7 +50,7 @@ class AppHeader(Widget):
                     Text.assemble(
                         ("elia ", title_style + Style(bold=True)),
                         ("///", subtitle_style),
-                        (" 1.0.0", title_style),
+                        (f" {version('elia')}", title_style),
                     )
                 )
             model_name = self.elia.runtime_config.selected_model

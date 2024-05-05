@@ -1,6 +1,6 @@
 [project]
 name = "elia"
-version = "0.5.0"
+version = "1.0.0b1"
 description = "A terminal interface to ChatGPT."
 authors = [
     { name = "Darren Burns", email = "darrenb900@gmail.com" }

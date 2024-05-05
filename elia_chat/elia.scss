@@ -35,6 +35,14 @@ ModalScreen {
   background: black 50%;
 }
 
+Rule {
+  color: white 20%;
+
+  &.-horizontal {
+    margin: 0 0;
+  }
+}
+
 Toast {
   background: $background-darken-1;
   border-right: none;
@@ -276,18 +284,35 @@ OptionList > .option-list--option-hover-highlighted-disabled {
   background: $main 60%;
 }
 
-MessageInfo {
+ChatDetails {
   align: center middle;
 }
 
-MessageInfo > #outermost-container {
-  width: 80%;
-  height: 60%;
+ChatDetails > #container {
+  width: 90%;
+  height: 85%;
   background: $background;
-}
+  padding: 1 2;
+  border: wide $main-border-color-focus;
+  border-title-color: $main-border-text-color;
+  border-title-background: $background;
+  border-title-style: b;
+  border-subtitle-color: $text-muted;
+  border-subtitle-background: $background;
 
-MessageInfo #inner-container {
-  height: 1fr;
+  & Markdown {
+    padding: 0;
+    margin: 0;
+  }
+
+  & .heading {
+    color: $text-muted;
+  }
+
+  & .datum {
+    text-style: i;
+  }
+
 }
 
 MessageInfo #message-info-header {
