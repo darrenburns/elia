@@ -2,7 +2,7 @@
 
 A powerful terminal user interface for interacting with large language models.
 
-Chat with Claude, ChatGPT, and local models like Llama 3, Phi 3, Mistral and Gemma.
+Chat with Claude 3, ChatGPT, and local models like Llama 3, Phi 3, Mistral and Gemma.
 
 <img width="1439" alt="elia-stacked-screenshot" src="https://github.com/darrenburns/elia/assets/5740731/8fb15936-abeb-4464-b34d-f6cb001913e4">
 
