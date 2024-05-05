@@ -42,7 +42,7 @@ elia "What is the Zen of Python?"
 The location of the configuration file is noted at the bottom of
 the options window (`ctrl+o`).
 
-The example file below shows the available options, as well as examples of how to add new OpenAI and Anthropic models.
+The example file below shows the available options, as well as examples of how to add new models.
 
 ```toml
 # the model that is selected by default on launch
