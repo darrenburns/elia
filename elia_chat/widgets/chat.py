@@ -15,6 +15,7 @@ from textual.widget import Widget
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
+from elia_chat.screens.chat_details import ChatDetails
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.prompt_input import PromptInput
@@ -51,6 +52,7 @@ class Chat(Widget):
             description="Latest message",
             show=False,
         ),
+        Binding(key="f2", action="details", description="Chat info"),
     ]
 
     allow_input_submit = reactive(True)
@@ -102,8 +104,6 @@ class Chat(Widget):
             0.05,
             callback=lambda: self.chat_container.scroll_end(animate=False, force=True),
         )
-
-        self.query_one(PromptInput).focus()
 
     @property
     def chat_container(self) -> VerticalScroll:
@@ -277,6 +277,9 @@ class Chat(Widget):
     def action_scroll_container_down(self) -> None:
         if self.chat_container:
             self.chat_container.scroll_down()
+
+    async def action_details(self) -> None:
+        await self.app.push_screen(ChatDetails(self.chat_data))
 
     async def load_chat(self, chat_data: ChatData) -> None:
         assert self.chat_container is not None

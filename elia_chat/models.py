@@ -56,6 +56,10 @@ class ChatData:
         return ""
 
     @property
+    def system_prompt(self) -> ChatMessage:
+        return self.messages[0]
+
+    @property
     def first_user_message(self) -> ChatMessage:
         return self.messages[1]
 
