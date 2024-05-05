@@ -4,6 +4,8 @@ A powerful terminal user interface for interacting with large language models.
 
 Supports hundreds of LLMs, including ChatGPT, Claude, and even models running locally through [`ollama`](https://github.com/ollama/ollama).
 
+<img width="1439" alt="elia-stacked-screenshot" src="https://github.com/darrenburns/elia/assets/5740731/8fb15936-abeb-4464-b34d-f6cb001913e4">
+
 Your conversations are stored locally in a SQLite database.
 
 ### Installation
