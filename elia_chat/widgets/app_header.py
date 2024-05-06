@@ -50,7 +50,7 @@ class AppHeader(Widget):
                     Text.assemble(
                         ("elia ", title_style + Style(bold=True)),
                         ("///", subtitle_style),
-                        (f" {version('elia')}", title_style),
+                        (f" {version('elia_chat')}", title_style),
                     )
                 )
             model_name = self.elia.runtime_config.selected_model

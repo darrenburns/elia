@@ -1,7 +1,7 @@
 [project]
-name = "elia"
-version = "1.0.0b1"
-description = "A terminal interface to ChatGPT."
+name = "elia_chat"
+version = "1.0.0"
+description = "A powerful terminal user interface for interacting with large language models."
 authors = [
     { name = "Darren Burns", email = "darrenb900@gmail.com" }
 ]
