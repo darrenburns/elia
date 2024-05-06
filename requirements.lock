@@ -13,7 +13,7 @@ aiohttp==3.9.5
 aiosignal==1.3.1
     # via aiohttp
 aiosqlite==0.20.0
-    # via elia
+    # via elia-chat
 annotated-types==0.6.0
     # via pydantic
 anyio==4.2.0
@@ -29,10 +29,10 @@ charset-normalizer==3.3.2
     # via requests
 click==8.1.7
     # via click-default-group
-    # via elia
+    # via elia-chat
     # via litellm
 click-default-group==1.2.4
-    # via elia
+    # via elia-chat
 distro==1.9.0
     # via openai
 filelock==3.13.4
@@ -43,6 +43,7 @@ frozenlist==1.4.1
 fsspec==2024.3.1
     # via huggingface-hub
 greenlet==3.0.3
+    # via elia-chat
     # via sqlalchemy
 h11==0.14.0
     # via httpcore
@@ -53,7 +54,7 @@ httpx==0.26.0
 huggingface-hub==0.22.2
     # via tokenizers
 humanize==4.9.0
-    # via elia
+    # via elia-chat
 idna==3.6
     # via anyio
     # via httpx
@@ -66,7 +67,7 @@ jinja2==3.1.3
 linkify-it-py==2.0.3
     # via markdown-it-py
 litellm==1.35.38
-    # via elia
+    # via elia-chat
 markdown-it-py==3.0.0
     # via mdit-py-plugins
     # via rich
@@ -91,7 +92,7 @@ pydantic==2.6.1
 pydantic-core==2.16.2
     # via pydantic
 pydantic-settings==2.2.1
-    # via elia
+    # via elia-chat
 pygments==2.17.2
     # via rich
 python-dotenv==1.0.1
@@ -114,9 +115,9 @@ sniffio==1.3.0
 sqlalchemy==2.0.25
     # via sqlmodel
 sqlmodel==0.0.14
-    # via elia
+    # via elia-chat
 textual==0.58.1
-    # via elia
+    # via elia-chat
 tiktoken==0.5.2
     # via litellm
 tokenizers==0.19.1
@@ -142,7 +143,7 @@ uc-micro-py==1.0.3
 urllib3==2.2.0
     # via requests
 xdg-base-dirs==6.0.1
-    # via elia
+    # via elia-chat
 yarl==1.9.4
     # via aiohttp
 zipp==3.18.1
