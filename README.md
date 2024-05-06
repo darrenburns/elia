@@ -85,5 +85,5 @@ elia reset
 ### Uninstalling
 
 ```bash
-pipx uninstall elia
+pipx uninstall elia-chat
 ```
