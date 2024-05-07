@@ -115,10 +115,9 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
 
         # Update the litellm organisation, if the the model defines it
         # in its config.
-        if model.organization:
-            import litellm
+        import litellm
 
-            litellm.organization = model.name
+        litellm.organization = model.name
 
         self.apply_overridden_subtitles(system_prompt_ta, selected_model_rs)
         self.refresh()
