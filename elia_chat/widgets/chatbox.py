@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from rich.console import RenderableType
 from rich.markdown import Markdown
+from rich.syntax import Syntax
 from textual.binding import Binding
 from textual.css.query import NoMatches
 from textual.geometry import Size
@@ -129,10 +130,7 @@ class Chatbox(Widget, can_focus=True):
     def markdown(self) -> Markdown:
         """Return the content as a Rich Markdown object."""
         content = self.message.message.get("content")
-        if isinstance(content, str):
-            content = content.replace("<", "\\<")
-            content = content.replace(">", "\\>")
-        else:
+        if not isinstance(content, str):
             content = ""
         return Markdown(content)
 
@@ -141,6 +139,14 @@ class Chatbox(Widget, can_focus=True):
             # When in selection mode, this widget has a TextArea child,
             # so we do not need to render anything.
             return ""
+
+        message = self.message.message
+        if message["role"] == "user":
+            content = message["content"] or ""
+            if isinstance(content, str):
+                return Syntax(content, lexer="markdown", background_color="#121212")
+            else:
+                return ""
         return self.markdown
 
     def get_content_width(self, container: Size, viewport: Size) -> int:
