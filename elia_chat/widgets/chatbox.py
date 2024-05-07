@@ -144,7 +144,12 @@ class Chatbox(Widget, can_focus=True):
         if message["role"] == "user":
             content = message["content"] or ""
             if isinstance(content, str):
-                return Syntax(content, lexer="markdown", background_color="#121212")
+                return Syntax(
+                    content,
+                    lexer="markdown",
+                    word_wrap=True,
+                    background_color="#121212",
+                )
             else:
                 return ""
         return self.markdown
