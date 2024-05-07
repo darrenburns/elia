@@ -1,5 +1,5 @@
 import os
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, SecretStr
 
 
 class EliaChatModel(BaseModel):
@@ -11,10 +11,17 @@ class EliaChatModel(BaseModel):
     """The display name of the model in the UI."""
     provider: str | None = None
     """The provider of the model, e.g. openai, anthropic, etc"""
-    required_env: str | None = None
-    """If this model requires an environment variable to be set in order to function,
-    this should be set to the name of the required variable.
-    """
+    api_key: SecretStr | None = None
+    """If set, this will be used in place of the environment variable that
+    would otherwise be used for this model (instead of OPENAI_API_KEY,
+    ANTHROPIC_API_KEY, etc.)."""
+    api_base: AnyHttpUrl | None = None
+    """If set, this will be used as the base URL for making API calls.
+    This can be useful if you're hosting models on a LocalAI server, for
+    example."""
+    organization: str | None = None
+    """Some providers, such as OpenAI, allow you to specify an organization.
+    In the case of """
     description: str | None = Field(default=None)
     """A description of the model which may appear inside the Elia UI."""
     product: str | None = Field(default=None)
@@ -33,7 +40,6 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
         EliaChatModel(
             name="gpt-3.5-turbo",
             display_name="GPT-3.5 Turbo",
-            required_env="OPENAI_API_KEY",
             provider="OpenAI",
             product="ChatGPT",
             description="The fastest ChatGPT model, great for most everyday tasks",
@@ -41,7 +47,6 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
         EliaChatModel(
             name="gpt-4-turbo",
             display_name="GPT-4 Turbo",
-            required_env="OPENAI_API_KEY",
             provider="OpenAI",
             product="ChatGPT",
             description="The most powerful ChatGPT model, capable of "
@@ -55,7 +60,6 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
         EliaChatModel(
             name="claude-3-haiku-20240307",
             display_name="Claude 3 Haiku",
-            required_env="ANTHROPIC_API_KEY",
             provider="Anthropic",
             product="Claude 3",
             description=(
@@ -65,7 +69,6 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
         EliaChatModel(
             name="claude-3-sonnet-20240229",
             display_name="Claude 3 Sonnet",
-            required_env="ANTHROPIC_API_KEY",
             provider="Anthropic",
             product="Claude 3",
             description=(
@@ -75,7 +78,6 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
         EliaChatModel(
             name="claude-3-opus-20240229",
             display_name="Claude 3 Opus",
-            required_env="ANTHROPIC_API_KEY",
             provider="Anthropic",
             product="Claude 3",
             description="Most powerful model for highly complex tasks",

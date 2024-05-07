@@ -105,12 +105,20 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
             assert selected_model_rs.pressed_button is not None
 
         model_button = cast(ModelRadioButton, selected_model_rs.pressed_button)
+        model = model_button.model
         self.elia.runtime_config = self.elia.runtime_config.model_copy(
             update={
                 "system_prompt": system_prompt_ta.text,
-                "selected_model": model_button.model.name,
+                "selected_model": model.name,
             }
         )
+
+        # Update the litellm organisation, if the the model defines it
+        # in its config.
+        if model.organization:
+            import litellm
+
+            litellm.organization = model.name
 
         self.apply_overridden_subtitles(system_prompt_ta, selected_model_rs)
         self.refresh()
