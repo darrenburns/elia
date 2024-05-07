@@ -175,8 +175,8 @@ class Chat(Widget):
             model=model.name,
             temperature=model.temperature,
             max_retries=model.max_retries,
-            api_key=model.api_key,  # type:ignore
-            api_base=model.api_base,
+            api_key=model.api_key.get_secret_value() if model.api_key else None,
+            api_base=model.api_base.unicode_string() if model.api_base else None,
         )
 
         ai_message: ChatCompletionAssistantMessageParam = {
