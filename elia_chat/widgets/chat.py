@@ -162,13 +162,17 @@ class Chat(Widget):
             self.chat_data.model_name, self.elia.launch_config
         )
 
+        import litellm
         from litellm import ModelResponse, acompletion
         from litellm.utils import trim_messages
 
         raw_messages = [message.message for message in self.chat_data.messages]
+
         messages: list[ChatCompletionUserMessageParam] = trim_messages(
             raw_messages, model.name
         )  # type: ignore
+
+        litellm.organization = model.organization
         response = await acompletion(
             messages=messages,
             stream=True,
