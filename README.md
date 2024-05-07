@@ -59,6 +59,12 @@ system_prompt = "You are a helpful assistant who talks like a pirate."
 [[models]]
 name = "ollama/llama3"
 
+# example of a model running on a local server, e.g. LocalAI
+[[models]]
+name = "some-model"
+api_base = "http://localhost:8080/v1/chat/completions"
+api_key = "api-key-if-required"
+
 # example of add a groq model, showing some other fields
 [[models]]
 name = "groq/llama2-70b-4096"
@@ -66,6 +72,12 @@ display_name = "Llama 2 70B"  # appears in UI
 provider = "Groq"  # appears in UI
 temperature = 1.0  # high temp = high variation in output
 max_retries = 0  # number of retries on failed request
+
+# example with different OpenAI organization
+[[models]]
+name = "gpt-3.5-turbo"
+display_name = "GPT 3.5 (Work Account)"
+organization = "org-id-here"
 ```
 
 ### Import from ChatGPT
