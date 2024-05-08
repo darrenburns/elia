@@ -11,13 +11,13 @@ from elia_chat.models import ChatData
 
 
 class ChatScreen(Screen[None]):
-    AUTO_FOCUS = "PromptInput"
+    AUTO_FOCUS = "ChatPromptInput"
     BINDINGS = [
         Binding(
-            key="m",
+            key="escape",
             action="focus('prompt')",
             description="Focus prompt",
-            key_display="m",
+            key_display="esc",
         ),
     ]
 

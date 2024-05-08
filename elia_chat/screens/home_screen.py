@@ -19,6 +19,10 @@ if TYPE_CHECKING:
     from elia_chat.app import Elia
 
 
+class HomePromptInput(PromptInput):
+    BINDINGS = [Binding("escape", "app.quit", "Exit Elia", key_display="esc")]
+
+
 class HomeScreen(Screen[None]):
     CSS = """\
 ChatList {
@@ -29,7 +33,6 @@ ChatList {
 """
 
     BINDINGS = [
-        Binding("escape,m", "focus('home-prompt')", "Focus prompt", key_display="esc"),
         Binding(
             "ctrl+j", "send_message", "Send message", priority=True, key_display="^j"
         ),
@@ -52,7 +55,7 @@ ChatList {
 
     def compose(self) -> ComposeResult:
         yield AppHeader(self.config_signal)
-        yield PromptInput(id="home-prompt")
+        yield HomePromptInput(id="home-prompt")
         yield ChatList()
         yield Footer()
 

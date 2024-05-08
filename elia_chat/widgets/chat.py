@@ -31,9 +31,12 @@ if TYPE_CHECKING:
     )
 
 
+class ChatPromptInput(PromptInput):
+    BINDINGS = [Binding("escape", "app.pop_screen", "Close chat", key_display="esc")]
+
+
 class Chat(Widget):
     BINDINGS = [
-        Binding("escape", "close", "Close", key_display="esc"),
         Binding("shift+down", "scroll_container_down", show=False),
         Binding("shift+up", "scroll_container_up", show=False),
         Binding(
@@ -86,7 +89,7 @@ class Chat(Widget):
         with VerticalScroll(id="chat-container") as vertical_scroll:
             vertical_scroll.can_focus = False
 
-        yield PromptInput(id="prompt")
+        yield ChatPromptInput(id="prompt")
         yield AgentIsTyping()
 
     async def on_mount(self, _: events.Mount) -> None:
