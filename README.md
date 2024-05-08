@@ -73,13 +73,6 @@ provider = "Groq"  # appears in UI
 temperature = 1.0  # high temp = high variation in output
 max_retries = 0  # number of retries on failed request
 
-# example with different OpenAI organization
-[[models]]
-name = "gpt-3.5-turbo"
-display_name = "GPT 3.5 (Work Account)"
-organization = "org-id-here"
-```
-
 ### Import from ChatGPT
 
 Export your conversations to a JSON file using the ChatGPT UI, then import them using the `import` command.
