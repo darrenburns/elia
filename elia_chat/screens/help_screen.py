@@ -35,6 +35,9 @@ Use `tab` and `shift+tab` to move between different widgets on screen.
 
 In some places you can make use of the arrow keys or Vim nav keys to move around.
 
+In general, pressing `esc` will move you "closer to home".
+Pay attention to the bar at the bottom to see where `esc` will take you.
+
 If you can see a scrollbar, `pageup`, `pagedown`, `home`, and `end` can also
 be used to navigate.
 
@@ -116,12 +119,14 @@ You can use the arrow keys to move up and down through messages.
 
 _With a message focused_:
 
-- `c`: Copy the raw Markdown of the message to the clipboard.
+- `y,c`: Copy the raw Markdown of the message to the clipboard.
     - This requires terminal support. The default MacOS terminal is not supported.
-- `space`: Enter _select mode_.
-    - In this mode, you can move a cursor through the text, `optionally` holding
-        shift to select text as you move.
-    - With some text selected, press `c` to copy.
+- `enter`: Enter _select mode_.
+    - In this mode, you can move a cursor through the text, optionally holding
+        `shift` to select text as you move.
+    - Press `v` to toggle _visual mode_, allowing you to select without text without
+        needing to hold `shift`.
+    - With some text selected, press `y` or c` to copy.
 - `enter`: View more details about a message.
     - The amount of details available may vary depending on the model
         or provider being used.
