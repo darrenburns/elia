@@ -10,7 +10,7 @@ from textual.signal import Signal
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
-from elia_chat.config import EliaChatModel, LaunchConfig
+from elia_chat.config import EliaChatModel, LaunchConfig, launch_config
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.screens.help_screen import HelpScreen
@@ -33,6 +33,7 @@ class Elia(App[None]):
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
         super().__init__()
         self.launch_config = config
+        launch_config.set(config)
         self._runtime_config = RuntimeConfig(
             selected_model=config.default_model_object,
             system_prompt=config.system_prompt,

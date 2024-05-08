@@ -125,7 +125,9 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
     ) -> None:
         if (
             self.elia.launch_config.default_model
-            != self.elia.runtime_config.selected_model.lookup_key
+            != self.elia.runtime_config.selected_model.id
+            and self.elia.launch_config.default_model
+            != self.elia.runtime_config.selected_model.name
         ):
             selected_model_rs.border_subtitle = "overrides config"
         else:

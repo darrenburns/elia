@@ -53,6 +53,7 @@ fsspec==2024.3.1
     # via huggingface-hub
 greenlet==3.0.3
     # via elia-chat
+    # via sqlalchemy
 h11==0.14.0
     # via httpcore
 httpcore==1.0.2

@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any
 
 
 from elia_chat.database.models import ChatDao, MessageDao
-from elia_chat.models import ChatData, ChatMessage
+from elia_chat.models import ChatData, ChatMessage, get_model
 
 if TYPE_CHECKING:
     from litellm.types.completion import ChatCompletionUserMessageParam
@@ -31,7 +31,7 @@ def chat_dao_to_chat_data(chat_dao: ChatDao) -> ChatData:
     return ChatData(
         id=chat_dao.id,
         title=chat_dao.title,
-        model_name=model,
+        model=get_model(model),
         create_timestamp=chat_dao.started_at if chat_dao.started_at else None,
         messages=[
             message_dao_to_chat_message(message, model) for message in chat_dao.messages
@@ -49,5 +49,5 @@ def message_dao_to_chat_message(message_dao: MessageDao, model: str) -> ChatMess
     return ChatMessage(
         message=message,
         timestamp=message_dao.timestamp,
-        model=model,
+        model=get_model(model),
     )

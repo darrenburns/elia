@@ -1,3 +1,4 @@
+from contextvars import ContextVar
 import os
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -131,3 +132,6 @@ class LaunchConfig(BaseModel):
         from elia_chat.models import get_model
 
         return get_model(self.default_model, self)
+
+
+launch_config: ContextVar[LaunchConfig] = ContextVar("launch_config")
