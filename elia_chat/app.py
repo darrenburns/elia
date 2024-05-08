@@ -10,7 +10,7 @@ from textual.signal import Signal
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
-from elia_chat.config import LaunchConfig
+from elia_chat.config import EliaChatModel, LaunchConfig, launch_config
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.screens.help_screen import HelpScreen
@@ -33,8 +33,9 @@ class Elia(App[None]):
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
         super().__init__()
         self.launch_config = config
+        launch_config.set(config)
         self._runtime_config = RuntimeConfig(
-            selected_model=config.default_model,
+            selected_model=config.default_model_object,
             system_prompt=config.system_prompt,
         )
         self.runtime_config_signal = Signal[RuntimeConfig](
@@ -64,10 +65,10 @@ class Elia(App[None]):
         if self.startup_prompt:
             await self.launch_chat(
                 prompt=self.startup_prompt,
-                model_name=self.runtime_config.selected_model,
+                model=self.runtime_config.selected_model,
             )
 
-    async def launch_chat(self, prompt: str, model_name: str) -> None:
+    async def launch_chat(self, prompt: str, model: EliaChatModel) -> None:
         current_time = datetime.datetime.now(datetime.UTC)
         system_message: ChatCompletionSystemMessageParam = {
             "content": self.runtime_config.system_prompt,
@@ -81,17 +82,17 @@ class Elia(App[None]):
             id=None,
             title=None,
             create_timestamp=None,
-            model_name=model_name,
+            model=model,
             messages=[
                 ChatMessage(
                     message=system_message,
                     timestamp=current_time,
-                    model=model_name,
+                    model=model,
                 ),
                 ChatMessage(
                     message=user_message,
                     timestamp=current_time,
-                    model=model_name,
+                    model=model,
                 ),
             ],
         )

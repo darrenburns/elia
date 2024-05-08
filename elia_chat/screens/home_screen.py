@@ -74,7 +74,7 @@ ChatList {
         event.prompt_input.clear()
         await self.elia.launch_chat(  # type: ignore
             prompt=text,
-            model_name=self.elia.runtime_config.selected_model,
+            model=self.elia.runtime_config.selected_model,
         )
 
     @on(PromptInput.CursorEscapingBottom)

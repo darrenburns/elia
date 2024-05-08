@@ -19,10 +19,6 @@ from elia_chat.screens.chat_details import ChatDetails
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader
 from elia_chat.widgets.prompt_input import PromptInput
-from elia_chat.models import (
-    EliaChatModel,
-    get_model_by_name,
-)
 from elia_chat.widgets.chatbox import Chatbox
 
 
@@ -62,7 +58,7 @@ class Chat(Widget):
         super().__init__()
         self.chat_data = chat_data
         self.elia = cast("Elia", self.app)
-        self.model = get_model_by_name(chat_data.model_name, self.elia.launch_config)
+        self.model = chat_data.model
 
     @dataclass
     class AgentResponseStarted(Message):
@@ -130,9 +126,7 @@ class Chat(Widget):
             "content": content,
             "role": "user",
         }
-        user_chat_message = ChatMessage(
-            user_message, now_utc, self.chat_data.model_name
-        )
+        user_chat_message = ChatMessage(user_message, now_utc, self.chat_data.model)
         self.chat_data.messages.append(user_chat_message)
         await ChatsManager.add_message_to_chat(
             chat_id=self.chat_data.id, message=user_chat_message
@@ -143,7 +137,7 @@ class Chat(Widget):
                 chat_id=self.chat_data.id, message=user_chat_message
             )
         )
-        user_message_chatbox = Chatbox(user_chat_message, self.chat_data.model_name)
+        user_message_chatbox = Chatbox(user_chat_message, self.chat_data.model)
 
         assert (
             self.chat_container is not None
@@ -155,12 +149,8 @@ class Chat(Widget):
 
     @work
     async def stream_agent_response(self) -> None:
-        log.debug(
-            f"Creating streaming response with model {self.chat_data.model_name!r}"
-        )
-        model: EliaChatModel = get_model_by_name(
-            self.chat_data.model_name, self.elia.launch_config
-        )
+        model = self.chat_data.model
+        log.debug(f"Creating streaming response with model {model.name!r}")
 
         import litellm
         from litellm import ModelResponse, acompletion
@@ -188,12 +178,11 @@ class Chat(Widget):
             "role": "assistant",
         }
         now = datetime.datetime.now(datetime.UTC)
-        message = ChatMessage(message=ai_message, model=model.name, timestamp=now)
+        message = ChatMessage(message=ai_message, model=model, timestamp=now)
 
-        assert self.chat_data.model_name is not None
         response_chatbox = Chatbox(
             message=message,
-            model_name=self.chat_data.model_name,
+            model=self.chat_data.model,
             classes="response-in-progress",
         )
         assert (
@@ -289,17 +278,16 @@ class Chat(Widget):
         await self.app.push_screen(ChatDetails(self.chat_data))
 
     async def load_chat(self, chat_data: ChatData) -> None:
-        assert self.chat_container is not None
         chatboxes = [
-            Chatbox(chat_message, self.chat_data.model_name)
-            for chat_message in self.chat_data.non_system_messages
+            Chatbox(chat_message, chat_data.model)
+            for chat_message in chat_data.non_system_messages
         ]
         await self.chat_container.mount_all(chatboxes)
         self.chat_container.scroll_end(animate=False, force=True)
         chat_header = self.query_one(ChatHeader)
         chat_header.update_header(
             chat=chat_data,
-            model=get_model_by_name(chat_data.model_name, self.elia.launch_config),
+            model=chat_data.model,
         )
 
         # If the last message didn't receive a response, try again.

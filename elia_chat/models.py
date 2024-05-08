@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 
-from elia_chat.config import LaunchConfig, EliaChatModel
+from elia_chat.config import LaunchConfig, EliaChatModel, launch_config
 
 if TYPE_CHECKING:
     from litellm.types.completion import ChatCompletionMessageParam
@@ -15,25 +15,36 @@ class UnknownModel(EliaChatModel):
     pass
 
 
-def get_model_by_name(model_name: str, config: LaunchConfig) -> EliaChatModel:
-    """Given the name of a model as a string, return the EliaChatModel."""
+def get_model(
+    model_id_or_name: str, config: LaunchConfig | None = None
+) -> EliaChatModel:
+    """Given the id or name of a model as a string, return the EliaChatModel.
+
+    Models are looked up by ID first.
+    """
+    if config is None:
+        config = launch_config.get()
     try:
-        return {model.name: model for model in config.all_models}[model_name]
+        return {model.id: model for model in config.all_models}[model_id_or_name]
     except KeyError:
-        return UnknownModel(name=model_name)
+        try:
+            return {model.name: model for model in config.all_models}[model_id_or_name]
+        except KeyError:
+            pass
+    return UnknownModel(id="unknown", name="unknown model")
 
 
 @dataclass
 class ChatMessage:
     message: ChatCompletionMessageParam
     timestamp: datetime | None
-    model: str
+    model: EliaChatModel
 
 
 @dataclass
 class ChatData:
     id: int | None  # Can be None before the chat gets assigned ID from database.
-    model_name: str
+    model: EliaChatModel
     title: str | None
     create_timestamp: datetime | None
     messages: list[ChatMessage]

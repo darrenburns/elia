@@ -16,7 +16,7 @@ from textual.widgets.option_list import Option
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.config import LaunchConfig
-from elia_chat.models import ChatData, get_model_by_name
+from elia_chat.models import ChatData
 
 
 @dataclass
@@ -31,7 +31,7 @@ class ChatListItemRenderable:
         delta = now - self.chat.update_time
         time_ago = humanize.naturaltime(delta)
         time_ago_text = Text(time_ago, style="dim i")
-        model = get_model_by_name(self.chat.model_name, self.config)
+        model = self.chat.model
         subtitle = f"[dim]{escape(model.display_name or model.name)}"
         if model.provider:
             subtitle += f" [i]by[/] {escape(model.provider)}"

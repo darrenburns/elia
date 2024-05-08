@@ -10,6 +10,7 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import TextArea
 
+from elia_chat.config import EliaChatModel
 from elia_chat.models import ChatMessage
 
 
@@ -31,7 +32,7 @@ class Chatbox(Widget, can_focus=True):
     def __init__(
         self,
         message: ChatMessage,
-        model_name: str,
+        model: EliaChatModel,
         name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
@@ -44,7 +45,7 @@ class Chatbox(Widget, can_focus=True):
             disabled=disabled,
         )
         self.message = message
-        self.model_name = model_name
+        self.model = model
 
     def on_mount(self) -> None:
         litellm_message = self.message.message
