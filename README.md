@@ -61,7 +61,7 @@ name = "ollama/llama3"
 
 # example of a model running on a local server, e.g. LocalAI
 [[models]]
-name = "some-model"
+name = "openai/some-model"
 api_base = "http://localhost:8080/v1/chat/completions"
 api_key = "api-key-if-required"
 
