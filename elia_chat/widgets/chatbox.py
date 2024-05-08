@@ -90,6 +90,7 @@ class SelectionTextArea(TextArea):
             self.notify(message, title="Message copied")
 
         self.app.copy_to_clipboard(text_to_copy)
+        self.visual_mode = False
 
     def action_leave_selection_mode(self) -> None:
         self.post_message(self.LeaveSelectionMode())
