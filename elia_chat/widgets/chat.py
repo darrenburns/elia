@@ -4,6 +4,7 @@ import datetime
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
+from elia_chat import constants
 from textual import log, on, work, events
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -163,15 +164,24 @@ class Chat(Widget):
         )  # type: ignore
 
         litellm.organization = model.organization
-        response = await acompletion(
-            messages=messages,
-            stream=True,
-            model=model.name,
-            temperature=model.temperature,
-            max_retries=model.max_retries,
-            api_key=model.api_key.get_secret_value() if model.api_key else None,
-            api_base=model.api_base.unicode_string() if model.api_base else None,
-        )
+        try:
+            response = await acompletion(
+                messages=messages,
+                stream=True,
+                model=model.name,
+                temperature=model.temperature,
+                max_retries=model.max_retries,
+                api_key=model.api_key.get_secret_value() if model.api_key else None,
+                api_base=model.api_base.unicode_string() if model.api_base else None,
+            )
+        except Exception as exception:
+            self.app.notify(
+                f"{exception}",
+                title="Error",
+                severity="error",
+                timeout=constants.ERROR_NOTIFY_TIMEOUT_SECS,
+            )
+            return
 
         ai_message: ChatCompletionAssistantMessageParam = {
             "content": "",
@@ -217,7 +227,7 @@ class Chat(Widget):
                 "Please check your configuration file.",
                 title="Error",
                 severity="error",
-                timeout=15,
+                timeout=constants.ERROR_NOTIFY_TIMEOUT_SECS,
             )
         else:
             self.post_message(
