@@ -59,10 +59,11 @@ class ChatsManager:
     async def create_chat(chat_data: ChatData) -> int:
         log.debug(f"Creating chat in database: {chat_data!r}")
 
-        model = chat_data.model_name
+        model = chat_data.model
+        lookup_key = model.lookup_key
         async with get_session() as session:
             chat = ChatDao(
-                model=model,
+                model=lookup_key,
                 title="",
                 started_at=datetime.datetime.now(datetime.UTC),
             )
@@ -77,7 +78,7 @@ class ChatsManager:
                     chat_id=chat_id,
                     role=litellm_message["role"],
                     content=content if isinstance(content, str) else "",
-                    model=model,
+                    model=lookup_key,
                     timestamp=message.timestamp,
                 )
                 (await chat.awaitable_attrs.messages).append(new_message)

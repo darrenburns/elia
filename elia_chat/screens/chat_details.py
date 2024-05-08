@@ -6,7 +6,7 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Label, Markdown, Rule
 
-from elia_chat.models import ChatData, get_model_by_name
+from elia_chat.models import ChatData
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
@@ -52,10 +52,10 @@ class ChatDetails(ModalScreen[None]):
 
                     yield Rule()
 
+                    model = chat.model
                     yield Label("Model information", classes="heading")
-                    yield Label(chat.model_name, classes="datum")
+                    yield Label(model.name, classes="datum")
 
-                    model = get_model_by_name(chat.model_name, self.elia.launch_config)
                     if display_name := model.display_name:
                         yield Label(display_name, classes="datum")
                     if provider := model.provider:

@@ -20,7 +20,7 @@ def chat_message_to_message_dao(
         role=message.message["role"],
         content=content if isinstance(content, str) else "",
         timestamp=message.timestamp,
-        model=message.model,
+        model=message.model.lookup_key,
         meta=meta,
     )
 

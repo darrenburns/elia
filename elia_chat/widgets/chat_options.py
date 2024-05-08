@@ -70,9 +70,14 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
                     provider = model.provider
                     if provider:
                         label += f" [i]by[/] {provider}"
+
+                    ids_defined = selected_model.id and model.id
+                    same_id = ids_defined and selected_model.id == model.id
+                    same_name = selected_model.name == model.name
+                    is_selected = same_id or same_name
                     yield ModelRadioButton(
                         model=model,
-                        value=selected_model == model.name,
+                        value=is_selected,
                         label=label,
                     )
             system_prompt_ta = TextArea(
@@ -108,7 +113,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
         self.elia.runtime_config = self.elia.runtime_config.model_copy(
             update={
                 "system_prompt": system_prompt_ta.text,
-                "selected_model": model_button.model.name,
+                "selected_model": model_button.model,
             }
         )
 
@@ -120,7 +125,7 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
     ) -> None:
         if (
             self.elia.launch_config.default_model
-            != self.elia.runtime_config.selected_model
+            != self.elia.runtime_config.selected_model.lookup_key
         ):
             selected_model_rs.border_subtitle = "overrides config"
         else:

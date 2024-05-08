@@ -49,8 +49,10 @@ the options window (`ctrl+o`).
 The example file below shows the available options, as well as examples of how to add new models.
 
 ```toml
-# the model that is selected by default on launch
-default_model = "gpt-3.5-turbo"
+# the *ID* for the model that is selected by default on launch
+# to use one of the default builtin OpenAI/anthropic models, prefix
+# the model name with `elia-`.
+default_model = "elia-gpt-3.5-turbo"
 # the system prompt on launch
 system_prompt = "You are a helpful assistant who talks like a pirate."
 

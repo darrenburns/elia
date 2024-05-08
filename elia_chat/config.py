@@ -7,6 +7,12 @@ class EliaChatModel(BaseModel):
     """The name of the model e.g. `gpt-3.5-turbo`.
     This must match the name of the model specified by the provider.
     """
+    id: str | None = None
+    """If you have multiple versions of the same model (e.g. a personal
+    OpenAI gpt-3.5 and a work OpenAI gpt-3.5 with different API keys/org keys),
+    you need to be able to refer to them. For example, when setting the `default_model`
+    key in the config, if you write `gpt-3.5`, there's no way to know whether you
+    mean your work or your personal `gpt-3.5`. That's where `id` comes in."""
     display_name: str | None = None
     """The display name of the model in the UI."""
     provider: str | None = None
@@ -27,10 +33,15 @@ class EliaChatModel(BaseModel):
     max_retries: int = Field(default=0)
     """The number of times to retry a request after it fails before giving up."""
 
+    @property
+    def lookup_key(self) -> str:
+        return self.id or self.name
+
 
 def get_builtin_openai_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
+            id="elia-gpt-3.5-turbo",
             name="gpt-3.5-turbo",
             display_name="GPT-3.5 Turbo",
             required_env="OPENAI_API_KEY",
@@ -39,6 +50,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             description="The fastest ChatGPT model, great for most everyday tasks",
         ),
         EliaChatModel(
+            id="elia-gpt-4-turbo",
             name="gpt-4-turbo",
             display_name="GPT-4 Turbo",
             required_env="OPENAI_API_KEY",
@@ -53,6 +65,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
 def get_builtin_anthropic_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
+            id="elia-claude-3-haiku-20240307",
             name="claude-3-haiku-20240307",
             display_name="Claude 3 Haiku",
             required_env="ANTHROPIC_API_KEY",
@@ -63,6 +76,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
             ),
         ),
         EliaChatModel(
+            id="elia-claude-3-sonnet-20240229",
             name="claude-3-sonnet-20240229",
             display_name="Claude 3 Sonnet",
             required_env="ANTHROPIC_API_KEY",
@@ -73,6 +87,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
             ),
         ),
         EliaChatModel(
+            id="elia-claude-3-opus-20240229",
             name="claude-3-opus-20240229",
             display_name="Claude 3 Opus",
             required_env="ANTHROPIC_API_KEY",
@@ -95,7 +110,8 @@ class LaunchConfig(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    default_model: str = Field(default="gpt-3.5-turbo")
+    default_model: str = Field(default="elia-gpt-3.5-turbo")
+    """The ID or name of the default model."""
     system_prompt: str = Field(
         default=os.getenv(
             "ELIA_SYSTEM_PROMPT", "You are a helpful assistant named Elia."
@@ -109,3 +125,9 @@ class LaunchConfig(BaseModel):
     @property
     def all_models(self) -> list[EliaChatModel]:
         return self.models + self.builtin_models
+
+    @property
+    def default_model_object(self) -> EliaChatModel:
+        from elia_chat.models import get_model
+
+        return get_model(self.default_model, self)
