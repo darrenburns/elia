@@ -65,4 +65,5 @@ class PromptInput(TextArea):
     def action_submit_prompt(self) -> None:
         if self.submit_ready:
             message = self.PromptSubmitted(self.text, prompt_input=self)
+            self.clear()
             self.post_message(message)

@@ -27,6 +27,7 @@ class Elia(App[None]):
     ENABLE_COMMAND_PALETTE = False
     CSS_PATH = Path(__file__).parent / "elia.scss"
     BINDINGS = [
+        Binding("q", "app.quit", "Quit", show=False),
         Binding("?", "help", "Help"),
     ]
 

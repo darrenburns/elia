@@ -75,13 +75,15 @@ class Chat(Widget):
         chatbox: Chatbox
 
     @dataclass
-    class FirstMessageSent(Message):
-        chat_data: ChatData
+    class AgentResponseFailed(Message):
+        """Sent when the agent fails to respond e.g. cant connect.
+        Can be used to reset UI state."""
+
+        last_message: ChatMessage
 
     @dataclass
-    class UserMessageSubmitted(Message):
-        chat_id: int
-        message: ChatMessage
+    class FirstMessageSent(Message):
+        chat_data: ChatData
 
     def compose(self) -> ComposeResult:
         yield ChatHeader(chat=self.chat_data, model=self.model)
@@ -119,28 +121,23 @@ class Chat(Widget):
         container.refresh()
         container.scroll_end(animate=False, force=True)
 
-    def key_d(self):
-        print(self.chat_container.scroll_y)
-        print(self.chat_container.max_scroll_y)
+    @on(AgentResponseFailed)
+    def restore_state_on_agent_failure(self, event: Chat.AgentResponseFailed) -> None:
+        original_prompt = event.last_message.message.get("content", "")
+        if isinstance(original_prompt, str):
+            self.query_one(ChatPromptInput).text = original_prompt
 
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
+
         now_utc = datetime.datetime.now(datetime.UTC)
         user_message: ChatCompletionUserMessageParam = {
             "content": content,
             "role": "user",
         }
+
         user_chat_message = ChatMessage(user_message, now_utc, self.chat_data.model)
         self.chat_data.messages.append(user_chat_message)
-        await ChatsManager.add_message_to_chat(
-            chat_id=self.chat_data.id, message=user_chat_message
-        )
-
-        self.post_message(
-            Chat.UserMessageSubmitted(
-                chat_id=self.chat_data.id, message=user_chat_message
-            )
-        )
         user_message_chatbox = Chatbox(user_chat_message, self.chat_data.model)
 
         assert (
@@ -149,6 +146,11 @@ class Chat(Widget):
 
         await self.chat_container.mount(user_message_chatbox)
         self.scroll_to_latest_message()
+
+        await ChatsManager.add_message_to_chat(
+            chat_id=self.chat_data.id, message=user_chat_message
+        )
+
         self.stream_agent_response()
 
     @work
@@ -184,6 +186,7 @@ class Chat(Widget):
                 severity="error",
                 timeout=constants.ERROR_NOTIFY_TIMEOUT_SECS,
             )
+            self.post_message(self.AgentResponseFailed(self.chat_data.messages[-1]))
             return
 
         ai_message: ChatCompletionAssistantMessageParam = {
@@ -232,6 +235,7 @@ class Chat(Widget):
                 severity="error",
                 timeout=constants.ERROR_NOTIFY_TIMEOUT_SECS,
             )
+            self.post_message(self.AgentResponseFailed(self.chat_data.messages[-1]))
         else:
             self.post_message(
                 self.AgentResponseComplete(
@@ -255,7 +259,6 @@ class Chat(Widget):
         if self.allow_input_submit is True:
             user_message = event.text
             await self.new_user_message(user_message)
-            event.prompt_input.clear()
 
     @on(PromptInput.CursorEscapingTop)
     async def on_cursor_up_from_prompt(self) -> None:

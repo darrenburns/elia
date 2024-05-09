@@ -46,7 +46,10 @@ class ModelRadioButton(RadioButton):
 
 
 class OptionsModal(ModalScreen[RuntimeConfig]):
-    BINDINGS = [Binding("escape", "app.pop_screen", "Close options", key_display="esc")]
+    BINDINGS = [
+        Binding("q", "app.quit", "Quit", show=False),
+        Binding("escape", "app.pop_screen", "Close options", key_display="esc"),
+    ]
 
     def __init__(
         self,
