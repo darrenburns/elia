@@ -86,7 +86,7 @@ display_name = "GPT 3.5 Turbo (Work)"
 id = "personal-gpt-3.5-turbo"
 name = "gpt-3.5-turbo"
 display_name = "GPT 3.5 Turbo (Personal)"
-
+```
 
 ### Import from ChatGPT
 
