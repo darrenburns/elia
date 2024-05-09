@@ -14,7 +14,9 @@ class HelpScreen(ModalScreen[None]):
     HELP_MARKDOWN = """\
 ### How do I quit Elia?
 
-Press `Ctrl+C` on your keyboard.ga
+Press `Ctrl+C` on your keyboard.
+`q` also works if an input isn't currently focused.
+If focus is on the prompt input box on the home screen, `esc` will close Elia too.
 
 ### Environment
 
