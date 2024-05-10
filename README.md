@@ -1,10 +1,10 @@
-## Elia
+# Elia
 
 A powerful terminal user interface for interacting with large language models.
 
 Chat with Claude 3, ChatGPT, and local models like Llama 3, Phi 3, Mistral and Gemma.
 
-<img width="1439" alt="elia-stacked-screenshot" src="https://github.com/darrenburns/elia/assets/5740731/8fb15936-abeb-4464-b34d-f6cb001913e4">
+![elia-screenshot-collage](https://github.com/darrenburns/elia/assets/5740731/75f8563f-ce1a-4c9c-98c0-1bd1f7010814)
 
 Your conversations are stored locally in a SQLite database.
 
