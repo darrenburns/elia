@@ -1,4 +1,4 @@
-## Elia
+# Elia
 
 A powerful terminal user interface for interacting with large language models.
 
