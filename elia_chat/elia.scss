@@ -52,14 +52,20 @@ Rule {
 Toast {
   background: $background-darken-1;
   border-right: none;
-}
+  &.-information {
+    border-left: outer $main-lighten-1;
+    & .toast--title {
+      color: $main-lighten-2;
+    }
+  }
 
-Toast.-information {
-  border-left: outer $main-lighten-1;
-}
+  &.-error {
+    border-left: outer $main-lighten-1;
+    & .toast--title {
+      color: $main-lighten-2;
+    }
+  }
 
-Toast.-information .toast--title {
-  color: $main-lighten-2;
 }
 
 
