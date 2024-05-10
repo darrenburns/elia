@@ -27,7 +27,7 @@ To use Anthropic models, the `ANTHROPIC_API_KEY` env var must be set.
 
 To use a local model, see the instructions in the README:
 
-* https://github.com/darrenburns/elia/blob/master/README.md
+* https://github.com/darrenburns/elia/blob/main/README.md
 
 ### Config file and database
 
