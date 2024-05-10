@@ -36,6 +36,8 @@ of the options screen (`ctrl+o`).
 
 ### General navigation
 
+Elia has very strong mouse support. Most things can be clicked.
+
 Use `tab` and `shift+tab` to move between different widgets on screen.
 
 In some places you can make use of the arrow keys or Vim nav keys to move around.
