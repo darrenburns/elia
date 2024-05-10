@@ -131,6 +131,7 @@ _With a message focused_:
         `shift` to select text as you move.
     - Press `v` to toggle _visual mode_, allowing you to select without text without
         needing to hold `shift`.
+    - Press `u` to quickly select the next code block in the message.
     - With some text selected, press `y` or c` to copy.
 - `enter`: View more details about a message.
     - The amount of details available may vary depending on the model
