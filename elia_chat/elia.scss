@@ -54,8 +54,12 @@ Toast {
   border-right: none;
 }
 
-Toast.information {
+Toast.-information {
   border-left: outer $main-lighten-1;
+}
+
+Toast.-information .toast--title {
+  color: $main-lighten-2;
 }
 
 
