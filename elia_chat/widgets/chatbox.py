@@ -19,9 +19,14 @@ from elia_chat.models import ChatMessage
 
 
 class SelectionTextArea(TextArea):
-    @dataclass
     class LeaveSelectionMode(Message):
-        pass
+        """Broadcast that the user wants to leave selection mode."""
+
+    @dataclass
+    class VisualModeToggled(Message):
+        """Sent when we enter/leave visual select mode."""
+
+        enabled: bool
 
     BINDINGS = [
         Binding(
@@ -47,13 +52,13 @@ class SelectionTextArea(TextArea):
         self.visual_mode = not self.visual_mode
 
     def watch_visual_mode(self, value: bool) -> None:
+        self.post_message(self.VisualModeToggled(value))
         self.cursor_blink = not value
 
         if not value:
             self.selection = Selection.cursor(self.selection.end)
 
         self.set_class(value, "visual-mode")
-        print(self.classes)
 
     def action_cursor_up(self, select: bool = False) -> None:
         return super().action_cursor_up(self.visual_mode or select)
@@ -169,7 +174,7 @@ class Chatbox(Widget, can_focus=True):
     async def watch_selection_mode(self, value: bool) -> None:
         if value:
             async with self.batch():
-                self.border_subtitle = "[[white]c[/]] Copy selection"
+                self.border_subtitle = "SELECT"
                 content = self.message.message.get("content")
                 text_area = SelectionTextArea(
                     content if isinstance(content, str) else "",
@@ -203,6 +208,12 @@ class Chatbox(Widget, can_focus=True):
                 return None
             else:
                 child.focus()
+
+    @on(SelectionTextArea.VisualModeToggled)
+    def handle_visual_select(self, event: SelectionTextArea.VisualModeToggled) -> None:
+        self.border_subtitle = (
+            "[reverse] VISUAL SELECT [/]" if event.enabled else "SELECT"
+        )
 
     @property
     def markdown(self) -> Markdown:
