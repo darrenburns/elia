@@ -1,4 +1,5 @@
 from __future__ import annotations
+import bisect
 from dataclasses import dataclass
 
 from rich.console import RenderableType
@@ -13,6 +14,7 @@ from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import TextArea
 from textual.widgets.text_area import Selection
+from textual.document._syntax_aware_document import SyntaxAwareDocumentError
 
 from elia_chat.config import EliaChatModel
 from elia_chat.models import ChatMessage
@@ -44,6 +46,7 @@ class SelectionTextArea(TextArea):
         Binding(
             "y,c", "copy_to_clipboard", description="Copy selection", key_display="y"
         ),
+        Binding("u", "next_code_block", description="Next code block", key_display="u"),
     ]
 
     visual_mode = reactive(False, init=False)
@@ -96,6 +99,34 @@ class SelectionTextArea(TextArea):
 
         self.app.copy_to_clipboard(text_to_copy)
         self.visual_mode = False
+
+    def action_next_code_block(self) -> None:
+        try:
+            query = self.document.prepare_query(
+                "(fenced_code_block (code_fence_content) @code_block)"
+            )
+        except SyntaxAwareDocumentError:
+            self.app.notify(
+                "This feature requires tree-sitter, which isn't installed.",
+                severity="error",
+            )
+        else:
+            if query:
+                self.visual_mode = True
+                code_block_nodes = self.document.query_syntax_tree(query)
+                locations: list[tuple[tuple[int, int], tuple[int, int]]] = [
+                    (node.start_point, node.end_point)
+                    for (node, _name) in code_block_nodes
+                ]
+                end_locations = [end for _start, end in locations]
+                cursor_row, _cursor_column = self.cursor_location
+                search_start_location = cursor_row + 1, 0
+                insertion_index = bisect.bisect_left(
+                    end_locations, search_start_location
+                )
+                insertion_index %= len(end_locations)
+                start, end = locations[insertion_index]
+                self.selection = Selection(start, end)
 
     def action_leave_selection_mode(self) -> None:
         self.post_message(self.LeaveSelectionMode())
