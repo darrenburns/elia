@@ -8,10 +8,11 @@
 
 ![elia-screenshot-collage](https://github.com/darrenburns/elia/assets/5740731/75f8563f-ce1a-4c9c-98c0-1bd1f7010814)
 
+### Introduction
 
-Your conversations are stored locally in a SQLite database.
-
-Conversations with local models are handled via `ollama` and never leave your machine.
+`elia` is an application for interacting with LLMs which runs entirely in your terminal, and is designed to be keyboard-focused, efficient, and fun to use!
+It stores your conversations in a local SQLite database, and allows you to interact with a variety of models.
+Speak with proprietary models such as ChatGPT and Claude, or with local models running through `ollama` or LocalAI.
 
 ### Installation
 
