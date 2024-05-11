@@ -8,13 +8,13 @@
 
 ![elia-screenshot-collage](https://github.com/darrenburns/elia/assets/5740731/75f8563f-ce1a-4c9c-98c0-1bd1f7010814)
 
-### Introduction
+## Introduction
 
 `elia` is an application for interacting with LLMs which runs entirely in your terminal, and is designed to be keyboard-focused, efficient, and fun to use!
 It stores your conversations in a local SQLite database, and allows you to interact with a variety of models.
 Speak with proprietary models such as ChatGPT and Claude, or with local models running through `ollama` or LocalAI.
 
-### Installation
+## Installation
 
 Install Elia with [pipx](https://github.com/pypa/pipx):
 
@@ -24,7 +24,7 @@ pipx install elia-chat
 
 Depending on the model you wish to use, you may need to set one or more environment variables (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc).
 
-### Quickstart
+## Quickstart
 
 Launch Elia from the command line:
 
@@ -38,14 +38,14 @@ Launch directly a new chat from the command line:
 elia "What is the Zen of Python?"
 ```
 
-### Running local models
+## Running local models
 
 1. Install [`ollama`](https://github.com/ollama/ollama).
 2. Pull the model you require, e.g. `ollama pull llama3`.
 3. Run the local ollama server: `ollama serve`.
 4. Add the model to the config file (see below).
 
-### Configuration
+## Configuration
 
 The location of the configuration file is noted at the bottom of
 the options window (`ctrl+o`).
@@ -92,7 +92,7 @@ name = "gpt-3.5-turbo"
 display_name = "GPT 3.5 Turbo (Personal)"
 ```
 
-### Import from ChatGPT
+## Import from ChatGPT
 
 Export your conversations to a JSON file using the ChatGPT UI, then import them using the `import` command.
 
@@ -100,13 +100,13 @@ Export your conversations to a JSON file using the ChatGPT UI, then import them 
 elia import 'path/to/conversations.json'
 ```
 
-### Wiping the database
+## Wiping the database
 
 ```bash
 elia reset
 ```
 
-### Uninstalling
+## Uninstalling
 
 ```bash
 pipx uninstall elia-chat
