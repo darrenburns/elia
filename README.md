@@ -1,6 +1,6 @@
 # Elia
 
-A powerful terminal user interface for interacting with large language models.
+A snappy, keyboard-centric terminal user interface for interacting with large language models.
 
 Chat with Claude 3, ChatGPT, and local models like Llama 3, Phi 3, Mistral and Gemma.
 
@@ -8,7 +8,7 @@ Chat with Claude 3, ChatGPT, and local models like Llama 3, Phi 3, Mistral and G
 
 Your conversations are stored locally in a SQLite database.
 
-Conversations with local models are done via `ollama` and never leave your machine.
+Conversations with local models are handled via `ollama` and never leave your machine.
 
 ### Installation
 
