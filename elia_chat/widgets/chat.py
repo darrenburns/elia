@@ -264,6 +264,10 @@ class Chat(Widget):
     async def on_cursor_up_from_prompt(self) -> None:
         self.focus_latest_message()
 
+    @on(Chatbox.CursorEscapingBottom)
+    def move_focus_to_prompt(self) -> None:
+        self.query_one(ChatPromptInput).focus()
+
     def get_latest_chatbox(self) -> Chatbox:
         return self.query(Chatbox).last()
 

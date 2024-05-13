@@ -151,6 +151,9 @@ class Chatbox(Widget, can_focus=True):
         ),
     ]
 
+    class CursorEscapingBottom(Message):
+        """Sent when the cursor moves down from the bottom message."""
+
     selection_mode = reactive(False, init=False)
 
     def __init__(
@@ -185,7 +188,10 @@ class Chatbox(Widget, can_focus=True):
         self.screen.focus_previous(Chatbox)
 
     def action_down(self) -> None:
-        self.screen.focus_next(Chatbox)
+        if self.parent and self is self.parent.children[-1]:
+            self.post_message(self.CursorEscapingBottom())
+        else:
+            self.screen.focus_next(Chatbox)
 
     def action_select(self) -> None:
         self.selection_mode = not self.selection_mode
