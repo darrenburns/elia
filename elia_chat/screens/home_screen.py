@@ -71,6 +71,10 @@ ChatList {
         chat = await self.chats_manager.get_chat(chat_id)
         await self.app.push_screen(ChatScreen(chat))
 
+    @on(ChatList.CursorEscapingTop)
+    def cursor_escaping_top(self):
+        self.query_one(HomePromptInput).focus()
+
     @on(PromptInput.PromptSubmitted)
     async def create_new_chat(self, event: PromptInput.PromptSubmitted) -> None:
         text = event.text

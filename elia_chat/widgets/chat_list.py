@@ -61,9 +61,9 @@ class ChatList(OptionList):
         ),
         Binding("j,down", "cursor_down", "Down", show=False),
         Binding("k,up", "cursor_up", "Up", show=False),
-        Binding("G,end", "last", "Last", show=False),
-        Binding("l,enter", "select", "Select", show=False),
+        Binding("l,right,enter", "select", "Select", show=False),
         Binding("g,home", "first", "First", show=False),
+        Binding("G,end", "last", "Last", show=False),
         Binding("pagedown", "page_down", "Page Down", show=False),
         Binding("pageup", "page_up", "Page Up", show=False),
     ]
@@ -71,6 +71,12 @@ class ChatList(OptionList):
     @dataclass
     class ChatOpened(Message):
         chat: ChatData
+
+    class CursorEscapingTop(Message):
+        """Cursor attempting to move out-of-bounds at top of list."""
+
+    class CursorEscapingBottom(Message):
+        """Cursor attempting to move out-of-bounds at bottom of list."""
 
     async def on_mount(self) -> None:
         await self.reload_and_refresh()
@@ -131,3 +137,9 @@ class ChatList(OptionList):
         option_list.add_options(self.options)
         option_list.highlighted = 0
         self.refresh()
+
+    def action_cursor_up(self) -> None:
+        if self.highlighted == 0:
+            self.post_message(self.CursorEscapingTop())
+        else:
+            return super().action_cursor_up()
