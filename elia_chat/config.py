@@ -54,7 +54,15 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             display_name="GPT-3.5 Turbo",
             provider="OpenAI",
             product="ChatGPT",
-            description="The fastest ChatGPT model, great for most everyday tasks",
+            description="Fast & inexpensive model for simple tasks.",
+        ),
+        EliaChatModel(
+            id="elia-gpt-4o",
+            name="openai/gpt-4o",
+            display_name="GPT-4o",
+            provider="OpenAI",
+            product="ChatGPT",
+            description="Fastest and most affordable flagship model.",
         ),
         EliaChatModel(
             id="elia-gpt-4-turbo",
@@ -62,8 +70,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             display_name="GPT-4 Turbo",
             provider="OpenAI",
             product="ChatGPT",
-            description="The most powerful ChatGPT model, capable of "
-            "complex tasks which require advanced reasoning",
+            description="Previous high-intelligence model.",
         ),
     ]
 
