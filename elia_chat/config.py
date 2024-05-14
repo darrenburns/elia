@@ -108,8 +108,34 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
     ]
 
 
+def get_builtin_google_models() -> list[EliaChatModel]:
+    return [
+        EliaChatModel(
+            id="elia-gemini/gemini-1.5-pro-latest",
+            name="gemini/gemini-1.5-pro-latest",
+            display_name="Gemini 1.5 Pro",
+            provider="Google",
+            product="Gemini",
+            description="Excels at reasoning tasks including code and text generation, "
+            "text editing, problem solving, data extraction and generation",
+        ),
+        EliaChatModel(
+            id="elia-gemini/gemini-1.5-flash-latest",
+            name="gemini/gemini-1.5-flash-latest",
+            display_name="Gemini 1.5 Flash",
+            provider="Google",
+            product="Gemini",
+            description="Fast and versatile performance across a variety of tasks",
+        ),
+    ]
+
+
 def get_builtin_models() -> list[EliaChatModel]:
-    return get_builtin_openai_models() + get_builtin_anthropic_models()
+    return (
+        get_builtin_openai_models()
+        + get_builtin_anthropic_models()
+        + get_builtin_google_models()
+    )
 
 
 class LaunchConfig(BaseModel):
