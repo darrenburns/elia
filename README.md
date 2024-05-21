@@ -59,6 +59,9 @@ The example file below shows the available options, as well as examples of how t
 default_model = "elia-gpt-3.5-turbo"
 # the system prompt on launch
 system_prompt = "You are a helpful assistant who talks like a pirate."
+# change the syntax highlighting theme of code in messages
+# choose from https://pygments.org/styles/
+message_code_theme = "dracula"
 
 # example of adding local llama3 support
 # only the `name` field is required here.

@@ -153,6 +153,8 @@ class LaunchConfig(BaseModel):
             "ELIA_SYSTEM_PROMPT", "You are a helpful assistant named Elia."
         )
     )
+    message_code_theme: str = Field(default="dracula")
+    """The default Pygments syntax highlighting theme to be used in chatboxes."""
     models: list[EliaChatModel] = Field(default_factory=list)
     builtin_models: list[EliaChatModel] = Field(
         default_factory=get_builtin_models, init=False
