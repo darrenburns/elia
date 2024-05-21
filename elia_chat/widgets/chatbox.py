@@ -260,7 +260,7 @@ class Chatbox(Widget, can_focus=True):
         content = self.message.message.get("content")
         if not isinstance(content, str):
             content = ""
-        return Markdown(content)
+        return Markdown(content, code_theme="dracula")
 
     def render(self) -> RenderableType:
         if self.selection_mode:
