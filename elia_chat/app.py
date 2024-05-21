@@ -28,7 +28,7 @@ class Elia(App[None]):
     CSS_PATH = Path(__file__).parent / "elia.scss"
     BINDINGS = [
         Binding("q", "app.quit", "Quit", show=False),
-        Binding("?", "help", "Help"),
+        Binding("f1,?", "help", "Help"),
     ]
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
