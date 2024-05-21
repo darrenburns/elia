@@ -50,6 +50,12 @@ Specify a model via the command line using `-m`/`--model`:
 elia -m gpt-4o
 ```
 
+Options can be combined - here's how you launch a chat with Gemini 1.5 Flash in inline mode.
+
+```bash
+elia -i -m gemini/gemini-1.5-flash-latest "How do I call Rust code from Python?"
+```
+
 ## Running local models
 
 1. Install [`ollama`](https://github.com/ollama/ollama).
