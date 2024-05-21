@@ -53,14 +53,13 @@ the options window (`ctrl+o`).
 The example file below shows the available options, as well as examples of how to add new models.
 
 ```toml
-# the *ID* for the model that is selected by default on launch
-# to use one of the default builtin OpenAI/anthropic models, prefix
-# the model name with `elia-`.
+# the ID or name of the model that is selected by default on launch
 default_model = "elia-gpt-3.5-turbo"
 # the system prompt on launch
 system_prompt = "You are a helpful assistant who talks like a pirate."
 # change the syntax highlighting theme of code in messages
 # choose from https://pygments.org/styles/
+# defaults to "monokai"
 message_code_theme = "dracula"
 
 # example of adding local llama3 support
