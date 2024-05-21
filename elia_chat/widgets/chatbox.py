@@ -98,7 +98,9 @@ class SelectionTextArea(TextArea):
             message = f"Copied message ({len(text_to_copy)} characters)."
             self.notify(message, title="Message copied")
 
-        self.app.copy_to_clipboard(text_to_copy)
+        import pyperclip
+
+        pyperclip.copy(text_to_copy)
         self.visual_mode = False
 
     def action_next_code_block(self) -> None:
@@ -204,7 +206,9 @@ class Chatbox(Widget, can_focus=True):
         if not self.selection_mode:
             text_to_copy = self.message.message.get("content")
             if isinstance(text_to_copy, str):
-                self.app.copy_to_clipboard(text_to_copy)
+                import pyperclip
+
+                pyperclip.copy(text_to_copy)
                 message = f"Copied message ({len(text_to_copy)} characters)."
                 self.notify(message, title="Message copied")
             else:

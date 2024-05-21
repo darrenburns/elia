@@ -140,6 +140,8 @@ pygments==2.17.2
     # via rich
 pyparsing==3.1.2
     # via httplib2
+pyperclip==1.8.2
+    # via elia-chat
 python-dotenv==1.0.1
     # via litellm
 pyyaml==6.0.1

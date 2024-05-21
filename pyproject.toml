@@ -16,6 +16,7 @@ dependencies = [
     "litellm==1.35.38",
     "greenlet>=3.0.3",
     "google-generativeai>=0.5.3",
+    "pyperclip>=1.8.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
