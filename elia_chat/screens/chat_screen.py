@@ -15,7 +15,7 @@ class ChatScreen(Screen[None]):
     BINDINGS = [
         Binding(
             key="escape",
-            action="focus('prompt')",
+            action="app.focus('prompt')",
             description="Focus prompt",
             key_display="esc",
         ),

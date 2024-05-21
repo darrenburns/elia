@@ -57,7 +57,7 @@ class ChatListItem(Option):
 class ChatList(OptionList):
     BINDINGS = [
         Binding(
-            "escape", "screen.focus('home-prompt')", "Focus prompt", key_display="esc"
+            "escape", "app.focus('home-prompt')", "Focus prompt", key_display="esc"
         ),
         Binding("j,down", "cursor_down", "Down", show=False),
         Binding("k,up", "cursor_up", "Up", show=False),

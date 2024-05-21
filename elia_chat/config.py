@@ -58,7 +58,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
         ),
         EliaChatModel(
             id="elia-gpt-4o",
-            name="openai/gpt-4o",
+            name="gpt-4o",
             display_name="GPT-4o",
             provider="OpenAI",
             product="ChatGPT",

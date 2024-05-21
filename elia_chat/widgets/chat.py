@@ -86,13 +86,13 @@ class Chat(Widget):
         chat_data: ChatData
 
     def compose(self) -> ComposeResult:
+        yield AgentIsTyping()
         yield ChatHeader(chat=self.chat_data, model=self.model)
 
         with VerticalScroll(id="chat-container") as vertical_scroll:
             vertical_scroll.can_focus = False
 
         yield ChatPromptInput(id="prompt")
-        yield AgentIsTyping()
 
     async def on_mount(self, _: events.Mount) -> None:
         """
