@@ -146,7 +146,7 @@ class LaunchConfig(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    default_model: str = Field(default="elia-gpt-3.5-turbo")
+    default_model: str = Field(default="elia-gpt-4o")
     """The ID or name of the default model."""
     system_prompt: str = Field(
         default=os.getenv(

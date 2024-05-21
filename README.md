@@ -32,10 +32,22 @@ Launch Elia from the command line:
 elia
 ```
 
-Launch directly a new chat from the command line:
+Launch a new chat inline (under your prompt) with `-i`/`--inline`:
 
 ```bash
-elia "What is the Zen of Python?"
+elia -i "What is the Zen of Python?"
+```
+
+Launch a new chat in full-screen mode:
+
+```bash
+elia "Tell me a cool fact about lizards!"
+```
+
+Specify a model via the command line using `-m`/`--model`:
+
+```bash
+elia -m gpt-4o
 ```
 
 ## Running local models
@@ -54,7 +66,7 @@ The example file below shows the available options, as well as examples of how t
 
 ```toml
 # the ID or name of the model that is selected by default on launch
-default_model = "elia-gpt-3.5-turbo"
+default_model = "gpt-4o"
 # the system prompt on launch
 system_prompt = "You are a helpful assistant who talks like a pirate."
 # change the syntax highlighting theme of code in messages
