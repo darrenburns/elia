@@ -18,6 +18,7 @@ from textual.document._syntax_aware_document import SyntaxAwareDocumentError
 
 from elia_chat.config import EliaChatModel
 from elia_chat.models import ChatMessage
+from elia_chat.config import launch_config
 
 
 class SelectionTextArea(TextArea):
@@ -97,7 +98,9 @@ class SelectionTextArea(TextArea):
             message = f"Copied message ({len(text_to_copy)} characters)."
             self.notify(message, title="Message copied")
 
-        self.app.copy_to_clipboard(text_to_copy)
+        import pyperclip
+
+        pyperclip.copy(text_to_copy)
         self.visual_mode = False
 
     def action_next_code_block(self) -> None:
@@ -203,7 +206,9 @@ class Chatbox(Widget, can_focus=True):
         if not self.selection_mode:
             text_to_copy = self.message.message.get("content")
             if isinstance(text_to_copy, str):
-                self.app.copy_to_clipboard(text_to_copy)
+                import pyperclip
+
+                pyperclip.copy(text_to_copy)
                 message = f"Copied message ({len(text_to_copy)} characters)."
                 self.notify(message, title="Message copied")
             else:
@@ -260,7 +265,9 @@ class Chatbox(Widget, can_focus=True):
         content = self.message.message.get("content")
         if not isinstance(content, str):
             content = ""
-        return Markdown(content)
+
+        config = launch_config.get()
+        return Markdown(content, code_theme=config.message_code_theme)
 
     def render(self) -> RenderableType:
         if self.selection_mode:

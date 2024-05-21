@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import datetime
 
+from sqlmodel import select
 from textual import log
 
 from elia_chat.database.converters import (
@@ -86,6 +87,15 @@ class ChatsManager:
             await session.commit()
 
         return chat.id
+
+    @staticmethod
+    async def archive_chat(chat_id: int) -> None:
+        async with get_session() as session:
+            statement = select(ChatDao).where(ChatDao.id == chat_id)
+            result = await session.exec(statement)
+            chat_dao = result.one()
+            chat_dao.archived = True
+            await session.commit()
 
     @staticmethod
     async def add_message_to_chat(chat_id: int, message: ChatMessage) -> None:

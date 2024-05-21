@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 from dataclasses import dataclass
+from typing import cast
 
 import humanize
 from rich.console import RenderResult, Console, ConsoleOptions
@@ -57,8 +58,9 @@ class ChatListItem(Option):
 class ChatList(OptionList):
     BINDINGS = [
         Binding(
-            "escape", "screen.focus('home-prompt')", "Focus prompt", key_display="esc"
+            "escape", "app.focus('home-prompt')", "Focus prompt", key_display="esc"
         ),
+        Binding("a", "archive_chat", "Archive chat", key_display="a"),
         Binding("j,down", "cursor_down", "Down", show=False),
         Binding("k,up", "cursor_up", "Up", show=False),
         Binding("l,right,enter", "select", "Select", show=False),
@@ -110,7 +112,7 @@ class ChatList(OptionList):
         old_highlighted = self.highlighted
         self.clear_options()
         self.add_options(self.options)
-        self.border_title = f"History ({len(self.options)})"
+        self.border_title = self.get_border_title()
         if new_highlighted > -1:
             self.highlighted = new_highlighted
         else:
@@ -123,6 +125,24 @@ class ChatList(OptionList):
     async def load_chats(self) -> list[ChatData]:
         all_chats = await ChatsManager.all_chats()
         return all_chats
+
+    async def action_archive_chat(self) -> None:
+        if self.highlighted is None:
+            return
+
+        item = cast(ChatListItem, self.get_option_at_index(self.highlighted))
+        self.options.pop(self.highlighted)
+        self.remove_option_at_index(self.highlighted)
+
+        chat_id = item.chat.id
+        await ChatsManager.archive_chat(chat_id)
+
+        self.border_title = self.get_border_title()
+        self.refresh()
+        self.app.notify(f"Chat [b]{chat_id!r}[/] archived")
+
+    def get_border_title(self) -> str:
+        return f"History ({len(self.options)})"
 
     def create_chat(self, chat_data: ChatData) -> None:
         new_chat_list_item = ChatListItem(chat_data, self.app.launch_config)

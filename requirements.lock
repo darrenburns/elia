@@ -67,7 +67,6 @@ googleapis-common-protos==1.63.0
     # via grpcio-status
 greenlet==3.0.3
     # via elia-chat
-    # via sqlalchemy
 grpcio==1.63.0
     # via google-api-core
     # via grpcio-status
@@ -134,19 +133,17 @@ pyasn1-modules==0.4.0
 pydantic==2.6.1
     # via google-generativeai
     # via openai
-    # via pydantic-settings
     # via sqlmodel
 pydantic-core==2.16.2
     # via pydantic
-pydantic-settings==2.2.1
-    # via elia-chat
 pygments==2.17.2
     # via rich
 pyparsing==3.1.2
     # via httplib2
+pyperclip==1.8.2
+    # via elia-chat
 python-dotenv==1.0.1
     # via litellm
-    # via pydantic-settings
 pyyaml==6.0.1
     # via huggingface-hub
 regex==2023.12.25
@@ -168,7 +165,7 @@ sqlalchemy==2.0.25
     # via sqlmodel
 sqlmodel==0.0.14
     # via elia-chat
-textual==0.58.1
+textual==0.62.0
     # via elia-chat
 tiktoken==0.5.2
     # via litellm

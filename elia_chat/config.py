@@ -58,7 +58,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
         ),
         EliaChatModel(
             id="elia-gpt-4o",
-            name="openai/gpt-4o",
+            name="gpt-4o",
             display_name="GPT-4o",
             provider="OpenAI",
             product="ChatGPT",
@@ -146,13 +146,15 @@ class LaunchConfig(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    default_model: str = Field(default="elia-gpt-3.5-turbo")
+    default_model: str = Field(default="elia-gpt-4o")
     """The ID or name of the default model."""
     system_prompt: str = Field(
         default=os.getenv(
             "ELIA_SYSTEM_PROMPT", "You are a helpful assistant named Elia."
         )
     )
+    message_code_theme: str = Field(default="monokai")
+    """The default Pygments syntax highlighting theme to be used in chatboxes."""
     models: list[EliaChatModel] = Field(default_factory=list)
     builtin_models: list[EliaChatModel] = Field(
         default_factory=get_builtin_models, init=False

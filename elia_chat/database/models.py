@@ -75,6 +75,7 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
             statement = (
                 select(ChatDao)
                 .join(subquery, subquery.c.chat_id == ChatDao.id)
+                .where(ChatDao.archived == False)
                 .order_by(desc(subquery.c.max_timestamp))
                 .options(selectinload(ChatDao.messages))
             )

@@ -6,7 +6,7 @@ import asyncio
 import pathlib
 from textwrap import dedent
 import tomllib
-from typing import Any, Tuple
+from typing import Any
 
 import click
 from click_default_group import DefaultGroup
@@ -17,7 +17,6 @@ from elia_chat.app import Elia
 from elia_chat.config import LaunchConfig
 from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.database.database import create_database, sqlite_file_name
-from elia_chat.launch_args import QuickLaunchArgs
 from elia_chat.locations import config_file
 
 console = Console()
@@ -51,13 +50,32 @@ def cli() -> None:
 
 @cli.command()
 @click.argument("prompt", nargs=-1, type=str, required=False)
-def default(prompt: tuple[str, ...]):
+@click.option(
+    "-m",
+    "--model",
+    type=str,
+    default="",
+    help="The model to use for the chat",
+)
+@click.option(
+    "-i",
+    "--inline",
+    is_flag=True,
+    help="Run in inline mode, without launching full TUI.",
+    default=False,
+)
+def default(prompt: tuple[str, ...], model: str, inline: bool):
     prompt = prompt or ("",)
     joined_prompt = " ".join(prompt)
     create_db_if_not_exists()
     file_config = load_or_create_config_file()
-    app = Elia(LaunchConfig(**file_config), startup_prompt=joined_prompt)
-    app.run()
+    cli_config = {}
+    if model:
+        cli_config["default_model"] = model
+
+    launch_config: dict[str, Any] = {**file_config, **cli_config}
+    app = Elia(LaunchConfig(**launch_config), startup_prompt=joined_prompt)
+    app.run(inline=inline)
 
 
 @cli.command()
@@ -108,30 +126,6 @@ def import_file_to_db(file: pathlib.Path) -> None:
     """
     asyncio.run(import_chatgpt_data(file=file))
     console.print(f"[green]ChatGPT data imported from {str(file)!r}")
-
-
-@cli.command()
-@click.argument("message", nargs=-1, type=str, required=True)
-@click.option(
-    "-m",
-    "--model",
-    type=str,
-    default="gpt-3.5-turbo",
-    help="The model to use for the chat",
-)
-def chat(message: Tuple[str, ...], model: str) -> None:
-    """
-    Start Elia with a chat message
-    """
-    quick_launch_args = QuickLaunchArgs(
-        launch_prompt=" ".join(message),
-        launch_prompt_model_name=model,
-    )
-    launch_config = LaunchConfig(
-        default_model=quick_launch_args.launch_prompt_model_name,
-    )
-    app = Elia(launch_config, quick_launch_args.launch_prompt)
-    app.run()
 
 
 if __name__ == "__main__":

@@ -30,12 +30,19 @@ Tabs .underline--bar {
 Screen {
   background: $background;
   padding: 0 2 1 2;
+  &:inline {
+    height: 80vh;
+    padding: 0 2;
+  }
 }
 
 ModalScreen {
   background: black 50%;
   padding: 0;
-
+  &:inline {
+    padding: 0;
+    border: none;
+  }
   & Footer {
     margin: 0 2 1 2;
   }
@@ -75,6 +82,9 @@ Chat {
     height: auto;
     padding: 1 2;
     background: $background;
+    &:inline {
+      padding: 0 2 1 2;
+    }
 
     & #model-static {
       color: $text-muted;
@@ -163,6 +173,11 @@ AppHeader {
   width: 1fr;
   padding: 1 2;
   height: auto;
+
+  &:inline {
+    padding: 0 2 1 2;
+  }
+
   & .app-title {
     color: $text-muted;
   }
@@ -378,10 +393,6 @@ MessageInfo #token-count {
 
 Tabs:focus .underline--bar {
   color: $text 35%;
-}
-
-TokenAnalysis {
-  height: auto;
 }
 
 MessageInfo #inner-container ContentSwitcher {

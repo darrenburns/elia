@@ -8,7 +8,7 @@ from textual.widgets import Footer, Markdown
 class HelpScreen(ModalScreen[None]):
     BINDINGS = [
         Binding("q", "app.quit", "Quit", show=False),
-        Binding("escape,?", "app.pop_screen()", "Close help", key_display="esc"),
+        Binding("escape,f1,?", "app.pop_screen()", "Close help", key_display="esc"),
     ]
 
     HELP_MARKDOWN = """\
