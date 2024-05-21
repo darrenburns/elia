@@ -39,7 +39,10 @@ Screen {
 ModalScreen {
   background: black 50%;
   padding: 0;
-
+  &:inline {
+    padding: 0;
+    border: none;
+  }
   & Footer {
     margin: 0 2 1 2;
   }
