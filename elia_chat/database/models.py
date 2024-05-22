@@ -98,6 +98,5 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
         async with get_session() as session:
             chat = await ChatDao.from_id(chat_id)
             chat.title = new_title
-            print(f"setting chat title to {new_title!r}")
             session.add(chat)
             await session.commit()

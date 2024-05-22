@@ -166,7 +166,7 @@ sqlalchemy==2.0.25
     # via sqlmodel
 sqlmodel==0.0.14
     # via elia-chat
-textual==0.60.0
+textual==0.62.0
     # via elia-chat
 tiktoken==0.7.0
     # via litellm
