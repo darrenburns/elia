@@ -267,6 +267,14 @@ Footer {
   background: $main-darken-1 0%;
 }
 
+FooterKey {
+  background: $main-darken-1 0%;
+  .footer-key--key {
+    color: greenyellow;
+    background: $main-darken-1 0%;
+  }
+}
+
 Footer > .footer--highlight {
   background: $main-lighten-2 20%;
 }
