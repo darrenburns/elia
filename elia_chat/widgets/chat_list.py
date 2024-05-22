@@ -28,7 +28,7 @@ class ChatListItemRenderable:
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-        now = datetime.datetime.now(datetime.UTC)
+        now = datetime.datetime.now(datetime.timezone.utc)
         delta = now - self.chat.update_time
         time_ago = humanize.naturaltime(delta)
         time_ago_text = Text(time_ago, style="dim i")
@@ -139,7 +139,10 @@ class ChatList(OptionList):
 
         self.border_title = self.get_border_title()
         self.refresh()
-        self.app.notify(f"Chat [b]{chat_id!r}[/] archived")
+        self.app.notify(
+            item.chat.title or f"Chat [b]{chat_id!r}[/] archived.",
+            title="Chat archived",
+        )
 
     def get_border_title(self) -> str:
         return f"History ({len(self.options)})"

@@ -75,7 +75,7 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
             statement = (
                 select(ChatDao)
                 .join(subquery, subquery.c.chat_id == ChatDao.id)
-                .where(ChatDao.archived == False)
+                .where(ChatDao.archived == False)  # noqa: E712
                 .order_by(desc(subquery.c.max_timestamp))
                 .options(selectinload(ChatDao.messages))
             )
@@ -92,3 +92,11 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
             )
             result = await session.exec(statement)
             return result.one()
+
+    @staticmethod
+    async def rename_chat(chat_id: int, new_title: str) -> None:
+        async with get_session() as session:
+            chat = await ChatDao.from_id(chat_id)
+            chat.title = new_title
+            session.add(chat)
+            await session.commit()

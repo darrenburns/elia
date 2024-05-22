@@ -18,7 +18,7 @@ from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
 from elia_chat.screens.chat_details import ChatDetails
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
-from elia_chat.widgets.chat_header import ChatHeader
+from elia_chat.widgets.chat_header import ChatHeader, TitleStatic
 from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.widgets.chatbox import Chatbox
 
@@ -37,6 +37,7 @@ class ChatPromptInput(PromptInput):
 
 class Chat(Widget):
     BINDINGS = [
+        Binding("ctrl+r", "rename", "Rename", key_display="^r"),
         Binding("shift+down", "scroll_container_down", show=False),
         Binding("shift+up", "scroll_container_up", show=False),
         Binding(
@@ -130,7 +131,7 @@ class Chat(Widget):
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
 
-        now_utc = datetime.datetime.now(datetime.UTC)
+        now_utc = datetime.datetime.now(datetime.timezone.utc)
         user_message: ChatCompletionUserMessageParam = {
             "content": content,
             "role": "user",
@@ -193,7 +194,7 @@ class Chat(Widget):
             "content": "",
             "role": "assistant",
         }
-        now = datetime.datetime.now(datetime.UTC)
+        now = datetime.datetime.now(datetime.timezone.utc)
         message = ChatMessage(message=ai_message, model=model, timestamp=now)
 
         response_chatbox = Chatbox(
@@ -268,6 +269,14 @@ class Chat(Widget):
     def move_focus_to_prompt(self) -> None:
         self.query_one(ChatPromptInput).focus()
 
+    @on(TitleStatic.ChatRenamed)
+    async def handle_chat_rename(self, event: TitleStatic.ChatRenamed) -> None:
+        if event.chat_id == self.chat_data.id and event.new_title:
+            self.chat_data.title = event.new_title
+            header = self.query_one(ChatHeader)
+            header.update_header(self.chat_data, self.model)
+            await ChatsManager.rename_chat(event.chat_id, event.new_title)
+
     def get_latest_chatbox(self) -> Chatbox:
         return self.query(Chatbox).last()
 
@@ -276,6 +285,10 @@ class Chat(Widget):
             self.get_latest_chatbox().focus()
         except NoMatches:
             pass
+
+    def action_rename(self) -> None:
+        title_static = self.query_one(TitleStatic)
+        title_static.begin_rename()
 
     def action_focus_latest_message(self) -> None:
         self.focus_latest_message()

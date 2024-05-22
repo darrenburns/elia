@@ -1,3 +1,4 @@
+from datetime import timezone
 from typing import TYPE_CHECKING, cast
 import humanize
 from textual.app import ComposeResult
@@ -65,7 +66,9 @@ class ChatDetails(ModalScreen[None]):
 
                     yield Label("First message", classes="heading")
                     if chat.create_timestamp:
-                        create_timestamp = chat.create_timestamp.replace(tzinfo=None)
+                        create_timestamp = chat.create_timestamp.replace(
+                            tzinfo=timezone.utc
+                        )
                         yield Label(
                             f"{humanize.naturaltime(create_timestamp)}",
                             classes="datum",
@@ -75,11 +78,11 @@ class ChatDetails(ModalScreen[None]):
 
                     yield Rule()
 
-                    update_time = chat.update_time
+                    update_time = chat.update_time.replace(tzinfo=timezone.utc)
                     yield Label("Updated at", classes="heading")
                     if update_time:
                         yield Label(
-                            f"{humanize.naturaltime(chat.update_time.replace(tzinfo=None))}",
+                            f"{humanize.naturaltime(chat.update_time)}",
                             classes="datum",
                         )
                     else:
