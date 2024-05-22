@@ -75,7 +75,7 @@ class ChatDao(AsyncAttrs, SQLModel, table=True):
             statement = (
                 select(ChatDao)
                 .join(subquery, subquery.c.chat_id == ChatDao.id)
-                .where(ChatDao.archived is False)
+                .where(ChatDao.archived == False)  # noqa: E712
                 .order_by(desc(subquery.c.max_timestamp))
                 .options(selectinload(ChatDao.messages))
             )
