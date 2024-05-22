@@ -50,7 +50,7 @@ Specify a model via the command line using `-m`/`--model`:
 elia -m gpt-4o
 ```
 
-Options can be combined - here's how you launch a chat with Gemini 1.5 Flash in inline mode.
+Options can be combined - here's how you launch a chat with Gemini 1.5 Flash in inline mode (requires `GEMINI_API_KEY` environment variable).
 
 ```bash
 elia -i -m gemini/gemini-1.5-flash-latest "How do I call Rust code from Python?"
