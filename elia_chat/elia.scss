@@ -327,36 +327,52 @@ OptionList > .option-list--option-hover-highlighted-disabled {
   background: $main 60%;
 }
 
+RenameChat {
+  & > Vertical {
+    background: $background 0%;
+    height: auto;
+    & Input {
+      padding: 0 4;
+      border: none;
+      border-bottom: hkey $main-border-color;
+      border-top: hkey $main-border-color;
+      border-subtitle-color: $main-border-text-color;
+      border-subtitle-background: $background;
+    }
+  }
+
+}
+
 ChatDetails {
   align: center middle;
+  & > #container {
+    width: 90%;
+    height: 85%;
+    background: $background;
+    padding: 1 2;
+    border: wide $main-border-color-focus;
+    border-title-color: $main-border-text-color;
+    border-title-background: $background;
+    border-title-style: b;
+    border-subtitle-color: $text-muted;
+    border-subtitle-background: $background;
+
+    & Markdown {
+      padding: 0;
+      margin: 0;
+    }
+
+    & .heading {
+      color: $text-muted;
+    }
+
+    & .datum {
+      text-style: i;
+    }
+
+  }
 }
 
-ChatDetails > #container {
-  width: 90%;
-  height: 85%;
-  background: $background;
-  padding: 1 2;
-  border: wide $main-border-color-focus;
-  border-title-color: $main-border-text-color;
-  border-title-background: $background;
-  border-title-style: b;
-  border-subtitle-color: $text-muted;
-  border-subtitle-background: $background;
-
-  & Markdown {
-    padding: 0;
-    margin: 0;
-  }
-
-  & .heading {
-    color: $text-muted;
-  }
-
-  & .datum {
-    text-style: i;
-  }
-
-}
 
 MessageInfo #message-info-header {
   dock: top;

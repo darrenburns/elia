@@ -7,11 +7,18 @@ from textual.widgets import Input
 
 
 class RenameChat(ModalScreen[str]):
-    BINDINGS = [Binding("escape", "app.pop_screen", "Close window")]
+    BINDINGS = [
+        Binding("escape", "app.pop_screen", "Cancel", key_display="esc"),
+        Binding("enter", "app.pop_screen", "Save"),
+    ]
 
     def compose(self) -> ComposeResult:
         with Vertical():
-            yield Input(placeholder="Enter a new title...")
+            title_input = Input(placeholder="Enter a title...")
+            title_input.border_subtitle = (
+                "[[white]enter[/]] Save  [[white]esc[/]] Cancel"
+            )
+            yield title_input
 
     @on(Input.Submitted)
     def close_screen(self, event: Input.Submitted) -> None:
