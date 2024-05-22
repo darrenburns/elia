@@ -112,6 +112,18 @@ name = "gpt-3.5-turbo"
 display_name = "GPT 3.5 Turbo (Personal)"
 ```
 
+## Changing keybindings
+
+Right now, keybinds cannot be changed. Terminals are also rather limited in what keybinds they support.
+For example, pressing <kbd>Cmd</kbd>+<kbd>Enter</kbd> to send a message is not possible (although we may support a protocol to allow this in some terminals in the future).
+
+For now, I recommend you map whatever key combo you want at the terminal emulator level to send `\n`.
+Here's an example using iTerm:
+
+<img width="848" alt="image" src="https://github.com/darrenburns/elia/assets/5740731/94b6e50c-429a-4d17-99c2-affaa828f35b">
+
+With this mapping in place, pressing <kbd>Cmd</kbd>+<kbd>Enter</kbd> will send a message to the LLM, and pressing <kbd>Enter</kbd> alone will create a new line.
+
 ## Import from ChatGPT
 
 Export your conversations to a JSON file using the ChatGPT UI, then import them using the `import` command.
