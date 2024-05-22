@@ -51,9 +51,10 @@ be used to navigate.
 On the chat screen, pressing `up` and `down` will navigate through messages,
 but if you just wish to scroll a little, you can use `shift+up` and `shift+down`.
 
-### The chat history
+### The chat list
 
 - `up,down,k,j`: Navigate through chats.
+- `a`: Archive the highlighted chat.
 - `pageup,pagedown`: Up/down a page.
 - `home,end`: Go to first/last chat.
 - `g,G`: Go to first/last chat.
@@ -120,9 +121,10 @@ and the cursor is at (0, 0) will move focus to the latest message.
 
 ### The chat screen
 
-Press `shift+tab` to focus the latest message (or move the cursor `up` from (0, 0)).
-
 You can use the arrow keys to move up and down through messages.
+
+- `ctrl+r`: Rename the chat (or click the chat title).
+- `f2`: View more information about the chat.
 
 _With a message focused_:
 
@@ -142,7 +144,6 @@ _With a message focused_:
 - `G`: Focus the latest message.
 - `m`: Move focus to the prompt box.
 - `up,down,k,j`: Navigate through messages.
-- `f2`: View more information about the chat.
 
 """
 
