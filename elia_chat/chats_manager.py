@@ -29,6 +29,10 @@ class ChatsManager:
         return chat_dao_to_chat_data(chat_dao)
 
     @staticmethod
+    async def rename_chat(chat_id: int, new_title: str) -> None:
+        await ChatDao.rename_chat(chat_id, new_title)
+
+    @staticmethod
     async def get_messages(
         chat_id: int,
     ) -> list[ChatMessage]:
@@ -66,7 +70,7 @@ class ChatsManager:
             chat = ChatDao(
                 model=lookup_key,
                 title="",
-                started_at=datetime.datetime.now(datetime.UTC),
+                started_at=datetime.datetime.now(datetime.timezone.utc),
             )
             session.add(chat)
             await session.commit()

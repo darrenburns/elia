@@ -6,17 +6,17 @@ authors = [
     { name = "Darren Burns", email = "darrenb900@gmail.com" }
 ]
 dependencies = [
-    "textual[syntax]==0.62.0",
+    "textual[syntax]==0.60.0",
     "sqlmodel>=0.0.9",
     "humanize>=4.6.0",
     "click>=8.1.6",
     "xdg-base-dirs>=6.0.1",
     "aiosqlite>=0.20.0",
     "click-default-group>=1.2.4",
-    "litellm==1.35.38",
     "greenlet>=3.0.3",
     "google-generativeai>=0.5.3",
     "pyperclip>=1.8.2",
+    "litellm>=1.37.19",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

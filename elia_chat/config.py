@@ -33,7 +33,7 @@ class EliaChatModel(BaseModel):
     """A description of the model which may appear inside the Elia UI."""
     product: str | None = Field(default=None)
     """For example `ChatGPT`, `Claude`, `Gemini`, etc."""
-    temperature: int = Field(default=1.0)
+    temperature: float = Field(default=1.0)
     """The temperature to use. Low temperature means the same prompt is likely
     to produce similar results. High temperature means a flatter distribution
     when predicting the next token, and so the next token will be more random.

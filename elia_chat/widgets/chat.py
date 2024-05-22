@@ -130,7 +130,7 @@ class Chat(Widget):
     async def new_user_message(self, content: str) -> None:
         log.debug(f"User message submitted in chat {self.chat_data.id!r}: {content!r}")
 
-        now_utc = datetime.datetime.now(datetime.UTC)
+        now_utc = datetime.datetime.now(datetime.timezone.utc)
         user_message: ChatCompletionUserMessageParam = {
             "content": content,
             "role": "user",
@@ -193,7 +193,7 @@ class Chat(Widget):
             "content": "",
             "role": "assistant",
         }
-        now = datetime.datetime.now(datetime.UTC)
+        now = datetime.datetime.now(datetime.timezone.utc)
         message = ChatMessage(message=ai_message, model=model, timestamp=now)
 
         response_chatbox = Chatbox(
