@@ -22,7 +22,7 @@ Install Elia with [pipx](https://github.com/pypa/pipx):
 pipx install elia-chat
 ```
 
-Depending on the model you wish to use, you may need to set one or more environment variables (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc).
+Depending on the model you wish to use, you may need to set one or more environment variables (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` etc).
 
 ## Quickstart
 
@@ -50,7 +50,7 @@ Specify a model via the command line using `-m`/`--model`:
 elia -m gpt-4o
 ```
 
-Options can be combined - here's how you launch a chat with Gemini 1.5 Flash in inline mode.
+Options can be combined - here's how you launch a chat with Gemini 1.5 Flash in inline mode (requires `GEMINI_API_KEY` environment variable).
 
 ```bash
 elia -i -m gemini/gemini-1.5-flash-latest "How do I call Rust code from Python?"
@@ -111,6 +111,18 @@ id = "personal-gpt-3.5-turbo"
 name = "gpt-3.5-turbo"
 display_name = "GPT 3.5 Turbo (Personal)"
 ```
+
+## Changing keybindings
+
+Right now, keybinds cannot be changed. Terminals are also rather limited in what keybinds they support.
+For example, pressing <kbd>Cmd</kbd>+<kbd>Enter</kbd> to send a message is not possible (although we may support a protocol to allow this in some terminals in the future).
+
+For now, I recommend you map whatever key combo you want at the terminal emulator level to send `\n`.
+Here's an example using iTerm:
+
+<img width="848" alt="image" src="https://github.com/darrenburns/elia/assets/5740731/94b6e50c-429a-4d17-99c2-affaa828f35b">
+
+With this mapping in place, pressing <kbd>Cmd</kbd>+<kbd>Enter</kbd> will send a message to the LLM, and pressing <kbd>Enter</kbd> alone will create a new line.
 
 ## Import from ChatGPT
 
