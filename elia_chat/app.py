@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 import datetime
+from itertools import cycle
 from pathlib import Path
 from typing import TYPE_CHECKING
 
 from textual.app import App
 from textual.binding import Binding
+from textual.css.query import NoMatches
+from textual.design import ColorSystem
 from textual.signal import Signal
+from textual.widgets import Footer
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
@@ -29,7 +33,38 @@ class Elia(App[None]):
     BINDINGS = [
         Binding("q", "app.quit", "Quit", show=False),
         Binding("f1,?", "help", "Help"),
+        Binding("f9", "next_theme", "Next theme", show=False),
     ]
+
+    theme = "elia"
+    themes: dict[str, ColorSystem] = {
+        "textual": ColorSystem(
+            primary="#004578",
+            accent="#0178D4",
+            dark=True,
+        ),
+        "elia": ColorSystem(primary="#6C2BD9", accent="#ADFF2F", dark=True),
+        "sunset": ColorSystem(
+            primary="#ff4500",
+            accent="#ffd700",
+            dark=True,
+        ),
+        "forest": ColorSystem(
+            primary="#228b22",
+            accent="#2e8b57",
+            dark=True,
+        ),
+        "ocean": ColorSystem(
+            primary="#1e90ff",
+            accent="#4682b4",
+            dark=True,
+        ),
+        "desert": ColorSystem(
+            primary="#edc9af",
+            accent="#8b4513",
+            dark=True,
+        ),
+    }
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
         super().__init__()
@@ -52,6 +87,8 @@ class Elia(App[None]):
         put users into the chat window, rather than going to the home screen.
         """
 
+        self.themes_cycle = cycle(self.themes.items())
+
     @property
     def runtime_config(self) -> RuntimeConfig:
         return self._runtime_config
@@ -68,6 +105,33 @@ class Elia(App[None]):
                 prompt=self.startup_prompt,
                 model=self.runtime_config.selected_model,
             )
+
+        self.set_interval(0.5, self.action_next_theme)
+
+    def action_next_theme(self) -> None:
+        new_theme = next(self.themes_cycle)
+        self.theme = new_theme[0]
+        self.refresh_css()
+        self.notify(
+            f"Theme is now [b]{new_theme[0]}[/]", title="Theme updated", timeout=0.2
+        )
+        try:
+            footer = self.query_one(Footer)
+        except NoMatches:
+            pass
+        else:
+            footer.refresh(recompose=True)
+
+    def get_css_variables(self) -> dict[str, str]:
+        if self.theme:
+            system = self.themes.get(self.theme)
+            if system:
+                theme = system.generate()
+            else:
+                theme = {}
+        else:
+            theme = {}
+        return {**super().get_css_variables(), **theme}
 
     async def launch_chat(self, prompt: str, model: EliaChatModel) -> None:
         current_time = datetime.datetime.now(datetime.UTC)

@@ -1,30 +1,25 @@
-$main-lighten-2: #9061F9;
-$main-lighten-1: #7E3AF2;
-$main: #6C2BD9;
-$main-darken-1: #5521B5;
-$main-darken-2: #4A1D96;
-$main-border-text-color: greenyellow 70%;
-$main-border-color: $main-lighten-1 90%;
-$main-border-color-focus: $main-lighten-2 100%;
+$primary-border-text-color: $accent 70%;
+$primary-border-color: $primary-lighten-1 90%;
+$primary-border-color-focus: $primary-lighten-2 100%;
 
-$left-border-trim: vkey $main-lighten-2 15%;
+$left-border-trim: vkey $primary-lighten-2 15%;
 
 * {
   scrollbar-color: $panel;
-  scrollbar-color-hover: $main-lighten-1 40%;
-  scrollbar-color-active: $main-darken-1;
+  scrollbar-color-hover: $primary-lighten-1 40%;
+  scrollbar-color-active: $primary-darken-1;
   scrollbar-background: #0E0E0E;
   scrollbar-background-active: $background-darken-1;
   scrollbar-background-hover: #0C0C0C;
   link-style: none;
-  link-color-hover: greenyellow;
-  link-background-hover: $main 0%;
+  link-color-hover: $accent;
+  link-background-hover: $primary 0%;
   link-style-hover: u not dim bold;
 }
 
 Tabs .underline--bar {
-  color: $main-lighten-2 50%;
-  background: $main 75%;
+  color: $primary-lighten-2 50%;
+  background: $primary 75%;
 }
 
 Screen {
@@ -60,16 +55,16 @@ Toast {
   background: $background-darken-1;
   border-right: none;
   &.-information {
-    border-left: outer $main-lighten-1;
+    border-left: outer $primary-lighten-1;
     & .toast--title {
-      color: $main-lighten-2;
+      color: $primary-lighten-2;
     }
   }
 
   &.-error {
-    border-left: outer $main-lighten-1;
+    border-left: outer $primary-lighten-1;
     & .toast--title {
-      color: $main-lighten-2;
+      color: $primary-lighten-2;
     }
   }
 
@@ -111,19 +106,19 @@ AgentIsTyping {
 
 AgentIsTyping LoadingIndicator {
   width: 11;
-  color: $main;
+  color: $primary;
 }
 
 TextArea {
   padding: 1 2;
-  border: round $main-border-color;
-  border-title-color: $main-border-text-color;
-  border-subtitle-color: $main-border-text-color;
+  border: round $primary-border-color;
+  border-title-color: $primary-border-text-color;
+  border-subtitle-color: $primary-border-text-color;
   &:focus {
-    border: round $main-border-color-focus;
+    border: round $primary-border-color-focus;
     border-title-style: bold;
     & .text-area--selection {
-      background: $main 60%;
+      background: $primary 60%;
     }
   }
   & .text-area--cursor-line {
@@ -138,7 +133,7 @@ TextArea {
     background: $background 0%;
   }
   & .text-area--selection {
-    background: $main-lighten-2 25%;
+    background: $primary-lighten-2 25%;
   }
 
   &.selection-mode {
@@ -183,7 +178,7 @@ AppHeader {
   }
 
   & .app-subtitle {
-    color: greenyellow 50%;
+    color: $accent 50%;
     text-style: bold;
   }
 
@@ -193,7 +188,7 @@ AppHeader {
 
   & #model-label {
     border: none;
-    background: $main-darken-2 0%;
+    background: $primary-darken-2 0%;
     text-style: dim;
   }
 }
@@ -202,14 +197,14 @@ HomeScreen ChatList {
   padding: 0;
   height: 1fr;
   width: 1fr;
-  border: round $main-border-color;
-  border-title-color: $main-border-text-color;
-  border-subtitle-color: $main-border-text-color;
+  border: round $primary-border-color;
+  border-title-color: $primary-border-text-color;
+  border-subtitle-color: $primary-border-text-color;
 
   &:focus {
-    border: round $main-border-color-focus;
+    border: round $primary-border-color-focus;
     border-title-style: bold;
-    border-subtitle-color: $main-border-text-color;
+    border-subtitle-color: $primary-border-text-color;
   }
 }
 
@@ -222,41 +217,41 @@ Chatbox {
   padding: 0 2;
 
   &.assistant-message.response-in-progress {
-    background: greenyellow 3%;
+    background: $accent 3%;
     min-width: 30%;
   }
 
   &.assistant-message {
-    border: round greenyellow 60%;
+    border: round $accent 60%;
     &:focus-within {
-      border: round greenyellow;
-      border-left: thick greenyellow 50%;
+      border: round $accent;
+      border-left: thick $accent 50%;
     }
 
     & TextArea {
       & .text-area--selection {
-        background: greenyellow 23%;
+        background: $accent 23%;
         color: white 93%;
       }
     }
 
     & SelectionTextArea.visual-mode {
       & .text-area--cursor {
-        background: greenyellow;
+        background: $accent;
       }
     }
 
   }
 
   &.human-message {
-    border: round $main-border-color;
+    border: round $primary-border-color;
     &:focus-within {
-      border: round $main-border-color-focus;
-      border-left: thick $main-border-color-focus;
+      border: round $primary-border-color-focus;
+      border-left: thick $primary-border-color-focus;
     }
     & SelectionTextArea.visual-mode {
       & .text-area--cursor {
-        background: $main-lighten-2;
+        background: $primary-lighten-2;
       }
     }
   }
@@ -264,22 +259,22 @@ Chatbox {
 }
 
 Footer {
-  background: $main-darken-1 0%;
+  background: $primary-darken-1 0%;
 }
 
 Footer > .footer--highlight {
-  background: $main-lighten-2 20%;
+  background: $primary-lighten-2 20%;
 }
 
 Footer > .footer--key {
   text-style: none;
-  background: $main-darken-2 0%;
-  color: $main-border-text-color;
+  background: $primary-darken-2 0%;
+  color: $primary-border-text-color;
 }
 
 Footer > .footer--highlight-key {
-  background: $main-lighten-2 30%;
-  color: greenyellow;
+  background: $primary-lighten-2 30%;
+  color: $accent;
 }
 
 OptionList {
@@ -287,13 +282,13 @@ OptionList {
 }
 
 OptionList > .option-list--option-highlighted {
-  background: $main 15%;
+  background: $primary 15%;
   color: $text;
   text-style: none;
 }
 
 OptionList:focus > .option-list--option-highlighted {
-  background: $main-darken-2 80%;
+  background: $primary-darken-2 80%;
   text-style: none;
 }
 
@@ -311,20 +306,20 @@ OptionList > .option-list--option-hover-disabled {
 }
 
 OptionList > .option-list--option-hover-highlighted {
-  background: $main-lighten-1 40%;
+  background: $primary-lighten-1 40%;
   color: $text;
   text-style: bold;
 }
 
 OptionList:focus > .option-list--option-hover-highlighted {
-  background: $main-lighten-1 50%;
+  background: $primary-lighten-1 50%;
   color: $text;
   text-style: bold;
 }
 
 OptionList > .option-list--option-hover-highlighted-disabled {
   color: $text-disabled;
-  background: $main 60%;
+  background: $primary 60%;
 }
 
 RenameChat {
@@ -334,9 +329,9 @@ RenameChat {
     & Input {
       padding: 0 4;
       border: none;
-      border-bottom: hkey $main-border-color;
-      border-top: hkey $main-border-color;
-      border-subtitle-color: $main-border-text-color;
+      border-bottom: hkey $primary-border-color;
+      border-top: hkey $primary-border-color;
+      border-subtitle-color: $primary-border-text-color;
       border-subtitle-background: $background;
     }
   }
@@ -350,8 +345,8 @@ ChatDetails {
     height: 85%;
     background: $background;
     padding: 1 2;
-    border: wide $main-border-color-focus;
-    border-title-color: $main-border-text-color;
+    border: wide $primary-border-color-focus;
+    border-title-color: $primary-border-text-color;
     border-title-background: $background;
     border-title-style: b;
     border-subtitle-color: $text-muted;
@@ -378,7 +373,7 @@ MessageInfo #message-info-header {
   dock: top;
   width: 1fr;
   height: auto;
-  background: $main-darken-2 70%;
+  background: $primary-darken-2 70%;
   color: $text;
 }
 
@@ -390,7 +385,7 @@ MessageInfo #message-info-footer {
   dock: bottom;
   height: 3;
   padding: 1 2;
-  background: $main-darken-1;
+  background: $primary-darken-1;
   color: $text;
   width: 1fr;
 }
@@ -436,18 +431,18 @@ OptionsModal #form-scrollable {
   width: 75%;
   height: auto;
   max-height: 90%;
-  border: wide $main-darken-2 80%;
-  border-title-color: $main-border-text-color;
+  border: wide $primary-darken-2 80%;
+  border-title-color: $primary-border-text-color;
   border-title-background: $background;
   & #available-models {
     width: 100%;
-    border: round $main-border-color;
-    border-title-color: $main-border-text-color;
+    border: round $primary-border-color;
+    border-title-color: $primary-border-text-color;
     background: red 0%;
     padding: 1 0;
 
     &:focus {
-      border: round $main-border-color-focus;
+      border: round $primary-border-color-focus;
       border-title-style: bold;
     }
   }
@@ -455,41 +450,41 @@ OptionsModal #form-scrollable {
   & TextArea {
     height: auto;
     max-height: 12;
-    border-subtitle-color: $main-border-color;
+    border-subtitle-color: $primary-border-color;
     &:focus {
-      border-subtitle-color: $main-border-color-focus;
+      border-subtitle-color: $primary-border-color-focus;
     }
   }
 
 
   #xdg-info {
     padding: 1 2;
-    border: round $main-border-color;
+    border: round $primary-border-color;
     height: auto;
-    border-title-color: $main-border-text-color;
+    border-title-color: $primary-border-text-color;
   }
 
 }
 
 .code_inline {
   text-style: none;
-  color: greenyellow;
+  color: $accent;
 }
 
 RadioSet:focus > RadioButton.-on {
   & > .toggle--label {
     text-style: bold not dim;
-    color: greenyellow;
+    color: $accent;
   }
 }
 
 RadioSet > RadioButton.-on {
   text-style: bold not dim;
-  color: greenyellow;
+  color: $accent;
 }
 
 RadioButton .toggle--button {
-  color: greenyellow 80%;
+  color: $accent 80%;
   background: $background-lighten-1;
 }
 
@@ -500,14 +495,14 @@ HelpScreen {
 
   & #help-scroll-keys-info {
     dock: bottom;
-    border-top: solid $main 50%;
+    border-top: solid $primary 50%;
     text-style: dim;
     padding: 0 2;
     background: $background 0%;
   }
   & > Vertical {
-    border: wide $main-border-color 80%;
-    border-title-color: $main-border-text-color;
+    border: wide $primary-border-color 80%;
+    border-title-color: $primary-border-text-color;
     border-title-background: $background;
     border-title-style: bold;
     width: 80%;
@@ -531,7 +526,7 @@ HelpScreen {
     }
     & MarkdownBlockQuote {
       background: $boost;
-      border-left: outer $main;
+      border-left: outer $primary;
       padding: 1;
     }
     & MarkdownBulletList {

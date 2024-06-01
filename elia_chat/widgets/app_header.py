@@ -41,14 +41,14 @@ class AppHeader(Widget):
 
     def compose(self) -> ComposeResult:
         title_style = self.get_component_rich_style("app-title")
-        subtitle_style = self.get_component_rich_style("app-subtitle")
+        self.get_component_rich_style("app-subtitle")
 
         with Horizontal():
             with Vertical(id="cl-header-container"):
                 yield Label(
                     Text.assemble(
                         ("elia ", title_style + Style(bold=True)),
-                        ("///", subtitle_style),
+                        ("///"),
                         (f" {version('elia_chat')}", title_style),
                     )
                 )
