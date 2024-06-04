@@ -63,6 +63,5 @@ class AppHeader(Widget):
         return f"[@click=screen.options]{escape(model.display_name or model.name)}[/]"
 
     def _update_selected_model(self, model: EliaChatModel) -> None:
-        print(self.elia.runtime_config)
         model_label = self.query_one("#model-label", Label)
         model_label.update(self._get_selected_model_link_text(model))

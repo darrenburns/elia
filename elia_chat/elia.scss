@@ -267,19 +267,12 @@ Footer {
   background: $main-darken-1 0%;
 }
 
-Footer > .footer--highlight {
-  background: $main-lighten-2 20%;
-}
-
-Footer > .footer--key {
-  text-style: none;
-  background: $main-darken-2 0%;
-  color: $main-border-text-color;
-}
-
-Footer > .footer--highlight-key {
-  background: $main-lighten-2 30%;
-  color: greenyellow;
+FooterKey {
+  background: $main-darken-1 0%;
+  .footer-key--key {
+    color: greenyellow;
+    background: $main-darken-1 0%;
+  }
 }
 
 OptionList {
