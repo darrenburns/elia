@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 import bisect
 from dataclasses import dataclass
 
@@ -8,17 +9,17 @@ from rich.syntax import Syntax
 from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches
+from textual.document._syntax_aware_document import SyntaxAwareDocumentError
 from textual.geometry import Size
 from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 from textual.widgets import TextArea
 from textual.widgets.text_area import Selection
-from textual.document._syntax_aware_document import SyntaxAwareDocumentError
 
-from elia_chat.config import EliaChatModel
+from elia_chat.config import EliaChatModel, launch_config
 from elia_chat.models import ChatMessage
-from elia_chat.config import launch_config
+from elia_chat.widgets.vim_mode import vim_modize
 
 
 class SelectionTextArea(TextArea):
@@ -31,26 +32,39 @@ class SelectionTextArea(TextArea):
 
         enabled: bool
 
-    BINDINGS = [
-        Binding(
-            "escape",
-            "leave_selection_mode",
-            description="Exit selection mode",
-            key_display="esc",
-        ),
-        Binding(
-            "v",
-            "toggle_visual_mode",
-            description="Toggle visual select",
-            key_display="v",
-        ),
-        Binding(
-            "y,c", "copy_to_clipboard", description="Copy selection", key_display="y"
-        ),
-        Binding("u", "next_code_block", description="Next code block", key_display="u"),
-    ]
+    BINDINGS = vim_modize(
+        [
+            Binding(
+                "escape",
+                "leave_selection_mode",
+                description="Exit selection mode",
+                key_display="esc",
+            ),
+            Binding(
+                "v",
+                "toggle_visual_mode",
+                description="Toggle visual select",
+                key_display="v",
+            ),
+            Binding(
+                "y,c",
+                "copy_to_clipboard",
+                description="Copy selection",
+                key_display="y",
+            ),
+            Binding(
+                "u", "next_code_block", description="Next code block", key_display="u"
+            ),
+        ],
+        selection=True,
+        movement=True,
+    )
 
     visual_mode = reactive(False, init=False)
+
+    def action_select_line(self) -> None:
+        self.visual_mode = True
+        super().action_select_line()
 
     def action_toggle_visual_mode(self) -> None:
         self.visual_mode = not self.visual_mode

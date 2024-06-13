@@ -4,8 +4,7 @@ import datetime
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
-from elia_chat import constants
-from textual import log, on, work, events
+from textual import events, log, on, work
 from textual.app import ComposeResult
 from textual.binding import Binding
 from textual.containers import VerticalScroll
@@ -14,21 +13,20 @@ from textual.message import Message
 from textual.reactive import reactive
 from textual.widget import Widget
 
+from elia_chat import constants
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
 from elia_chat.screens.chat_details import ChatDetails
 from elia_chat.widgets.agent_is_typing import AgentIsTyping
 from elia_chat.widgets.chat_header import ChatHeader, TitleStatic
-from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.widgets.chatbox import Chatbox
-
+from elia_chat.widgets.prompt_input import PromptInput
 
 if TYPE_CHECKING:
+    from litellm.types.completion import (ChatCompletionAssistantMessageParam,
+                                          ChatCompletionUserMessageParam)
+
     from elia_chat.app import Elia
-    from litellm.types.completion import (
-        ChatCompletionUserMessageParam,
-        ChatCompletionAssistantMessageParam,
-    )
 
 
 class ChatPromptInput(PromptInput):
