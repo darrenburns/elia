@@ -196,7 +196,7 @@ sqlalchemy==2.0.25
     # via sqlmodel
 sqlmodel==0.0.14
     # via elia-chat
-textual==0.60.0
+textual==0.63.6
     # via elia-chat
     # via textual-dev
 textual-dev==1.4.0

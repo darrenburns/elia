@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import datetime
 from itertools import cycle
 from pathlib import Path
@@ -38,31 +39,51 @@ class Elia(App[None]):
 
     theme = "elia"
     themes: dict[str, ColorSystem] = {
+        "elia": ColorSystem(primary="#6C2BD9", accent="#ADFF2F", dark=True),
         "textual": ColorSystem(
             primary="#004578",
+            secondary="#ffa62b",
+            warning="#ffa62b",
+            error="#ba3c5b",
+            success="#4EBF71",
             accent="#0178D4",
             dark=True,
         ),
-        "elia": ColorSystem(primary="#6C2BD9", accent="#ADFF2F", dark=True),
         "sunset": ColorSystem(
             primary="#ff4500",
+            secondary="#ff8c00",
+            warning="#ff6347",
+            error="#b22222",
+            success="#32cd32",
             accent="#ffd700",
             dark=True,
         ),
         "forest": ColorSystem(
             primary="#228b22",
+            secondary="#6b8e23",
+            warning="#deb887",
+            error="#8b0000",
+            success="#556b2f",
             accent="#2e8b57",
-            dark=True,
+            dark=False,
         ),
         "ocean": ColorSystem(
             primary="#1e90ff",
+            secondary="#00ced1",
+            warning="#ffa07a",
+            error="#ff4500",
+            success="#20b2aa",
             accent="#4682b4",
             dark=True,
         ),
         "desert": ColorSystem(
             primary="#edc9af",
+            # secondary="#e3ab57",
+            warning="#ffdead",
+            error="#a0522d",
+            success="#cd853f",
             accent="#8b4513",
-            dark=True,
+            dark=False,
         ),
     }
 
@@ -106,14 +127,18 @@ class Elia(App[None]):
                 model=self.runtime_config.selected_model,
             )
 
-        self.set_interval(0.5, self.action_next_theme)
+        async def next_theme():
+            self.action_next_theme()
+            await asyncio.sleep(0.1)
+
+        self.set_interval(1, next_theme)
 
     def action_next_theme(self) -> None:
         new_theme = next(self.themes_cycle)
         self.theme = new_theme[0]
         self.refresh_css()
         self.notify(
-            f"Theme is now [b]{new_theme[0]}[/]", title="Theme updated", timeout=0.2
+            f"Theme is now [b]{new_theme[0]}[/]", title="Theme updated", timeout=2
         )
         try:
             footer = self.query_one(Footer)

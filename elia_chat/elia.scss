@@ -8,13 +8,14 @@ $left-border-trim: vkey $primary-lighten-2 15%;
   scrollbar-color: $panel;
   scrollbar-color-hover: $primary-lighten-1 40%;
   scrollbar-color-active: $primary-darken-1;
-  scrollbar-background: #0E0E0E;
+  scrollbar-background: $surface;
   scrollbar-background-active: $background-darken-1;
-  scrollbar-background-hover: #0C0C0C;
+  scrollbar-background-hover: $surface;
   link-style: none;
   link-color-hover: $accent;
   link-background-hover: $primary 0%;
   link-style-hover: u not dim bold;
+  transition: background 0.4s, color 0.4s;
 }
 
 Tabs .underline--bar {
@@ -175,10 +176,12 @@ AppHeader {
 
   & .app-title {
     color: $text-muted;
+    background: transparent;
   }
 
   & .app-subtitle {
     color: $accent 50%;
+    background: transparent;
     text-style: bold;
   }
 
@@ -259,21 +262,26 @@ Chatbox {
 }
 
 Footer {
-  background: $primary-darken-1 0%;
+  background: transparent;
 }
 
 Footer > .footer--highlight {
   background: $primary-lighten-2 20%;
 }
 
-Footer > .footer--key {
+FooterKey {
   text-style: none;
-  background: $primary-darken-2 0%;
+  background: transparent;
   color: $primary-border-text-color;
+  & .footer-key--key {
+    color: $secondary;
+    background: transparent;
+    text-style: bold;
+  }
 }
 
 Footer > .footer--highlight-key {
-  background: $primary-lighten-2 30%;
+  background: transparent;
   color: $accent;
 }
 

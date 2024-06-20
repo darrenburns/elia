@@ -1,7 +1,6 @@
 from typing import TYPE_CHECKING, cast
 from importlib.metadata import version
 from rich.markup import escape
-from rich.style import Style
 from textual.app import ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.signal import Signal
@@ -40,16 +39,16 @@ class AppHeader(Widget):
         self.config_signal.subscribe(self, on_config_change)
 
     def compose(self) -> ComposeResult:
-        title_style = self.get_component_rich_style("app-title")
+        self.get_component_rich_style("app-title")
         self.get_component_rich_style("app-subtitle")
 
         with Horizontal():
             with Vertical(id="cl-header-container"):
                 yield Label(
                     Text.assemble(
-                        ("elia ", title_style + Style(bold=True)),
+                        ("elia "),
                         ("///"),
-                        (f" {version('elia_chat')}", title_style),
+                        (f" {version('elia_chat')}"),
                     )
                 )
             model_name_or_id = (
