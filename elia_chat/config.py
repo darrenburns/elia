@@ -55,6 +55,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             provider="OpenAI",
             product="ChatGPT",
             description="Fast & inexpensive model for simple tasks.",
+            temperature=0.7,
         ),
         EliaChatModel(
             id="elia-gpt-4o",
@@ -63,6 +64,7 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             provider="OpenAI",
             product="ChatGPT",
             description="Fastest and most affordable flagship model.",
+            temperature=0.7,
         ),
         EliaChatModel(
             id="elia-gpt-4-turbo",
@@ -71,12 +73,23 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             provider="OpenAI",
             product="ChatGPT",
             description="Previous high-intelligence model.",
+            temperature=0.7,
         ),
     ]
 
 
 def get_builtin_anthropic_models() -> list[EliaChatModel]:
     return [
+        EliaChatModel(
+            id="elia-claude-3-5-sonnet-20240620",
+            name="claude-3-5-sonnet-20240620",
+            display_name="Claude 3.5 Sonnet",
+            provider="Anthropic",
+            product="Claude 3.5",
+            description=(
+                "Anthropic's most intelligent model"
+            ),
+        ),
         EliaChatModel(
             id="elia-claude-3-haiku-20240307",
             name="claude-3-haiku-20240307",
@@ -103,7 +116,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
             display_name="Claude 3 Opus",
             provider="Anthropic",
             product="Claude 3",
-            description="Most powerful model for highly complex tasks",
+            description="Excels at writing and complex tasks",
         ),
     ]
 
