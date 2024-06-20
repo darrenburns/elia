@@ -4,19 +4,20 @@ Elia CLI
 
 import asyncio
 import pathlib
-from textwrap import dedent
 import tomllib
+from pathlib import Path
+from textwrap import dedent
 from typing import Any
 
 import click
 from click_default_group import DefaultGroup
-
 from rich.console import Console
 
 from elia_chat.app import Elia
 from elia_chat.config import LaunchConfig
-from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.database.database import create_database, sqlite_file_name
+from elia_chat.database.export_chatgpt import export_chatgpt_data
+from elia_chat.database.import_chatgpt import import_chatgpt_data
 from elia_chat.locations import config_file
 
 console = Console()
@@ -92,14 +93,16 @@ def reset() -> None:
     console.print(
         Padding(
             Text.from_markup(
-                dedent(f"""\
+                dedent(
+                    f"""\
 [u b red]Warning![/]
 
 [b red]This will delete all messages and chats.[/]
 
 You may wish to create a backup of \
 "[bold blue u]{str(sqlite_file_name.resolve().absolute())}[/]" before continuing.
-            """)
+            """
+                )
             ),
             pad=(1, 2),
         )
@@ -108,6 +111,29 @@ You may wish to create a backup of \
         sqlite_file_name.unlink(missing_ok=True)
         asyncio.run(create_database())
         console.print(f"♻️  Database reset @ {sqlite_file_name}")
+
+
+@cli.command("export")
+@click.option(
+    "-c",
+    "--chat",
+    type=str,
+    default="",
+    help="Chat identifier, either id or name",
+)
+@click.argument(
+    "file",
+    type=click.Path(dir_okay=False, path_type=pathlib.Path, resolve_path=True),
+    required=False,
+)
+def export_db_to_file(chat: str, file: pathlib.Path) -> None:
+    """
+    Export ChatGPT Conversations
+
+    This command will export a chat with all messages into a json file.
+    """
+    exported_file = asyncio.run(export_chatgpt_data(chat=chat, file=file))
+    console.print(f"[green]Chat exported as json to {str(exported_file)!r}")
 
 
 @cli.command("import")

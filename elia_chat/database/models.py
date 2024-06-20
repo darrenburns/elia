@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
-from sqlalchemy import Column, DateTime, func, JSON, desc
+from sqlalchemy import JSON, Column, DateTime, desc, func
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import selectinload
 from sqlmodel import Field, Relationship, SQLModel, select
@@ -46,6 +46,17 @@ class MessageDao(AsyncAttrs, SQLModel, table=True):
     """
     model: str | None
     """The model that wrote this response. (Could switch models mid-chat, possibly)"""
+
+    def as_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "timestamp": self.timestamp.isoformat(),
+            "chat_id": self.chat_id,
+            "role": self.role,
+            "content": self.content,
+            "meta": self.meta,
+            "model": self.model,
+        }
 
 
 class ChatDao(AsyncAttrs, SQLModel, table=True):
