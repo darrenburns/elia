@@ -1,8 +1,9 @@
 from dataclasses import dataclass
+
 from textual import events, on
 from textual.binding import Binding
-from textual.widgets import TextArea
 from textual.message import Message
+from textual.widgets import TextArea
 
 
 class PromptInput(TextArea):
