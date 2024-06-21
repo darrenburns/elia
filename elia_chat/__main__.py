@@ -21,12 +21,10 @@ from elia_chat.locations import config_file
 
 console = Console()
 
-
 def create_db_if_not_exists() -> None:
     if not sqlite_file_name.exists():
         click.echo(f"Creating database at {sqlite_file_name!r}")
         asyncio.run(create_database())
-
 
 def load_or_create_config_file() -> dict[str, Any]:
     config = config_file()
@@ -42,11 +40,9 @@ def load_or_create_config_file() -> dict[str, Any]:
 
     return file_config
 
-
 @click.group(cls=DefaultGroup, default="default", default_if_no_args=True)
 def cli() -> None:
     """Interact with large language models using your terminal."""
-
 
 @cli.command()
 @click.argument("prompt", nargs=-1, type=str, required=False)
@@ -64,7 +60,7 @@ def cli() -> None:
     help="Run in inline mode, without launching full TUI.",
     default=False,
 )
-def default(prompt: tuple[str, ...], model: str, inline: bool):
+def default(prompt: tuple[str, ...], model: str, inline: bool) -> None:
     prompt = prompt or ("",)
     joined_prompt = " ".join(prompt)
     create_db_if_not_exists()
@@ -76,7 +72,6 @@ def default(prompt: tuple[str, ...], model: str, inline: bool):
     launch_config: dict[str, Any] = {**file_config, **cli_config}
     app = Elia(LaunchConfig(**launch_config), startup_prompt=joined_prompt)
     app.run(inline=inline)
-
 
 @cli.command()
 def reset() -> None:
@@ -109,7 +104,6 @@ You may wish to create a backup of \
         asyncio.run(create_database())
         console.print(f"♻️  Database reset @ {sqlite_file_name}")
 
-
 @cli.command("import")
 @click.argument(
     "file",
@@ -126,7 +120,6 @@ def import_file_to_db(file: pathlib.Path) -> None:
     """
     asyncio.run(import_chatgpt_data(file=file))
     console.print(f"[green]ChatGPT data imported from {str(file)!r}")
-
 
 if __name__ == "__main__":
     cli()
