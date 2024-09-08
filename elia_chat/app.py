@@ -62,7 +62,7 @@ class Elia(App[None]):
         self.runtime_config_signal.publish(self.runtime_config)
 
     async def on_mount(self) -> None:
-        self.push_screen(HomeScreen(self.runtime_config_signal))
+        await self.push_screen(HomeScreen(self.runtime_config_signal))
         if self.startup_prompt:
             await self.launch_chat(
                 prompt=self.startup_prompt,
@@ -70,7 +70,7 @@ class Elia(App[None]):
             )
 
     async def launch_chat(self, prompt: str, model: EliaChatModel) -> None:
-        current_time = datetime.datetime.now(datetime.UTC)
+        current_time = datetime.datetime.now(datetime.timezone.utc)
         system_message: ChatCompletionSystemMessageParam = {
             "content": self.runtime_config.system_prompt,
             "role": "system",
@@ -102,9 +102,9 @@ class Elia(App[None]):
 
     async def action_help(self) -> None:
         if isinstance(self.screen, HelpScreen):
-            self.app.pop_screen()
+            self.pop_screen()
         else:
-            await self.app.push_screen(HelpScreen())
+            await self.push_screen(HelpScreen())
 
 
 if __name__ == "__main__":
