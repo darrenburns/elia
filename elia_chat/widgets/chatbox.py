@@ -90,17 +90,29 @@ class SelectionTextArea(TextArea):
 
     def action_copy_to_clipboard(self) -> None:
         text_to_copy = self.selected_text
+
         if text_to_copy:
             message = f"Copied {len(text_to_copy)} selected characters to clipboard."
-            self.notify(message, title="Selection copied")
+            title = "Selection copied"
         else:
             text_to_copy = self.text
             message = f"Copied message ({len(text_to_copy)} characters)."
-            self.notify(message, title="Message copied")
+            title = "Message copied"
 
-        import pyperclip
+        try:
+            import pyperclip
 
-        pyperclip.copy(text_to_copy)
+            pyperclip.copy(text_to_copy)
+        except pyperclip.PyperclipException as exc:
+            self.notify(
+                str(exc),
+                title="Clipboard error",
+                severity="error",
+                timeout=10,
+            )
+        else:
+            self.notify(message, title=title)
+
         self.visual_mode = False
 
     def action_next_code_block(self) -> None:
@@ -206,11 +218,20 @@ class Chatbox(Widget, can_focus=True):
         if not self.selection_mode:
             text_to_copy = self.message.message.get("content")
             if isinstance(text_to_copy, str):
-                import pyperclip
+                try:
+                    import pyperclip
 
-                pyperclip.copy(text_to_copy)
-                message = f"Copied message ({len(text_to_copy)} characters)."
-                self.notify(message, title="Message copied")
+                    pyperclip.copy(text_to_copy)
+                except pyperclip.PyperclipException as exc:
+                    self.notify(
+                        str(exc),
+                        title="Clipboard error",
+                        severity="error",
+                        timeout=10,
+                    )
+                else:
+                    message = f"Copied message ({len(text_to_copy)} characters)."
+                    self.notify(message, title="Message copied")
             else:
                 message = "Unable to copy message"
                 self.notify(message, title="Clipboard error", severity="error")
