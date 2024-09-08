@@ -154,7 +154,7 @@ class Chat(Widget):
 
         self.stream_agent_response()
 
-    @work
+    @work(thread=True, group="agent_response")
     async def stream_agent_response(self) -> None:
         model = self.chat_data.model
         log.debug(f"Creating streaming response with model {model.name!r}")

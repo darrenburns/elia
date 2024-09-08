@@ -28,7 +28,7 @@ elia = "elia_chat.__main__:cli"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.rye]
+[tool.uv]
 managed = true
 dev-dependencies = [
     "black>=23.3.0",
