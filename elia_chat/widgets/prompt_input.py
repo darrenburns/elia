@@ -19,7 +19,9 @@ class PromptInput(TextArea):
     class CursorEscapingBottom(Message):
         pass
 
-    BINDINGS = [Binding("ctrl+j", "submit_prompt", "Send message", key_display="^j")]
+    BINDINGS = [
+        Binding("ctrl+j,alt+enter", "submit_prompt", "Send message", key_display="^j")
+    ]
 
     def __init__(
         self,
@@ -67,3 +69,5 @@ class PromptInput(TextArea):
             message = self.PromptSubmitted(self.text, prompt_input=self)
             self.clear()
             self.post_message(message)
+        else:
+            self.notify("Cannot send empty message!")
