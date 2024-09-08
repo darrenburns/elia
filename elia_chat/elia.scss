@@ -264,22 +264,16 @@ Chatbox {
 }
 
 Footer {
-  background: $main-darken-1 0%;
-}
+  background: transparent;
 
-Footer > .footer--highlight {
-  background: $main-lighten-2 20%;
-}
+  & FooterKey {
+    background: transparent;
+  }
 
-Footer > .footer--key {
-  text-style: none;
-  background: $main-darken-2 0%;
-  color: $main-border-text-color;
-}
-
-Footer > .footer--highlight-key {
-  background: $main-lighten-2 30%;
-  color: greenyellow;
+  .footer-key--key {
+    color: greenyellow;
+    background: transparent;
+  }
 }
 
 OptionList {

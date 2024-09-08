@@ -44,9 +44,47 @@ class SelectionTextArea(TextArea):
             description="Toggle visual select",
             key_display="v",
         ),
+        Binding("up,k", "cursor_up", "Cursor Up", show=False),
+        Binding("down,j", "cursor_down", "Cursor Down", show=False),
+        Binding("right,l", "cursor_right", "Cursor Right", show=False),
+        Binding("left,h", "cursor_left", "Cursor Left", show=False),
+        Binding("shift+up,K", "cursor_up(True)", "cursor up select", show=False),
+        Binding("shift+down,J", "cursor_down(True)", "cursor down select", show=False),
+        Binding("shift+left,H", "cursor_left(True)", "cursor left select", show=False),
         Binding(
-            "y,c", "copy_to_clipboard", description="Copy selection", key_display="y"
+            "shift+right,L", "cursor_right(True)", "cursor right select", show=False
         ),
+        Binding("ctrl+left,b", "cursor_word_left", "cursor word left", show=False),
+        Binding("ctrl+right,w", "cursor_word_right", "cursor word right", show=False),
+        Binding(
+            "home,ctrl+a,0,^", "cursor_line_start", "cursor line start", show=False
+        ),
+        Binding("end,ctrl+e,$", "cursor_line_end", "cursor line end", show=False),
+        Binding("pageup,ctrl+b", "cursor_page_up", "cursor page up", show=False),
+        Binding("pagedown,ctrl+f", "cursor_page_down", "cursor page down", show=False),
+        Binding("ctrl+d", "cursor_half_page_down", "cursor half page down", show=False),
+        Binding("ctrl+u", "cursor_half_page_up", "cursor half page up", show=False),
+        Binding(
+            "ctrl+shift+left,B",
+            "cursor_word_left(True)",
+            "cursor left word select",
+            show=False,
+        ),
+        Binding(
+            "ctrl+shift+right,W",
+            "cursor_word_right(True)",
+            "cursor right word select",
+            show=False,
+        ),
+        Binding("f6,V", "select_line", "select line", show=False),
+        Binding(
+            "y,c",
+            "copy_to_clipboard",
+            description="Copy selection",
+            show=False,
+        ),
+        Binding("g", "cursor_top", "Go to top", show=False),
+        Binding("G", "cursor_bottom", "Go to bottom", show=False),
         Binding("u", "next_code_block", description="Next code block", key_display="u"),
     ]
 
@@ -87,6 +125,12 @@ class SelectionTextArea(TextArea):
 
     def action_cursor_word_right(self, select: bool = False) -> None:
         return super().action_cursor_word_right(self.visual_mode or select)
+
+    def action_cursor_top(self) -> None:
+        self.selection = Selection.cursor((0, 0))
+
+    def action_cursor_bottom(self) -> None:
+        self.selection = Selection.cursor((self.document.line_count - 1, 0))
 
     def action_copy_to_clipboard(self) -> None:
         text_to_copy = self.selected_text
@@ -147,6 +191,28 @@ class SelectionTextArea(TextArea):
 
     def action_leave_selection_mode(self) -> None:
         self.post_message(self.LeaveSelectionMode())
+
+    def action_cursor_half_page_down(self) -> None:
+        """Move the cursor and scroll down half of a page."""
+        half_height = self.content_size.height // 2
+        _, cursor_location = self.selection
+        target = self.navigator.get_location_at_y_offset(
+            cursor_location,
+            half_height,
+        )
+        self.scroll_relative(y=half_height, animate=False)
+        self.move_cursor(target)
+
+    def action_cursor_half_page_up(self) -> None:
+        """Move the cursor and scroll down half of a page."""
+        half_height = self.content_size.height // 2
+        _, cursor_location = self.selection
+        target = self.navigator.get_location_at_y_offset(
+            cursor_location,
+            -half_height,
+        )
+        self.scroll_relative(y=-half_height, animate=False)
+        self.move_cursor(target)
 
 
 class Chatbox(Widget, can_focus=True):

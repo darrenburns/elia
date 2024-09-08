@@ -154,7 +154,7 @@ class Chat(Widget):
 
         self.stream_agent_response()
 
-    @work
+    @work(thread=True, group="agent_response")
     async def stream_agent_response(self) -> None:
         model = self.chat_data.model
         log.debug(f"Creating streaming response with model {model.name!r}")
@@ -195,13 +195,16 @@ class Chat(Widget):
             "role": "assistant",
         }
         now = datetime.datetime.now(datetime.timezone.utc)
-        message = ChatMessage(message=ai_message, model=model, timestamp=now)
 
+        message = ChatMessage(message=ai_message, model=model, timestamp=now)
         response_chatbox = Chatbox(
             message=message,
             model=self.chat_data.model,
             classes="response-in-progress",
         )
+        self.post_message(self.AgentResponseStarted())
+        self.app.call_from_thread(self.chat_container.mount, response_chatbox)
+
         assert (
             self.chat_container is not None
         ), "Textual has mounted container at this point in the lifecycle."
@@ -212,20 +215,20 @@ class Chat(Widget):
                 chunk = cast(ModelResponse, chunk)
                 response_chatbox.border_title = "Agent is responding..."
 
-                if chunk_count == 0:
-                    self.post_message(self.AgentResponseStarted())
-                    await self.chat_container.mount(response_chatbox)
-
                 chunk_content = chunk.choices[0].delta.content
                 if isinstance(chunk_content, str):
-                    response_chatbox.append_chunk(chunk_content)
+                    self.app.call_from_thread(
+                        response_chatbox.append_chunk, chunk_content
+                    )
                 else:
                     break
 
                 scroll_y = self.chat_container.scroll_y
                 max_scroll_y = self.chat_container.max_scroll_y
                 if scroll_y in range(max_scroll_y - 3, max_scroll_y + 1):
-                    self.chat_container.scroll_end(animate=False)
+                    self.app.call_from_thread(
+                        self.chat_container.scroll_end, animate=False
+                    )
 
                 chunk_count += 1
         except Exception:
