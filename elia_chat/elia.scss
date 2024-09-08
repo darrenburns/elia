@@ -264,7 +264,16 @@ Chatbox {
 }
 
 Footer {
-  background: $main-darken-1 0%;
+  background: transparent;
+
+  & FooterKey {
+    background: transparent;
+  }
+
+  .footer-key--key {
+    color: greenyellow;
+    background: transparent;
+  }
 }
 
 Footer > .footer--highlight {

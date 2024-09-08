@@ -310,7 +310,7 @@ requires-dist = [
     { name = "litellm", specifier = ">=1.37.19" },
     { name = "pyperclip", specifier = ">=1.8.2" },
     { name = "sqlmodel", specifier = ">=0.0.9" },
-    { name = "textual", extras = ["syntax"], specifier = "==0.62" },
+    { name = "textual", extras = ["syntax"], specifier = "==0.79.1" },
     { name = "xdg-base-dirs", specifier = ">=6.0.1" },
 ]
 
@@ -1425,16 +1425,17 @@ wheels = [
 
 [[package]]
 name = "textual"
-version = "0.62.0"
+version = "0.79.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", extra = ["linkify", "plugins"] },
+    { name = "platformdirs" },
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c8/a0/84147b0b2b686b1b0f739bf0ada0af62be98f07d2c0ea7c83d65effce9ad/textual-0.62.0.tar.gz", hash = "sha256:563c1c13a087c8f4fef8a47aae43e1274139e85d00e0b0898b8eb89c5e494997", size = 1308703 }
+sdist = { url = "https://files.pythonhosted.org/packages/a4/0d/9c3e18839b696fa6f3bf0e820579967d5c3ffafc9a7c28e557f0ed4a74a3/textual-0.79.1.tar.gz", hash = "sha256:2aaa9778beac5e56957794ee492bd8d281d39516ccb0e507e726484a1327d8b2", size = 1366998 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/48/88/de1ec5fd398e2c6fabe8efb1ae1b10e2840f446298efabaaaa24a40c0ef6/textual-0.62.0-py3-none-any.whl", hash = "sha256:5208c1df961848889ff0a0c7628f203a2bc773fc2a45d6e842b27a8e34c15499", size = 552262 },
+    { url = "https://files.pythonhosted.org/packages/6a/4b/cd3a8067f5a0f575d5532095d2cf3430f9926509f0698a55ede73c2532c3/textual-0.79.1-py3-none-any.whl", hash = "sha256:75f26c0a8829560a1a8cc739f758c2c1c684246e27166acb3f4ad40110200692", size = 581639 },
 ]
 
 [package.optional-dependencies]
