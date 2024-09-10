@@ -55,8 +55,8 @@ def load_user_themes() -> dict[str, Theme]:
 
 
 BUILTIN_THEMES: dict[str, Theme] = {
-    "posting": Theme(
-        name="posting",
+    "textual": Theme(
+        name="textual",
         primary="#004578",
         secondary="#0178D4",
         warning="#ffa62b",
@@ -64,7 +64,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         success="#4EBF71",
         accent="#ffa62b",
         dark=True,
-        syntax="posting",
     ),
     "monokai": Theme(
         name="monokai",
@@ -78,7 +77,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         surface="#3E3D32",  # Slightly lighter gray-green
         panel="#3E3D32",  # Same as surface for consistency
         dark=True,
-        syntax="monokai",
     ),
     "solarized-light": Theme(
         name="solarized-light",
@@ -91,7 +89,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         background="#fdf6e3",
         surface="#eee8d5",
         panel="#eee8d5",
-        syntax="github_light",
     ),
     "nautilus": Theme(
         name="nautilus",
@@ -105,7 +102,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         background="#001F3F",  # Dark Blue (deep ocean)
         surface="#003366",  # Navy Blue (shallower water)
         panel="#005A8C",  # Steel Blue (water surface)
-        syntax="posting",
     ),
     "galaxy": Theme(
         name="galaxy",
@@ -119,7 +115,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         background="#0F0F1F",  # Very Dark Blue, almost black
         surface="#1E1E3F",  # Dark Blue-Purple
         panel="#2D2B55",  # Slightly Lighter Blue-Purple
-        syntax="monokai",
     ),
     "nebula": Theme(
         name="nebula",
@@ -133,7 +128,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         background="#0A0A23",  # Dark Navy, closer to a night sky
         surface="#1C1C3C",  # Dark Blue-Purple
         panel="#2E2E5E",  # Slightly Lighter Blue-Purple
-        syntax="dracula",
     ),
     "alpine": Theme(
         name="alpine",

@@ -5,7 +5,9 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 
-from elia_chat.config import LaunchConfig, EliaChatModel, launch_config
+from elia_chat.config import LaunchConfig, EliaChatModel
+
+from textual._context import active_app
 
 if TYPE_CHECKING:
     from litellm.types.completion import ChatCompletionMessageParam
@@ -23,7 +25,7 @@ def get_model(
     Models are looked up by ID first.
     """
     if config is None:
-        config = launch_config.get()
+        config = active_app.get().launch_config
     try:
         return {model.id: model for model in config.all_models}[model_id_or_name]
     except KeyError:

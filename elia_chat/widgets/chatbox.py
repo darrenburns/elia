@@ -18,7 +18,6 @@ from textual.document._syntax_aware_document import SyntaxAwareDocumentError
 
 from elia_chat.config import EliaChatModel
 from elia_chat.models import ChatMessage
-from elia_chat.config import launch_config
 
 
 class SelectionTextArea(TextArea):
@@ -353,8 +352,7 @@ class Chatbox(Widget, can_focus=True):
         if not isinstance(content, str):
             content = ""
 
-        config = launch_config.get()
-        return Markdown(content, code_theme=config.message_code_theme)
+        return Markdown(content, code_theme=self.app.launch_config.message_code_theme)
 
     def render(self) -> RenderableType:
         if self.selection_mode:

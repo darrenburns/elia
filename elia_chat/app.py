@@ -11,7 +11,7 @@ from textual.signal import Signal
 
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
-from elia_chat.config import EliaChatModel, LaunchConfig, launch_config
+from elia_chat.config import EliaChatModel, LaunchConfig
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.screens.help_screen import HelpScreen
@@ -35,7 +35,12 @@ class Elia(App[None]):
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
         self.launch_config = config
-        launch_config.set(config)
+
+        available_themes: dict[str, Theme] = BUILTIN_THEMES.copy()
+        available_themes |= load_user_themes()
+
+        self.themes: dict[str, Theme] = available_themes
+
         self._runtime_config = RuntimeConfig(
             selected_model=config.default_model_object,
             system_prompt=config.system_prompt,
@@ -52,11 +57,6 @@ class Elia(App[None]):
         This is a convenience which will immediately load the chat interface and
         put users into the chat window, rather than going to the home screen.
         """
-
-        available_themes: dict[str, Theme] = {"galaxy": BUILTIN_THEMES["galaxy"]}
-        available_themes |= load_user_themes()
-
-        self.themes: dict[str, Theme] = available_themes
 
         super().__init__()
 
@@ -130,10 +130,11 @@ class Elia(App[None]):
         return {**super().get_css_variables(), **color_system}
 
     def watch_theme(self, theme: str | None) -> None:
+        print("theme changed:", theme)
+        print("theme object:", self.theme_object)
+        print("themes:", self.themes)
         self.refresh_css(animate=False)
         self.screen._update_styles()
-        if theme:
-            print(self.theme_object)
 
     @property
     def theme_object(self) -> Theme | None:

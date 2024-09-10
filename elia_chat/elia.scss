@@ -1,23 +1,24 @@
-$main-lighten-2: #9061F9;
-$main-lighten-1: #7E3AF2;
-$main: #6C2BD9;
-$main-darken-1: #5521B5;
-$main-darken-2: #4A1D96;
-$main-border-text-color: greenyellow 70%;
+$main-lighten-2: $primary-lighten-2;
+$main-lighten-1: $primary-lighten-1;
+$main: $primary;
+$main-darken-1: $primary-darken-1;
+$main-darken-2: $primary-darken-2;
+$main-border-text-color: $accent 70%;
 $main-border-color: $main-lighten-1 90%;
 $main-border-color-focus: $main-lighten-2 100%;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
 * {
-  scrollbar-color: $panel;
-  scrollbar-color-hover: $main-lighten-1 40%;
-  scrollbar-color-active: $main-darken-1;
-  scrollbar-background: #0E0E0E;
-  scrollbar-background-active: $background-darken-1;
-  scrollbar-background-hover: #0C0C0C;
+  scrollbar-color: $accent 30%;
+  scrollbar-color-hover: $accent 80%;
+  scrollbar-color-active: $accent;
+  scrollbar-background: $surface-darken-1;
+  scrollbar-background-hover: $surface-darken-1;
+  scrollbar-background-active: $surface-darken-1;
+  scrollbar-size-vertical: 1;
   link-style: none;
-  link-color-hover: greenyellow;
+  link-color-hover: $accent;
   link-background-hover: $main 0%;
   link-style-hover: u not dim bold;
 }
@@ -178,13 +179,16 @@ AppHeader {
     padding: 0 2 1 2;
   }
 
-  & .app-title {
+  & #elia-title {
     color: $text-muted;
   }
 
+  & .app-title {
+    color: $secondary;
+  }
+
   & .app-subtitle {
-    color: greenyellow 50%;
-    text-style: bold;
+    color: $accent;
   }
 
   & Horizontal {
@@ -222,27 +226,27 @@ Chatbox {
   padding: 0 2;
 
   &.assistant-message.response-in-progress {
-    background: greenyellow 3%;
+    background: $accent 3%;
     min-width: 30%;
   }
 
   &.assistant-message {
-    border: round greenyellow 60%;
+    border: round $accent 60%;
     &:focus-within {
-      border: round greenyellow;
-      border-left: thick greenyellow 50%;
+      border: round $accent;
+      border-left: thick $accent 50%;
     }
 
     & TextArea {
       & .text-area--selection {
-        background: greenyellow 23%;
+        background: $accent 23%;
         color: white 93%;
       }
     }
 
     & SelectionTextArea.visual-mode {
       & .text-area--cursor {
-        background: greenyellow;
+        background: $accent;
       }
     }
 
@@ -271,7 +275,7 @@ Footer {
   }
 
   .footer-key--key {
-    color: greenyellow;
+    color: $accent;
     background: transparent;
   }
 }
@@ -467,23 +471,23 @@ OptionsModal #form-scrollable {
 
 .code_inline {
   text-style: none;
-  color: greenyellow;
+  color: $accent;
 }
 
 RadioSet:focus > RadioButton.-on {
   & > .toggle--label {
     text-style: bold not dim;
-    color: greenyellow;
+    color: $accent;
   }
 }
 
 RadioSet > RadioButton.-on {
   text-style: bold not dim;
-  color: greenyellow;
+  color: $accent;
 }
 
 RadioButton .toggle--button {
-  color: greenyellow 80%;
+  color: $accent 80%;
   background: $background-lighten-1;
 }
 

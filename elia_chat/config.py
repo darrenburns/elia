@@ -1,4 +1,3 @@
-from contextvars import ContextVar
 import os
 from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, SecretStr
 
@@ -182,5 +181,6 @@ class LaunchConfig(BaseModel):
 
         return get_model(self.default_model, self)
 
-
-launch_config: ContextVar[LaunchConfig] = ContextVar("launch_config")
+    @classmethod
+    def get_current(cls) -> "LaunchConfig":
+        return cls()
