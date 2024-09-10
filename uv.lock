@@ -273,7 +273,7 @@ wheels = [
 
 [[package]]
 name = "elia-chat"
-version = "1.8.0"
+version = "1.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiosqlite" },
@@ -283,6 +283,7 @@ dependencies = [
     { name = "greenlet" },
     { name = "humanize" },
     { name = "litellm" },
+    { name = "pydantic" },
     { name = "pyperclip" },
     { name = "sqlmodel" },
     { name = "textual", extra = ["syntax"] },
@@ -308,6 +309,7 @@ requires-dist = [
     { name = "greenlet", specifier = ">=3.0.3" },
     { name = "humanize", specifier = ">=4.6.0" },
     { name = "litellm", specifier = ">=1.37.19" },
+    { name = "pydantic", specifier = ">=2.9.0" },
     { name = "pyperclip", specifier = ">=1.8.2" },
     { name = "sqlmodel", specifier = ">=0.0.9" },
     { name = "textual", extras = ["syntax"], specifier = "==0.79.1" },

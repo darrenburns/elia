@@ -86,9 +86,7 @@ def get_builtin_anthropic_models() -> list[EliaChatModel]:
             display_name="Claude 3.5 Sonnet",
             provider="Anthropic",
             product="Claude 3.5",
-            description=(
-                "Anthropic's most intelligent model"
-            ),
+            description=("Anthropic's most intelligent model"),
         ),
         EliaChatModel(
             id="elia-claude-3-haiku-20240307",
@@ -172,6 +170,7 @@ class LaunchConfig(BaseModel):
     builtin_models: list[EliaChatModel] = Field(
         default_factory=get_builtin_models, init=False
     )
+    theme: str = Field(default="elia")
 
     @property
     def all_models(self) -> list[EliaChatModel]:

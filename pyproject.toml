@@ -17,6 +17,7 @@ dependencies = [
     "google-generativeai>=0.5.3",
     "pyperclip>=1.8.2",
     "litellm>=1.37.19",
+    "pydantic>=2.9.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"

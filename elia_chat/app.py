@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from textual.app import App
 from textual.binding import Binding
+from textual.reactive import Reactive, reactive
 from textual.signal import Signal
 
 from elia_chat.chats_manager import ChatsManager
@@ -51,6 +52,8 @@ class Elia(App[None]):
         This is a convenience which will immediately load the chat interface and
         put users into the chat window, rather than going to the home screen.
         """
+
+    theme: Reactive[str] = reactive("elia", init=False)
 
     @property
     def runtime_config(self) -> RuntimeConfig:
