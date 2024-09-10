@@ -167,6 +167,7 @@ HomeScreen PromptInput {
 
 AppHeader #cl-header-container {
   height: auto;
+  background: $background;
 }
 
 AppHeader {
@@ -174,21 +175,15 @@ AppHeader {
   width: 1fr;
   padding: 1 2;
   height: auto;
+  background: $background;
 
   &:inline {
     padding: 0 2 1 2;
   }
 
   & #elia-title {
-    color: $text-muted;
-  }
-
-  & .app-title {
-    color: $secondary;
-  }
-
-  & .app-subtitle {
     color: $accent;
+    text-style: bold;
   }
 
   & Horizontal {

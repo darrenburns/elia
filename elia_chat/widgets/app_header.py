@@ -39,17 +39,10 @@ class AppHeader(Widget):
         self.config_signal.subscribe(self, on_config_change)
 
     def compose(self) -> ComposeResult:
-        title_style = self.get_component_rich_style("app-title", partial=True)
-        subtitle_style = self.get_component_rich_style("app-subtitle", partial=True)
-
         with Horizontal():
             with Vertical(id="cl-header-container"):
                 yield Label(
-                    Text.assemble(
-                        ("elia ", title_style),
-                        ("///", subtitle_style),
-                        (f" {version('elia_chat')}", title_style),
-                    ),
+                    Text("Elia") + Text(" v" + version("elia-chat"), style="dim"),
                     id="elia-title",
                 )
             model_name_or_id = (
