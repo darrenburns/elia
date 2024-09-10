@@ -16,6 +16,7 @@ from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.screens.help_screen import HelpScreen
 from elia_chat.screens.home_screen import HomeScreen
+from elia_chat.themes import BUILTIN_THEMES, Theme, load_user_themes
 
 if TYPE_CHECKING:
     from litellm.types.completion import (
@@ -33,7 +34,6 @@ class Elia(App[None]):
     ]
 
     def __init__(self, config: LaunchConfig, startup_prompt: str = ""):
-        super().__init__()
         self.launch_config = config
         launch_config.set(config)
         self._runtime_config = RuntimeConfig(
@@ -53,7 +53,14 @@ class Elia(App[None]):
         put users into the chat window, rather than going to the home screen.
         """
 
-    theme: Reactive[str] = reactive("elia", init=False)
+        available_themes: dict[str, Theme] = {"galaxy": BUILTIN_THEMES["galaxy"]}
+        available_themes |= load_user_themes()
+
+        self.themes: dict[str, Theme] = available_themes
+
+        super().__init__()
+
+    theme: Reactive[str | None] = reactive(None, init=False)
 
     @property
     def runtime_config(self) -> RuntimeConfig:
@@ -66,6 +73,7 @@ class Elia(App[None]):
 
     async def on_mount(self) -> None:
         await self.push_screen(HomeScreen(self.runtime_config_signal))
+        self.theme = self.launch_config.theme
         if self.startup_prompt:
             await self.launch_chat(
                 prompt=self.startup_prompt,
@@ -108,6 +116,31 @@ class Elia(App[None]):
             self.pop_screen()
         else:
             await self.push_screen(HelpScreen())
+
+    def get_css_variables(self) -> dict[str, str]:
+        if self.theme:
+            theme = self.themes.get(self.theme)
+            if theme:
+                color_system = theme.to_color_system().generate()
+            else:
+                color_system = {}
+        else:
+            color_system = {}
+
+        return {**super().get_css_variables(), **color_system}
+
+    def watch_theme(self, theme: str | None) -> None:
+        self.refresh_css(animate=False)
+        self.screen._update_styles()
+        if theme:
+            print(self.theme_object)
+
+    @property
+    def theme_object(self) -> Theme | None:
+        try:
+            return self.themes[self.theme]
+        except KeyError:
+            return None
 
 
 if __name__ == "__main__":
