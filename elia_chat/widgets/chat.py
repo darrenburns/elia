@@ -265,7 +265,9 @@ class Chat(Widget):
             await self.new_user_message(user_message)
 
     @on(PromptInput.CursorEscapingTop)
-    async def on_cursor_up_from_prompt(self) -> None:
+    async def on_cursor_up_from_prompt(
+        self, event: PromptInput.CursorEscapingTop
+    ) -> None:
         self.focus_latest_message()
 
     @on(Chatbox.CursorEscapingBottom)

@@ -38,9 +38,11 @@ class PromptInput(TextArea):
         if self.cursor_location == (0, 0) and event.key == "up":
             event.prevent_default()
             self.post_message(self.CursorEscapingTop())
+            event.stop()
         elif self.cursor_at_end_of_text and event.key == "down":
             event.prevent_default()
             self.post_message(self.CursorEscapingBottom())
+            event.stop()
 
     def on_mount(self):
         self.border_title = "Enter your [u]m[/]essage..."
