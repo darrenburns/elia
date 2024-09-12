@@ -116,6 +116,23 @@ name = "gpt-3.5-turbo"
 display_name = "GPT 3.5 Turbo (Personal)"
 ```
 
+## Custom themes
+
+Add a custom theme YAML file to the themes directory.
+Here's an example:
+
+```yaml
+name: example  # use this name in your config file
+primary: '#4e78c4'
+secondary: '#f39c12'
+accent: '#e74c3c'
+background: '#0e1726'
+surface: '#17202a'
+error: '#e74c3c'  # error messages
+success: '#2ecc71'  # success messages
+warning: '#f1c40f'  # warning messages
+```
+
 ## Changing keybindings
 
 Right now, keybinds cannot be changed. Terminals are also rather limited in what keybinds they support.

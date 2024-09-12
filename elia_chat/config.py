@@ -169,7 +169,7 @@ class LaunchConfig(BaseModel):
     builtin_models: list[EliaChatModel] = Field(
         default_factory=get_builtin_models, init=False
     )
-    theme: str = Field(default="galaxy")
+    theme: str = Field(default="nebula")
 
     @property
     def all_models(self) -> list[EliaChatModel]:
