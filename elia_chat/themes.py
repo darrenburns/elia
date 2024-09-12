@@ -78,18 +78,6 @@ BUILTIN_THEMES: dict[str, Theme] = {
         panel="#3E3D32",  # Same as surface for consistency
         dark=True,
     ),
-    "solarized-light": Theme(
-        name="solarized-light",
-        primary="#268bd2",
-        secondary="#2aa198",
-        warning="#cb4b16",
-        error="#dc322f",
-        success="#859900",
-        accent="#6c71c4",
-        background="#fdf6e3",
-        surface="#eee8d5",
-        panel="#eee8d5",
-    ),
     "nautilus": Theme(
         name="nautilus",
         primary="#0077BE",  # Ocean Blue
