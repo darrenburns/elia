@@ -361,6 +361,12 @@ class Chatbox(Widget, can_focus=True):
             return ""
 
         message = self.message.message
+        theme = self.app.theme_object
+        if theme:
+            background_color = theme.background
+        else:
+            background_color = "#121212"
+
         if message["role"] == "user":
             content = message["content"] or ""
             if isinstance(content, str):
@@ -368,7 +374,7 @@ class Chatbox(Widget, can_focus=True):
                     content,
                     lexer="markdown",
                     word_wrap=True,
-                    background_color="#121212",
+                    background_color=background_color,
                 )
             else:
                 return ""
