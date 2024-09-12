@@ -119,7 +119,9 @@ display_name = "GPT 3.5 Turbo (Personal)"
 ## Custom themes
 
 Add a custom theme YAML file to the themes directory.
-Here's an example:
+You can find the themes directory location by pressing `ctrl+o` on the home screen and looking for the `Themes directory` line.
+
+Here's an example of a theme YAML file:
 
 ```yaml
 name: example  # use this name in your config file
