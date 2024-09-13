@@ -312,7 +312,7 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.9.0" },
     { name = "pyperclip", specifier = ">=1.8.2" },
     { name = "sqlmodel", specifier = ">=0.0.9" },
-    { name = "textual", extras = ["syntax"], specifier = "==0.79.1" },
+    { name = "textual", extras = ["syntax"], editable = "../textual" },
     { name = "xdg-base-dirs", specifier = ">=6.0.1" },
 ]
 
@@ -1428,22 +1428,28 @@ wheels = [
 [[package]]
 name = "textual"
 version = "0.79.1"
-source = { registry = "https://pypi.org/simple" }
+source = { editable = "../textual" }
 dependencies = [
     { name = "markdown-it-py", extra = ["linkify", "plugins"] },
     { name = "platformdirs" },
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a4/0d/9c3e18839b696fa6f3bf0e820579967d5c3ffafc9a7c28e557f0ed4a74a3/textual-0.79.1.tar.gz", hash = "sha256:2aaa9778beac5e56957794ee492bd8d281d39516ccb0e507e726484a1327d8b2", size = 1366998 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/6a/4b/cd3a8067f5a0f575d5532095d2cf3430f9926509f0698a55ede73c2532c3/textual-0.79.1-py3-none-any.whl", hash = "sha256:75f26c0a8829560a1a8cc739f758c2c1c684246e27166acb3f4ad40110200692", size = 581639 },
-]
 
 [package.optional-dependencies]
 syntax = [
     { name = "tree-sitter" },
     { name = "tree-sitter-languages" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "markdown-it-py", extras = ["linkify", "plugins"], specifier = ">=2.1.0" },
+    { name = "platformdirs", specifier = ">=3.6.0,<5" },
+    { name = "rich", specifier = ">=13.3.3" },
+    { name = "tree-sitter", marker = "extra == 'syntax'", specifier = ">=0.20.1,<0.21.0" },
+    { name = "tree-sitter-languages", marker = "extra == 'syntax'", specifier = "==1.10.2" },
+    { name = "typing-extensions", specifier = ">=4.4.0,<5.0.0" },
 ]
 
 [[package]]

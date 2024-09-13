@@ -40,6 +40,9 @@ dev-dependencies = [
     "pyinstrument>=4.6.2",
 ]
 
+[tool.uv.sources]
+textual = { path = "../textual", editable = true }
+
 [tool.mypy]
 ignore_missing_imports = true
 

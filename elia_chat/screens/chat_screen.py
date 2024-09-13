@@ -18,6 +18,7 @@ class ChatScreen(Screen[None]):
             action="app.focus('prompt')",
             description="Focus prompt",
             key_display="esc",
+            tooltip="Return focus to the prompt input.",
         ),
     ]
 
