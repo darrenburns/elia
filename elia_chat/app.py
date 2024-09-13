@@ -130,9 +130,6 @@ class Elia(App[None]):
         return {**super().get_css_variables(), **color_system}
 
     def watch_theme(self, theme: str | None) -> None:
-        print("theme changed:", theme)
-        print("theme object:", self.theme_object)
-        print("themes:", self.themes)
         self.refresh_css(animate=False)
         self.screen._update_styles()
 

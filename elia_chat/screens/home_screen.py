@@ -14,6 +14,7 @@ from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.app_header import AppHeader
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.widgets.chat_options import OptionsModal
+from elia_chat.widgets.welcome import Welcome
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
@@ -70,12 +71,14 @@ ChatList {
         yield AppHeader(self.config_signal)
         yield HomePromptInput(id="home-prompt")
         yield ChatList()
+        yield Welcome()
         yield Footer()
 
     @on(ScreenResume)
     async def reload_screen(self) -> None:
         chat_list = self.query_one(ChatList)
         await chat_list.reload_and_refresh()
+        self.show_welcome_if_required()
 
     @on(ChatList.ChatOpened)
     async def open_chat_screen(self, event: ChatList.ChatOpened):
@@ -113,3 +116,12 @@ ChatList {
     def update_config(self, runtime_config: RuntimeConfig) -> None:
         app = cast("Elia", self.app)
         app.runtime_config = runtime_config
+
+    def show_welcome_if_required(self) -> None:
+        chat_list = self.query_one(ChatList)
+        if chat_list.option_count == 0:
+            welcome = self.query_one(Welcome)
+            welcome.display = "block"
+        else:
+            welcome = self.query_one(Welcome)
+            welcome.display = "none"

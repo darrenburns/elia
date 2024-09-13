@@ -216,18 +216,31 @@ AppHeader {
   }
 }
 
-HomeScreen ChatList {
-  padding: 0;
-  height: 1fr;
-  width: 1fr;
-  border: round $main-border-color;
-  border-title-color: $main-border-text-color;
-  border-subtitle-color: $main-border-text-color;
+HomeScreen {
+  & ChatList {
+    padding: 0;
+    height: 1fr;
+    width: 1fr;
+    border: round $main-border-color;
+    border-title-color: $main-border-text-color;
+    border-subtitle-color: $main-border-text-color;
 
-  &:focus {
-    border: round $main-border-color-focus;
+    &:focus {
+      border: round $main-border-color-focus;
+      border-title-style: bold;
+      border-subtitle-color: $main-border-text-color;
+    }
+  }
+
+  & Welcome {
+    display: none;
+    border: round $main-border-color;
+    border-title-color: $main-border-text-color;
+    border-title-align: center;
     border-title-style: bold;
     border-subtitle-color: $main-border-text-color;
+    padding: 0 1;
+    text-align: center;
   }
 }
 
