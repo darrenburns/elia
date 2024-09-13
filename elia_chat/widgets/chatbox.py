@@ -2,6 +2,7 @@ from __future__ import annotations
 import bisect
 from dataclasses import dataclass
 
+from rich.cells import cell_len
 from rich.console import RenderableType
 from rich.markdown import Markdown
 from rich.syntax import Syntax
@@ -384,7 +385,7 @@ class Chatbox(Widget, can_focus=True):
         # Naive approach. Can sometimes look strange, but works well enough.
         content = self.message.message.get("content")
         if isinstance(content, str):
-            content_width = min(len(content), container.width)
+            content_width = min(cell_len(content), container.width)
         else:
             content_width = 10  # Arbitrary
         return content_width

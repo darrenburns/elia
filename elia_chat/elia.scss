@@ -3,16 +3,16 @@ $main-lighten-1: $primary-lighten-1;
 $main: $primary;
 $main-darken-1: $primary-darken-1;
 $main-darken-2: $primary-darken-2;
-$main-border-text-color: $accent 70%;
-$main-border-color: $main-lighten-1 90%;
-$main-border-color-focus: $main-lighten-2 100%;
+$main-border-text-color: $accent;
+$main-border-color: $main-lighten-1 50%;
+$main-border-color-focus: $main-lighten-1 100%;
 
 $left-border-trim: vkey $main-lighten-2 15%;
 
 * {
   scrollbar-color: $accent 30%;
-  scrollbar-color-hover: $accent 80%;
-  scrollbar-color-active: $accent;
+  scrollbar-color-hover: $accent 50%;
+  scrollbar-color-active: $accent 80%;
   scrollbar-background: $surface-darken-1;
   scrollbar-background-hover: $surface-darken-1;
   scrollbar-background-active: $surface-darken-1;
@@ -99,6 +99,7 @@ Chat {
     height: auto;
     max-height: 50%;
     padding: 0 1;
+    background: $background;
   }
 
   ResponseStatus {
