@@ -96,23 +96,37 @@ Chat {
     max-height: 50%;
     padding: 0 1;
   }
-}
 
-AgentIsTyping {
-  dock: top;
-  align-horizontal: right;
-  display: none;
-  height: 1;
-  width: auto;
-  layer: overlay;
-  margin-top: 1;
-  margin-right: 2;
-}
-
-
-AgentIsTyping LoadingIndicator {
-  width: 11;
-  color: $main;
+  ResponseStatus {
+    dock: top;
+    align-horizontal: right;
+    display: none;
+    layer: overlay;
+    height: 2;
+    width: auto;
+    margin-top: 1;
+    margin-right: 2;
+    & Label {
+      width: auto;
+    }
+    & LoadingIndicator {
+      width: auto;
+      color: $primary;
+      height: 1;
+      margin-top: 1;
+      dock: right;
+    }
+    &.-awaiting-response {
+      LoadingIndicator {
+        color: $primary;
+      }
+    }
+    &.-agent-responding {
+      LoadingIndicator {
+        color: $secondary;
+      }
+    }
+  }
 }
 
 TextArea {

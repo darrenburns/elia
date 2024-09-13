@@ -4,6 +4,8 @@ import datetime
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
+from textual.widgets import Label
+
 from elia_chat import constants
 from textual import log, on, work, events
 from textual.app import ComposeResult
@@ -17,7 +19,7 @@ from textual.widget import Widget
 from elia_chat.chats_manager import ChatsManager
 from elia_chat.models import ChatData, ChatMessage
 from elia_chat.screens.chat_details import ChatDetails
-from elia_chat.widgets.agent_is_typing import AgentIsTyping
+from elia_chat.widgets.agent_is_typing import ResponseStatus
 from elia_chat.widgets.chat_header import ChatHeader, TitleStatic
 from elia_chat.widgets.prompt_input import PromptInput
 from elia_chat.widgets.chatbox import Chatbox
@@ -83,11 +85,11 @@ class Chat(Widget):
         last_message: ChatMessage
 
     @dataclass
-    class FirstMessageSent(Message):
-        chat_data: ChatData
+    class NewUserMessage(Message):
+        content: str
 
     def compose(self) -> ComposeResult:
-        yield AgentIsTyping()
+        yield ResponseStatus()
         yield ChatHeader(chat=self.chat_data, model=self.model)
 
         with VerticalScroll(id="chat-container") as vertical_scroll:
@@ -100,13 +102,6 @@ class Chat(Widget):
         When the component is mounted, we need to check if there is a new chat to start
         """
         await self.load_chat(self.chat_data)
-
-        # TODO - The code below shouldn't be required.
-        #  Seems like a Textual bug.
-        self.set_timer(
-            0.05,
-            callback=lambda: self.chat_container.scroll_end(animate=False, force=True),
-        )
 
     @property
     def chat_container(self) -> VerticalScroll:
@@ -146,7 +141,9 @@ class Chat(Widget):
         ), "Textual has mounted container at this point in the lifecycle."
 
         await self.chat_container.mount(user_message_chatbox)
+
         self.scroll_to_latest_message()
+        self.post_message(self.NewUserMessage(content))
 
         await ChatsManager.add_message_to_chat(
             chat_id=self.chat_data.id, message=user_chat_message
@@ -248,6 +245,19 @@ class Chat(Widget):
                     chatbox=response_chatbox,
                 )
             )
+
+    @on(AgentResponseFailed)
+    @on(AgentResponseStarted)
+    async def agent_started_responding(
+        self, event: AgentResponseFailed | AgentResponseStarted
+    ) -> None:
+        try:
+            awaiting_reply = self.chat_container.query_one("#awaiting-reply", Label)
+        except NoMatches:
+            pass
+        else:
+            if awaiting_reply:
+                await awaiting_reply.remove()
 
     @on(AgentResponseComplete)
     def agent_finished_responding(self, event: AgentResponseComplete) -> None:
