@@ -73,7 +73,11 @@ Toast {
       color: $main-lighten-2;
     }
   }
+}
 
+Tooltip {
+  background: $background-darken-1;
+  border: wide $main-border-color;
 }
 
 

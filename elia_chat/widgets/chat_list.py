@@ -58,9 +58,20 @@ class ChatListItem(Option):
 class ChatList(OptionList):
     BINDINGS = [
         Binding(
-            "escape", "app.focus('home-prompt')", "Focus prompt", key_display="esc"
+            "escape",
+            "app.focus('home-prompt')",
+            "Focus prompt",
+            key_display="esc",
+            tooltip="Return focus to the prompt input.",
         ),
-        Binding("a", "archive_chat", "Archive chat", key_display="a"),
+        Binding(
+            "a",
+            "archive_chat",
+            "Archive chat",
+            key_display="a",
+            tooltip="Archive the highlighted chat"
+            " (without deleting it from Elia's database).",
+        ),
         Binding("j,down", "cursor_down", "Down", show=False),
         Binding("k,up", "cursor_up", "Up", show=False),
         Binding("l,right,enter", "select", "Select", show=False),
@@ -94,7 +105,7 @@ class ChatList(OptionList):
     @on(events.Focus)
     def show_border_subtitle(self) -> None:
         if self.highlighted is not None:
-            self.border_subtitle = "[[white]Enter[/]] Open chat"
+            self.border_subtitle = f"{self.highlighted + 1} / {self.option_count}"
         elif self.option_count > 0:
             self.highlighted = 0
 

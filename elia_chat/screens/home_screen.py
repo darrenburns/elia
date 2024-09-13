@@ -39,8 +39,17 @@ ChatList {
             "Send message",
             priority=True,
             key_display="^j",
+            tooltip="Send a message to the chosen LLM. On modern terminals, "
+            "[b u]alt+enter[/] can be used as an alternative.",
         ),
-        Binding("o,ctrl+o", "options", "Options", key_display="^o"),
+        Binding(
+            "o,ctrl+o",
+            "options",
+            "Options",
+            key_display="^o",
+            tooltip="Change the model, system prompt, and check where Elia"
+            " is storing your data.",
+        ),
     ]
 
     def __init__(
