@@ -141,4 +141,4 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
         if system_prompt_ta.text != self.elia.launch_config.system_prompt:
             system_prompt_ta.border_subtitle = "overrides config"
         else:
-            system_prompt_ta.border_subtitle = ""
+            system_prompt_ta.border_subtitle = "editable"

@@ -95,11 +95,14 @@ Chat {
       color: $text-muted;
     }
   }
-  PromptInput {
+  ChatPromptInput {
     height: auto;
     max-height: 50%;
     padding: 0 1;
     background: $background;
+    &.-submit-blocked {
+      border: round $error 50%;
+    }
   }
 
   ResponseStatus {

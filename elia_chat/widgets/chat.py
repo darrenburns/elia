@@ -149,6 +149,8 @@ class Chat(Widget):
             chat_id=self.chat_data.id, message=user_chat_message
         )
 
+        prompt = self.query_one(ChatPromptInput)
+        prompt.submit_ready = False
         self.stream_agent_response()
 
     @work(thread=True, group="agent_response")
@@ -265,6 +267,8 @@ class Chat(Widget):
         self.chat_data.messages.append(event.message)
         event.chatbox.border_title = "Agent"
         event.chatbox.remove_class("response-in-progress")
+        prompt = self.query_one(ChatPromptInput)
+        prompt.submit_ready = True
 
     @on(PromptInput.PromptSubmitted)
     async def user_chat_message_submitted(
@@ -341,6 +345,8 @@ class Chat(Widget):
         # If the last message didn't receive a response, try again.
         messages = chat_data.messages
         if messages and messages[-1].message["role"] == "user":
+            prompt = self.query_one(ChatPromptInput)
+            prompt.submit_ready = False
             self.stream_agent_response()
 
     def action_close(self) -> None:

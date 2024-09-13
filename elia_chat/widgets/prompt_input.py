@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from textual import events, on
 from textual.binding import Binding
+from textual.reactive import reactive
 from textual.widgets import TextArea
 from textual.message import Message
 
@@ -23,6 +24,8 @@ class PromptInput(TextArea):
         Binding("ctrl+j,alt+enter", "submit_prompt", "Send message", key_display="^j")
     ]
 
+    submit_ready = reactive(True)
+
     def __init__(
         self,
         name: str | None = None,
@@ -44,18 +47,18 @@ class PromptInput(TextArea):
             self.post_message(self.CursorEscapingBottom())
             event.stop()
 
+    def watch_submit_ready(self, submit_ready: bool) -> None:
+        self.set_class(not submit_ready, "-submit-blocked")
+
     def on_mount(self):
         self.border_title = "Enter your [u]m[/]essage..."
-        self.submit_ready = False
 
     @on(TextArea.Changed)
     async def prompt_changed(self, event: TextArea.Changed) -> None:
         text_area = event.text_area
         if text_area.text.strip() != "":
-            self.submit_ready = True
             text_area.border_subtitle = "[[white]^j[/]] Send message"
         else:
-            self.submit_ready = False
             text_area.border_subtitle = None
 
         text_area.set_class(text_area.wrapped_document.height > 1, "multiline")
@@ -67,9 +70,14 @@ class PromptInput(TextArea):
         self.parent.refresh()
 
     def action_submit_prompt(self) -> None:
+        if self.text.strip() == "":
+            self.notify("Cannot send empty message!")
+            return
+
         if self.submit_ready:
             message = self.PromptSubmitted(self.text, prompt_input=self)
             self.clear()
             self.post_message(message)
         else:
-            self.notify("Cannot send empty message!")
+            self.app.bell()
+            self.notify("Please wait for response to complete.")
