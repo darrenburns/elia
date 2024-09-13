@@ -230,6 +230,10 @@ HomeScreen {
       border-title-style: bold;
       border-subtitle-color: $main-border-text-color;
     }
+
+    &.-empty {
+      hatch: right $background-lighten-1;
+    }
   }
 
   & Welcome {

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class HomePromptInput(PromptInput):
-    BINDINGS = [Binding("escape", "app.quit", "Exit Elia", key_display="esc")]
+    BINDINGS = [Binding("escape", "app.quit", "Quit", key_display="esc")]
 
 
 class HomeScreen(Screen[None]):

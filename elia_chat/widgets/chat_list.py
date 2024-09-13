@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from dataclasses import dataclass
-from typing import cast
+from typing import Self, cast
 
 import humanize
 from rich.console import RenderResult, Console, ConsoleOptions
@@ -11,6 +11,7 @@ from rich.padding import Padding
 from rich.text import Text
 from textual import events, log, on
 from textual.binding import Binding
+from textual.geometry import Region
 from textual.message import Message
 from textual.widgets import OptionList
 from textual.widgets.option_list import Option
@@ -105,7 +106,7 @@ class ChatList(OptionList):
     @on(events.Focus)
     def show_border_subtitle(self) -> None:
         if self.highlighted is not None:
-            self.border_subtitle = f"{self.highlighted + 1} / {self.option_count}"
+            self.border_subtitle = self.get_border_subtitle()
         elif self.option_count > 0:
             self.highlighted = 0
 
@@ -129,6 +130,8 @@ class ChatList(OptionList):
         else:
             self.highlighted = old_highlighted
 
+        self.refresh()
+
     async def load_chat_list_items(self) -> list[ChatListItem]:
         chats = await self.load_chats()
         return [ChatListItem(chat, self.app.launch_config) for chat in chats]
@@ -149,14 +152,20 @@ class ChatList(OptionList):
         await ChatsManager.archive_chat(chat_id)
 
         self.border_title = self.get_border_title()
-        self.refresh()
+        self.border_subtitle = self.get_border_subtitle()
         self.app.notify(
             item.chat.title or f"Chat [b]{chat_id!r}[/] archived.",
             title="Chat archived",
         )
+        self.refresh()
 
     def get_border_title(self) -> str:
         return f"History ({len(self.options)})"
+
+    def get_border_subtitle(self) -> str:
+        if self.highlighted is None:
+            return ""
+        return f"{self.highlighted + 1} / {self.option_count}"
 
     def create_chat(self, chat_data: ChatData) -> None:
         new_chat_list_item = ChatListItem(chat_data, self.app.launch_config)
