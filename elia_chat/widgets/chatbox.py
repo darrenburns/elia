@@ -136,7 +136,7 @@ class SelectionTextArea(TextArea):
         text_to_copy = self.selected_text
 
         if text_to_copy:
-            message = f"Copied {len(text_to_copy)} selected characters to clipboard."
+            message = f"Copied {len(text_to_copy)} characters to clipboard."
             title = "Selection copied"
         else:
             text_to_copy = self.text
@@ -380,15 +380,6 @@ class Chatbox(Widget, can_focus=True):
             else:
                 return ""
         return self.markdown
-
-    def get_content_width(self, container: Size, viewport: Size) -> int:
-        # Naive approach. Can sometimes look strange, but works well enough.
-        content = self.message.message.get("content")
-        if isinstance(content, str):
-            content_width = min(cell_len(content), container.width)
-        else:
-            content_width = 10  # Arbitrary
-        return content_width
 
     def append_chunk(self, chunk: str) -> None:
         """Append a chunk of text to the end of the message."""

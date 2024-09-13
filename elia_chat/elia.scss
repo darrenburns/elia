@@ -264,6 +264,7 @@ Chatbox {
   }
 
   &.assistant-message {
+    width: 1fr;
     border: round $accent 60%;
     &:focus-within {
       border: round $accent;
@@ -295,6 +296,9 @@ Chatbox {
       & .text-area--cursor {
         background: $main-lighten-2;
       }
+    }
+    & TextArea {
+      width: 1fr;
     }
   }
 
