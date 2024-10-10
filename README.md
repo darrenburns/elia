@@ -19,7 +19,7 @@ Speak with proprietary models such as ChatGPT and Claude, or with local models r
 Install Elia with [pipx](https://github.com/pypa/pipx):
 
 ```bash
-pipx install elia-chat
+pipx install --python 3.11 elia-chat
 ```
 
 Depending on the model you wish to use, you may need to set one or more environment variables (e.g. `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, `GEMINI_API_KEY` etc).
