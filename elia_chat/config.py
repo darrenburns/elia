@@ -38,9 +38,10 @@ class EliaChatModel(BaseModel):
     when predicting the next token, and so the next token will be more random.
     Setting a very high temperature will likely produce junk output."""
     max_retries: int = Field(default=0)
+    """The number of times to retry a request after it fails before giving up."""
+    is_limited_access: bool = Field(default=False)
     """Whether a model is limits access to special groups of users and should
     not be shown to all users. Users who know/want these models can opt-in."""
-    is_limited_access: bool = Field(default=False)
 
     @property
     def lookup_key(self) -> str:
