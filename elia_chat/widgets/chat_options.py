@@ -74,6 +74,9 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
                     if provider:
                         label += f" [i]by[/] {provider}"
 
+                    if model.is_limited_access:
+                        label += f" [dim](Limited Access – check with provider for your eligibility)[/]"
+
                     ids_defined = selected_model.id and model.id
                     same_id = ids_defined and selected_model.id == model.id
                     same_name = selected_model.name == model.name
