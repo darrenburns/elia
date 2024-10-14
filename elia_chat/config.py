@@ -32,13 +32,16 @@ class EliaChatModel(BaseModel):
     """A description of the model which may appear inside the Elia UI."""
     product: str | None = Field(default=None)
     """For example `ChatGPT`, `Claude`, `Gemini`, etc."""
-    temperature: float = Field(default=1.0)
+    temperature: float | None = Field(default=1.0)
     """The temperature to use. Low temperature means the same prompt is likely
     to produce similar results. High temperature means a flatter distribution
     when predicting the next token, and so the next token will be more random.
     Setting a very high temperature will likely produce junk output."""
     max_retries: int = Field(default=0)
     """The number of times to retry a request after it fails before giving up."""
+    is_limited_access: bool = Field(default=False)
+    """Whether a model/api limits access to special groups of users and should
+    be noted as such to interested users. Users who know/want these models can opt-in."""
 
     @property
     def lookup_key(self) -> str:
@@ -73,6 +76,26 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
             product="ChatGPT",
             description="Previous high-intelligence model.",
             temperature=0.7,
+        ),
+        EliaChatModel(
+            id="elia-o1-mini",
+            name="o1-mini",
+            display_name="o1-mini",
+            provider="OpenAI",
+            product="ChatGPT",
+            description="Faster and cheaper version of o1, adept at coding, math, and science tasks where extensive general knowledge isn't required.",
+            temperature=None,  # o1 models do not support temperature param
+            is_limited_access=True,
+        ),
+        EliaChatModel(
+            id="elia-o1-preview",
+            name="o1-preview",
+            display_name="o1-preview",
+            provider="OpenAI",
+            product="ChatGPT",
+            description="Early preview of o1 model, designed to reason about hard problems using broad general knowledge about the world.",
+            temperature=None,  # o1 models do not support temperature param
+            is_limited_access=True,
         ),
     ]
 
