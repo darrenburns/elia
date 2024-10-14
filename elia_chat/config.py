@@ -40,8 +40,8 @@ class EliaChatModel(BaseModel):
     max_retries: int = Field(default=0)
     """The number of times to retry a request after it fails before giving up."""
     is_limited_access: bool = Field(default=False)
-    """Whether a model is limits access to special groups of users and should
-    not be shown to all users. Users who know/want these models can opt-in."""
+    """Whether a model/api limits access to special groups of users and should
+    be noted as such to interested users. Users who know/want these models can opt-in."""
 
     @property
     def lookup_key(self) -> str:
