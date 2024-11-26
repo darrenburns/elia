@@ -80,8 +80,8 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
 def get_builtin_anthropic_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
-            id="elia-claude-3-5-sonnet-20240620",
-            name="claude-3-5-sonnet-20240620",
+            id="elia-claude-3-5-sonnet-20241022",
+            name="claude-3-5-sonnet-20241022",
             display_name="Claude 3.5 Sonnet",
             provider="Anthropic",
             product="Claude 3.5",
