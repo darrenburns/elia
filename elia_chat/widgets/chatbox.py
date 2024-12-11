@@ -1,6 +1,11 @@
 from __future__ import annotations
-import bisect
 from dataclasses import dataclass
+import base64
+import bisect
+import os
+import sys
+
+import pyperclip
 
 from rich.cells import cell_len
 from rich.console import RenderableType
@@ -19,6 +24,39 @@ from textual.document._syntax_aware_document import SyntaxAwareDocumentError
 
 from elia_chat.config import EliaChatModel
 from elia_chat.models import ChatMessage
+
+
+class Helpers():
+
+    class Clipboard():
+
+        @staticmethod
+        def copy_to_clipboard(text):
+            """Copies text to clipboard using the best available method."""
+            if Helpers.Clipboard._use_osc52():
+                Helpers.Clipboard._copy_to_clipboard_osc52(text)
+            else:
+                pyperclip.copy(text)
+
+        @staticmethod
+        def _use_osc52():
+            """Determines if OSC52 should be used."""
+            x11_display = os.getenv("DISPLAY", "")
+            term = os.getenv("TERM", "")
+            tty_available = os.path.exists("/dev/tty")
+            return (x11_display == "") and tty_available and ("screen" in term or "xterm" in term or "tmux" in term)
+
+        @staticmethod
+        def _copy_to_clipboard_osc52(text):
+            """Copies text to clipboard using OSC52."""
+            b64_text = base64.b64encode(text.encode()).decode()
+            osc52_sequence = f"\033]52;c;{b64_text}\a"
+            # Does not work because Textual seems to capture stdout:
+            #sys.stdout.write(osc52_sequence)
+            #sys.stdout.flush()
+            with open("/dev/tty", "w") as ttyd:
+                ttyd.write(osc52_sequence)
+                ttyd.flush()
 
 
 class SelectionTextArea(TextArea):
@@ -144,9 +182,7 @@ class SelectionTextArea(TextArea):
             title = "Message copied"
 
         try:
-            import pyperclip
-
-            pyperclip.copy(text_to_copy)
+            Helpers.Clipboard.copy_to_clipboard(text_to_copy)
         except pyperclip.PyperclipException as exc:
             self.notify(
                 str(exc),
@@ -285,9 +321,7 @@ class Chatbox(Widget, can_focus=True):
             text_to_copy = self.message.message.get("content")
             if isinstance(text_to_copy, str):
                 try:
-                    import pyperclip
-
-                    pyperclip.copy(text_to_copy)
+                    Helpers.Clipboard.copy_to_clipboard(text_to_copy)
                 except pyperclip.PyperclipException as exc:
                     self.notify(
                         str(exc),
