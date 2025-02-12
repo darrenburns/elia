@@ -1,12 +1,12 @@
 [project]
 name = "elia_chat"
-version = "1.10.0"
+version = "1.11.0"
 description = "A powerful terminal user interface for interacting with large language models."
 authors = [
     { name = "Darren Burns", email = "darrenb900@gmail.com" }
 ]
 dependencies = [
-    "textual[syntax]==0.79.1",
+    "textual[syntax]==1.0.0",
     "sqlmodel>=0.0.9",
     "humanize>=4.6.0",
     "click>=8.1.6",
@@ -20,7 +20,7 @@ dependencies = [
     "pydantic>=2.9.0",
 ]
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.13"
 
 [project.scripts]
 elia = "elia_chat.__main__:cli"
