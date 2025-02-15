@@ -1,5 +1,13 @@
 import os
-from pydantic import AnyHttpUrl, BaseModel, ConfigDict, Field, SecretStr
+
+from pydantic import (
+    AnyHttpUrl,
+    BaseModel,
+    ConfigDict,
+    Field,
+    SecretStr,
+    field_validator,
+)
 
 
 class EliaChatModel(BaseModel):
@@ -170,6 +178,12 @@ class LaunchConfig(BaseModel):
         default_factory=get_builtin_models, init=False
     )
     theme: str = Field(default="nebula")
+
+    @field_validator("system_prompt")
+    def non_empty(cls, value: str) -> str:
+        if not value or value.strip() == "":
+            raise ValueError("system prompt must not be empty")
+        return value
 
     @property
     def all_models(self) -> list[EliaChatModel]:
