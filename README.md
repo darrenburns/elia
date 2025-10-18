@@ -63,6 +63,30 @@ elia -i -m gemini/gemini-1.5-flash-latest "How do I call Rust code from Python?"
 3. Run the local ollama server: `ollama serve`.
 4. Add the model to the config file (see below).
 
+## MCP (Model Context Protocol) Support
+
+Elia supports MCP servers that provide external tools and data sources to language models during conversations.
+
+**Quick setup:**
+1. Install UV: `curl -LsSf https://astral.sh/uv/install.sh | sh`
+2. Create `~/.config/elia/mcp.json` with your server configurations
+3. Restart Elia
+
+**Example configuration:**
+```json
+{
+  "mcp_servers": {
+    "filesystem": {
+      "command": "uvx",
+      "args": ["mcp-server-filesystem@latest", "/home/user"],
+      "auto_approve": ["read_file", "list_directory"]
+    }
+  }
+}
+```
+
+See [README-MCP.md](README-MCP.md) for quick setup and [docs/mcp-support.md](docs/mcp-support.md) for complete documentation.
+
 ## Configuration
 
 The location of the configuration file is noted at the bottom of

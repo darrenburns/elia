@@ -15,6 +15,7 @@ from elia_chat.widgets.app_header import AppHeader
 from elia_chat.screens.chat_screen import ChatScreen
 from elia_chat.widgets.chat_options import OptionsModal
 from elia_chat.widgets.welcome import Welcome
+from elia_chat.widgets.mcp_status import MCPStatusIndicator
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
@@ -69,6 +70,9 @@ ChatList {
 
     def compose(self) -> ComposeResult:
         yield AppHeader(self.config_signal)
+        # Add MCP status indicator if MCP is configured
+        if self.elia.mcp_manager and len(self.elia.mcp_manager.clients) > 0:
+            yield MCPStatusIndicator(self.elia.mcp_manager, id="mcp-status-indicator")
         yield HomePromptInput(id="home-prompt")
         yield ChatList()
         yield Welcome()

@@ -18,6 +18,7 @@ dependencies = [
     "pyperclip>=1.8.2",
     "litellm>=1.37.19",
     "pydantic>=2.9.0",
+    "mcp>=1.0.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.11"
@@ -38,10 +39,11 @@ dev-dependencies = [
     "pre-commit>=3.3.2",
     "textual-dev>=1.0.1",
     "pyinstrument>=4.6.2",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=1.2.0",
 ]
 
-[tool.uv.sources]
-textual = { path = "../textual", editable = true }
+
 
 [tool.mypy]
 ignore_missing_imports = true

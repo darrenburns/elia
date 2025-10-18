@@ -15,6 +15,7 @@ from elia_chat.config import EliaChatModel
 from elia_chat.locations import config_file, theme_directory
 from elia_chat.runtime_config import RuntimeConfig
 from elia_chat.database.database import sqlite_file_name
+from elia_chat.widgets.mcp_status import MCPStatusWidget
 
 if TYPE_CHECKING:
     from elia_chat.app import Elia
@@ -88,6 +89,10 @@ class OptionsModal(ModalScreen[RuntimeConfig]):
             )
             system_prompt_ta.border_title = "System Message"
             yield system_prompt_ta
+            # MCP Status section
+            if self.elia.mcp_manager and len(self.elia.mcp_manager.clients) > 0:
+                yield MCPStatusWidget(self.elia.mcp_manager, id="mcp-status-widget")
+            
             with Vertical(id="xdg-info") as xdg_info:
                 xdg_info.border_title = "More Information"
                 yield Static(f"{sqlite_file_name.absolute()}\n[dim]Database[/]\n")

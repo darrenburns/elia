@@ -1,3 +1,4 @@
+from typing import cast
 from textual import on, log
 from textual.app import ComposeResult
 from textual.binding import Binding
@@ -8,6 +9,7 @@ from elia_chat.chats_manager import ChatsManager
 from elia_chat.widgets.agent_is_typing import ResponseStatus
 from elia_chat.widgets.chat import Chat
 from elia_chat.models import ChatData
+from elia_chat.widgets.mcp_status import MCPStatusIndicator
 
 
 class ChatScreen(Screen[None]):
@@ -32,6 +34,11 @@ class ChatScreen(Screen[None]):
 
     def compose(self) -> ComposeResult:
         yield Chat(self.chat_data)
+        # Add MCP status indicator if MCP is configured
+        from elia_chat.app import Elia
+        elia = cast(Elia, self.app)
+        if elia.mcp_manager and len(elia.mcp_manager.clients) > 0:
+            yield MCPStatusIndicator(elia.mcp_manager, id="chat-mcp-status")
         yield Footer()
 
     @on(Chat.NewUserMessage)

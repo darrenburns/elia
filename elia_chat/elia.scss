@@ -574,3 +574,73 @@ HelpScreen {
     }
   }
 }
+/* Tool Approval Dialog Styles */
+#tool-approval-dialog {
+  background: $surface;
+  border: thick $primary;
+  width: 60;
+  height: auto;
+  max-height: 30;
+  padding: 1;
+  margin: 2;
+}
+
+#dialog-title {
+  text-align: center;
+  text-style: bold;
+  color: $primary;
+  margin-bottom: 1;
+}
+
+#tool-info {
+  margin-bottom: 1;
+  padding: 1;
+  background: $surface-lighten-1;
+  border: solid $surface-lighten-2;
+}
+
+.tool-name {
+  text-style: bold;
+  color: $accent;
+}
+
+.server-name {
+  color: $text-muted;
+  margin-bottom: 1;
+}
+
+.arguments-label {
+  text-style: bold;
+  margin-top: 1;
+}
+
+#arguments-display {
+  background: $surface-darken-1;
+  border: solid $surface-lighten-1;
+  padding: 1;
+  margin-top: 1;
+  max-height: 8;
+  overflow-y: auto;
+}
+
+.no-arguments {
+  color: $text-muted;
+  text-style: italic;
+}
+
+#approval-question {
+  text-align: center;
+  margin: 1 0;
+  color: $warning;
+}
+
+#button-container {
+  align: center middle;
+  height: 3;
+  margin-top: 1;
+}
+
+#button-container Button {
+  margin: 0 1;
+  min-width: 10;
+}
