@@ -80,40 +80,40 @@ def get_builtin_openai_models() -> list[EliaChatModel]:
 def get_builtin_anthropic_models() -> list[EliaChatModel]:
     return [
         EliaChatModel(
-            id="elia-claude-3-5-sonnet-20240620",
-            name="claude-3-5-sonnet-20240620",
-            display_name="Claude 3.5 Sonnet",
+            id="elia-claude-sonnet-4-5-20250929",
+            name="claude-sonnet-4-5-20250929",
+            display_name="Claude Sonnet 4.5",
             provider="Anthropic",
-            product="Claude 3.5",
-            description=("Anthropic's most intelligent model"),
+            product="Claude 4.5",
+            description=("Anthropic's smartest model for complex agents and coding"),
         ),
         EliaChatModel(
-            id="elia-claude-3-haiku-20240307",
-            name="claude-3-haiku-20240307",
-            display_name="Claude 3 Haiku",
+            id="elia-claude-haiku-4-5-20251001",
+            name="claude-haiku-4-5-20251001",
+            display_name="Claude Haiku 4.5",
             provider="Anthropic",
-            product="Claude 3",
+            product="Claude 4.5",
             description=(
-                "Fastest and most compact model for near-instant responsiveness"
+                "Fastest model with near-frontier intelligence"
             ),
         ),
         EliaChatModel(
-            id="elia-claude-3-sonnet-20240229",
-            name="claude-3-sonnet-20240229",
-            display_name="Claude 3 Sonnet",
+            id="elia-claude-sonnet-4-20250514",
+            name="claude-sonnet-4-20250514",
+            display_name="Claude Sonnet 4",
             provider="Anthropic",
-            product="Claude 3",
+            product="Claude 4",
             description=(
                 "Ideal balance of intelligence and speed for enterprise workloads"
             ),
         ),
         EliaChatModel(
-            id="elia-claude-3-opus-20240229",
-            name="claude-3-opus-20240229",
-            display_name="Claude 3 Opus",
+            id="elia-claude-opus-4-1-20250805",
+            name="claude-opus-4-1-20250805",
+            display_name="Claude Opus 4.1",
             provider="Anthropic",
-            product="Claude 3",
-            description="Excels at writing and complex tasks",
+            product="Claude 4.1",
+            description="Exceptional model for specialized reasoning tasks",
         ),
     ]
 
