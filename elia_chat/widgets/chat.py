@@ -220,7 +220,11 @@ class Chat(Widget):
                         response_chatbox.append_chunk, chunk_content
                     )
                 else:
-                    break
+                    # Reasoning models (e.g. via Ollama) stream their thinking
+                    # tokens as ``delta.reasoning_content`` while ``delta.content``
+                    # is ``None``. Skip those chunks instead of aborting, otherwise
+                    # the whole response is dropped and the agent box stays empty.
+                    continue
 
                 scroll_y = self.chat_container.scroll_y
                 max_scroll_y = self.chat_container.max_scroll_y
