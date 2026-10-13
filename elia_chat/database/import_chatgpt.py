@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import UTC, datetime
 from pathlib import Path
 
 from rich.console import Console
@@ -36,7 +36,7 @@ async def import_chatgpt_data(file: Path) -> None:
                     title=chat_data.get("title"),
                     model="gpt-3.5-turbo",
                     started_at=datetime.fromtimestamp(
-                        chat_data.get("create_time", 0) or 0
+                        chat_data.get("create_time", 0) or 0, UTC
                     ),
                 )
                 session.add(chat)
@@ -64,7 +64,7 @@ async def import_chatgpt_data(file: Path) -> None:
                             role=role,
                             content=str(message_info["content"].get("parts", [""])[0]),
                             timestamp=datetime.fromtimestamp(
-                                message_info.get("create_time", 0) or 0
+                                message_info.get("create_time", 0) or 0, UTC
                             ),
                             model=model,
                             meta=metadata,
