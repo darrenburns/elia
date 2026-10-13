@@ -85,4 +85,6 @@ class ChatData:
     @property
     def update_time(self) -> datetime:
         message_timestamp = self.messages[-1].timestamp
-        return message_timestamp.astimezone().replace(tzinfo=UTC)
+        if message_timestamp.tzinfo is None:
+            return message_timestamp.replace(tzinfo=UTC)
+        return message_timestamp.astimezone(UTC)
