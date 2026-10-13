@@ -62,7 +62,10 @@ async def import_chatgpt_data(file: Path) -> None:
                         message = MessageDao(
                             chat_id=chat_id,
                             role=role,
-                            content=str(message_info["content"].get("parts", [""])[0]),
+                            content="\n".join(
+                                str(part)
+                                for part in message_info["content"].get("parts", [])
+                            ),
                             timestamp=datetime.fromtimestamp(
                                 message_info.get("create_time", 0) or 0
                             ),
